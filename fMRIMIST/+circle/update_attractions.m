@@ -1,0 +1,26 @@
+function data = update_attractions(iTrial,data,player)
+
+L0_type = data.(player).L0_type; % 'mem_const' 'RW_freq'
+
+% not needed for bot
+if strcmp(data.(player).model,'bot')
+    return
+end
+
+switch player
+    
+    case 'A'
+
+        [data.(player).f_mat_self,data.(player).f_mat_opp] = circle.tomRL_step_level0(...
+                                                    L0_type,iTrial,...
+                                                    data.(player).f_mat_self,data.(player).f_mat_opp,...
+                                                    data.choice_own,data.choice_other,...
+                                                    data.(player).params(2:end));
+    case {'B','bot'}
+        
+        [data.(player).f_mat_self,data.(player).f_mat_opp] = circle.tomRL_step_level0(...
+                                                    L0_type,iTrial,...
+                                                    data.(player).f_mat_self,data.(player).f_mat_opp,...
+                                                    data.choice_other,data.choice_own,...
+                                                    data.(player).params(2:end));         
+end
