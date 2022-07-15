@@ -14,6 +14,7 @@
 * The output of the calibration script will be in 
 `C:\Users\Econ_Experiment\Documents\Gilles\tms_risk\experiment\logs\sub-<subject n>\ses-1\sub-<subject n>_ses-1_task-calibration_run-1_events.tsv` (*single subject computer*)
 * Copy this file to *the scanner computer* via the network into `C:\Users\Econ_Experiment\Documents\Maike_Renkert\2022StressRisk\fMRIMIST\risk_task\logs\sub-<subject n>\ses-1\sub-<subject n>_ses-1_task-calibration_run-1_events.tsv` (*scanner computer*)
+* copy it to: N:\client_write\MaikeR\logs
 
 # Calibrate trials on stimulus computer
 * Now open powershell on the *scanner computer* 
