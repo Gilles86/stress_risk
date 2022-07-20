@@ -29,3 +29,21 @@
 Then just press `enter` to execute it. This takes way less time than actually typing everything out.*
 
 *Note 2: For now we use the code for the tms project. We should at some point refine the instructions to the particularities of this experiment.*
+
+# run experiment on stimulus computer
+* prepare scanner screen
+  * open webcam (camera feedback; res.=1024x576; press 'start'; press on arrow box to make boarder disappear)
+  * adjust position of webcam windwow: right boarder at left part of trolly, upper boarder at scanner cross
+  * open background-grey-box (upper screen)
+
+* experiment script
+  * open Matlab, make sure you are in the right folder C:\Users\Econ_Experiment\Documents\Maike_Renkert\2022StressRisk\fMRIMIST
+  * check Risk_settings.m (e.g. speedupfactor = 1 !!!) --> close again
+  * start Risk_task_Wrapper(<sub ID>)
+  * useful keys:
+     * S = start
+     * 
+ 
+ 
+ 
+ 
