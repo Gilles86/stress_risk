@@ -41,8 +41,10 @@ Then just press `enter` to execute it. This takes way less time than actually ty
 
 * experiment script
   * open Matlab, make sure you are in the right folder `C:\Users\Econ_Experiment\Documents\Maike_Renkert\2022StressRisk\fMRIMIST`
-  * check Risk_settings.m (e.g. speedupfactor = 1 !!!) --> close again
-  * start Risk_task_Wrapper(`<sub ID>`)  --> close again
+  * check `Risk_settings.m` (e.g. speedupfactor = 1 !!!) --> close again
+  * start by typing `Risk_task_Wrapper(<sub ID>)`  
+    * type in subject characterisitics
+    * for condition: 0 = control, 1 = stress(MIST)
   * useful keys:
      * S = start
      * 
