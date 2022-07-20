@@ -49,6 +49,8 @@ Then just press `enter` to execute it. This takes way less time than actually ty
      * S = start
      * 
  
+# additional 
+  * basic scanning settings can also be checked on: Transfer-Computer --> `SNS-Lab/Documents/Allerlei_Nuetzliches/Studienparameter_2022.docx`
  
  
  
