@@ -37,9 +37,9 @@ Then just press `enter` to execute it. This takes way less time than actually ty
   * open background-grey-box (upper screen)
 
 * experiment script
-  * open Matlab, make sure you are in the right folder C:\Users\Econ_Experiment\Documents\Maike_Renkert\2022StressRisk\fMRIMIST
+  * open Matlab, make sure you are in the right folder `C:\Users\Econ_Experiment\Documents\Maike_Renkert\2022StressRisk\fMRIMIST`
   * check Risk_settings.m (e.g. speedupfactor = 1 !!!) --> close again
-  * start Risk_task_Wrapper(<sub ID>)
+  * start Risk_task_Wrapper(`<sub ID>`)
   * useful keys:
      * S = start
      * 
