@@ -4,8 +4,8 @@
 # Session 1
 
 * if no measurements before: 
- * Start the projector and eye-tracker 
- * Start the stimulus computer
+  * Start the projector and eye-tracker 
+  * Start the stimulus computer
 * Put the forms ready.
 * prepare button box configuration
 
@@ -17,14 +17,15 @@
   * Go to the experiment folder `cd Documents\Gilles\tms_risk\experiment`
 * Run the **instruction script**: `python instruct.py --settings macbook`
 
-** Run calibration in the scanner
-* Now open powershell on the *stimulus computer* 
+## Run calibration in the scanner
+* open powershell on the *stimulus computer* 
   * Open `Windows PowerShell` by pushing the start button and type `powershell`
   * Go to the right directory: `cd .\Documents\SNS\Gilles\virtualenv\risk\Scripts`
   * Activate the environment: `.\activate` (the `.\` is important!)
-  * Go to the experiment folder `cd C:\Users\Econ_Experiment\Documents\Maike_Renkert\2022StressRisk\fMRIMIST\risk_task\`
-
- * Use the calibration script to make a settings file for the task: `python make_trial_design.py <subject n> 1 1`.
+  * 
+## Run experiment in the scanner 
+* Go to the experiment folder `cd C:\Users\Econ_Experiment\Documents\Maike_Renkert\2022StressRisk\fMRIMIST\risk_task\`
+* Use the calibration script to make a settings file for the task: `python make_trial_design.py <subject n> 1 1`.
 * Now you can run the actual task with `task.py <subject n> <session> <run> --settings 3t`.
 
 # Session 2
