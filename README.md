@@ -34,7 +34,7 @@
 
 ## risk-experiment
 * prepare experiment settings
-  * Go to the experiment folder `cd Documents\
+  * Go to the experiment folder cd `C:\Users\Econ_Experimenter\Documents\SNS\Gilles\tms_risk\experiment`
   * Use the calibration script to make a settings file for the task: `python make_trial_design.py <subject n> 1 1`.
 * Now you can run the actual task with `task.py <subject n> <session> <run> --settings 3t`.
   * the script basically runs itself. Just:
