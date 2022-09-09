@@ -15,7 +15,7 @@
 * Activate the virtual environment:
    * go to folder by: `cd Documents\Gilles\virtualenv\Scripts\`
    * activate environment from there: `.\activate`
-* Go to the experiment folder `cd Documents\Gilles\tms_risk\experiment`
+* Go to the experiment folder `cd C:\Users\Econ_Experiment\Documents\Maike_Renkert\2022StressRisk\fMRIMIST\risk_task\`
 * Run the **instruction script**: `python instruct.py --settings macbook` (--> welcome screen comes up)
 
  --> now the subject goes into the single-subject room, fills our the forms and then does the instruction on the computer
@@ -34,7 +34,7 @@
 
 ## risk-experiment
 * prepare experiment settings
-  * Go to the experiment folder `cd C:\Users\Econ_Experiment\Documents\Maike_Renkert\2022StressRisk\fMRIMIST\risk_task\`
+  * Go to the experiment folder `cd Documents\
   * Use the calibration script to make a settings file for the task: `python make_trial_design.py <subject n> 1 1`.
 * Now you can run the actual task with `task.py <subject n> <session> <run> --settings 3t`.
   * the script basically runs itself. Just:
