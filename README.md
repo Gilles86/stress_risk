@@ -18,7 +18,7 @@
 * Run the **instruction script**: `python instruct.py --settings macbook`
 
 ## Run calibration in the scanner
-* open powershell on the *stimulus computer* 
+* on the *stimulus computer* :
   * Open `Windows PowerShell` by pushing the start button and type `powershell`
   * Go to the right directory: `cd .\Documents\SNS\Gilles\virtualenv\risk\Scripts`
   * Activate the environment: `.\activate` (the `.\` is important!)
