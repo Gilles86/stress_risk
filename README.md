@@ -9,25 +9,45 @@
 * Put the forms ready.
 * prepare button box configuration
 
-## Run task instructions script in single subject room
+## prepare task instructions script in single subject room
 
 * Open `Windows PowerShell` by pushing the start button and type `powershell` and press enter.
 * Activate the virtual environment:
-  * Activate the virtual environment: `Documents\Gilles\virtualenv\Scripts\activate`
-  * Go to the experiment folder `cd Documents\Gilles\tms_risk\experiment`
-* Run the **instruction script**: `python instruct.py --settings macbook`
+   * go to folder by: `cd Documents\Gilles\virtualenv\Scripts\`
+   * activate environment from there: `.\activate`
+* Go to the experiment folder `cd Documents\Gilles\tms_risk\experiment`
+* Run the **instruction script**: `python instruct.py --settings macbook` (--> welcome screen comes up)
 
-## Run calibration in the scanner
+ --> now the subject goes into the single-subject room, fills our the forms and then does the instruction on the computer
+ 
+## calibration
+### set up calibration on *stimulus computer*
 * on the *stimulus computer* :
   * Open `Windows PowerShell` by pushing the start button and type `powershell`
   * Go to the right directory: `cd .\Documents\SNS\Gilles\virtualenv\risk\Scripts`
   * Activate the environment: `.\activate` (the `.\` is important!)
   * run:  `python .\make_calibration_settings.py <subject number>`
-  * g
-## Run experiment in the scanner 
-* Go to the experiment folder `cd C:\Users\Econ_Experiment\Documents\Maike_Renkert\2022StressRisk\fMRIMIST\risk_task\`
-* Use the calibration script to make a settings file for the task: `python make_trial_design.py <subject n> 1 1`.
+
+### run calibration while anatomical scans
+* subject is now in the scanner, MRI scan sequence is ready. 
+* ?!? run `calibration.py` 
+
+## risk-experiment
+* prepare experiment settings
+  * Go to the experiment folder `cd C:\Users\Econ_Experiment\Documents\Maike_Renkert\2022StressRisk\fMRIMIST\risk_task\`
+  * Use the calibration script to make a settings file for the task: `python make_trial_design.py <subject n> 1 1`.
 * Now you can run the actual task with `task.py <subject n> <session> <run> --settings 3t`.
+  * the script basically runs itself. Just:
+    * Use q to exit the script after the last volume has been colleceted
+    * Press escape when you see the calibration screen to exit the calibration phase and start the next run (unless you want to recalibrate, but during TMS you never want this).
+    
+After the last (6th) run, immediately run python payout.py <subject> <session> --settings 3t to show the subject how much money they made on this session. This should also be noted down on the 1st sheeft of the Google spreadsheet document.
+
+
+* check movement while fMRI:
+  * start: doubleclick on `QA` (Matlab file)
+  * push `start acquisition`
+  * what to take care of: lower right panel `Volume deviation`
 
 # Session 2
 * prepare scanner screen
