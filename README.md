@@ -1,7 +1,7 @@
 # stress_risk
 
 
-* Session 1
+# Session 1
 ## Run task instructions script in single subject room
 * Put the forms ready.
 * Start the stimulus computer
@@ -34,7 +34,7 @@ Then just press `enter` to execute it. This takes way less time than actually ty
 # run experiment on stimulus computer
 * prepare button box configuration
   *
-* Session 2
+# Session 2
 * prepare scanner screen
   * open webcam (camera feedback; res.=1024x576; press 'start'; press on arrow box to make boarder disappear)
   * adjust position of webcam windwow: right boarder at left part of trolly, upper boarder at scanner cross
