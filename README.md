@@ -22,7 +22,8 @@
   * Open `Windows PowerShell` by pushing the start button and type `powershell`
   * Go to the right directory: `cd .\Documents\SNS\Gilles\virtualenv\risk\Scripts`
   * Activate the environment: `.\activate` (the `.\` is important!)
-  * 
+  * run:  `python .\make_calibration_settings.py <subject number>`
+  * g
 ## Run experiment in the scanner 
 * Go to the experiment folder `cd C:\Users\Econ_Experiment\Documents\Maike_Renkert\2022StressRisk\fMRIMIST\risk_task\`
 * Use the calibration script to make a settings file for the task: `python make_trial_design.py <subject n> 1 1`.
