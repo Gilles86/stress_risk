@@ -37,6 +37,12 @@
   * Go to the experiment folder cd `C:\Users\Econ_Experimenter\Documents\SNS\Gilles\tms_risk\experiment`
   * Use the calibration script to make a settings file for the task: `python make_trial_design.py <subject n> 1 1`.
 * Now you can run the actual task with `task.py <subject n> <session> <run> --settings 3t`.
+```
+for ($i=1; $i -lt 7; $i++){
+     python .\task.py <subject> <sessions> $i --settings 3t
+}
+```
+
   * the script basically runs itself. Just:
     * Use q to exit the script after the last volume has been colleceted
     * Press escape when you see the calibration screen to exit the calibration phase and start the next run (unless you want to recalibrate, but during TMS you never want this).
