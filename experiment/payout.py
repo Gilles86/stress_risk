@@ -6,6 +6,7 @@ import numpy as np
 import re
 from text import TextSession
 from utils import get_output_dir_str
+import numpy as np
 
 
 def get_payout(subject, session, settings='default'):
@@ -46,8 +47,8 @@ def get_payout(subject, session, settings='default'):
             'This means you will not get a bonus'
         payout = 0
     else:
-        txt += f'You chose between {int(row.prob1*100):d}% probability of ' \
-            f'winning {int(row.n1)} CHF, or {int(row.prob2*100):d}% probability ' \
+        txt += f'You chose between {int(np.round(row.prob1*100))}% probability of ' \
+            f'winning {int(row.n1)} CHF, or {int(np.round(row.prob2*100))}% probability ' \
             f'of winning {int(row.n2)} CHF.'
 
         if ((row.choice == 1) and (row['prob1'] == 1)):
