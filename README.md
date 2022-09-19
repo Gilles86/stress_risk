@@ -6,48 +6,49 @@
 * if no measurements before: 
   * Start the projector and eye-tracker 
   * Start the stimulus computer
-* Put the forms ready.
+* Put the forms ready **in the single subject room**.
 * prepare button box configuration
 
-## prepare task instructions script in single subject room
 
-* Open `Windows PowerShell` by pushing the start button and type `powershell` and press enter.
-* Activate the virtual environment:
-   * go to folder by: `cd Documents\Gilles\virtualenv\Scripts\`
-   * activate environment from there: `.\activate`
-* Go to the experiment folder `cd C:\Users\Econ_Experiment\Documents\Maike_Renkert\2022StressRisk\fMRIMIST\risk_task\`
-* Run the **instruction script**: `python instruct.py --settings macbook` (--> welcome screen comes up)
+## Prepare subject
+ * Welcome the subject. Say your name and that you are the experimenter today. Explain that this is an experiment with 2 sessions. Whether they get invited for the second session depends on data quality. It's particularly important that they don't move in the scanner.
+ * Bring them to the single subject room.
+ * Ask them to fill in all the forms. If they have any questions come to you.
+ * After they filled in all forms, check that they are eligible for the MRI scanner.
+ * If all is OK, bring them to the changing room. 
+ * Once they are changed, they can come to the single subject room again,
+
+## Prepare task instructions script in single subject room
+
+ * Put the instruction papers in the middle of the desk.
+ * Open "Stress study isntructions"-shortcut. It should be on the Desktop. Otherwise, it can be found in `C:\Users\Public\Documents\stress_risk`.
+ * Explain the subject to carefully read the instructions. After that they can perform the instruction task on the computer. "It should be pretty self-explanatory. Otherwise, don't hesitate to ask".
+ * After they finish the instruction task, the subjects can be placed in the scanner room.
+ 
+ ## Prepare task in scanner
+ * Open "Track Screen 1" on the desktop
+   * We use this program just to make sure the subject's eye is clearly visible. We *do not use it for calibration*.
+ * Run the first Survey-scan.
+ * During the survey you can already open the master script via the "Stress risk session 1"-shortcut on the desktop. 
+   * It an also be found in `C:\Exp...\Maike\stress_risk`
+ * Once the survey is done, *and you are sure that you don't have to move the subject*, start the eye tracker calibration by pressing `c`.
+   ** Say the following to the subject: "*We are almost ready to start the first part of this session, but first we are going to calibrate the eye tracker. What I need you to do is slowly follow the dots on the screen with your eyes.*"
+   ** Perform the calibration
+ * Once the calibration is succesful, press `escape` to go to the main task.
+ * Explain the subject what to do next: "We are now ready to start the first part of the session. We are going to do 4 runs of the task that you just practised. While you are doing the task, we are making anatomical scans, thus the scanner will be loud. It is very important that you don't move, in particular when you hear the scanner makings noises. After the 4th run, we will probably still be making some anatomical scans. During that time you can take a little break before the second part of the experiment begins. Just close your eyes if you want and try to relax. Press a button when you are ready to start"
+ * Wait for the subject to start the task and then start the `T1w` and `FLAIR`-sequences.
+ * After the anatomical scans are done press `q` to exit the first part of the session. Make sure your command window and your mouse are on the lower display.
+ * You now get to see a psychometric graph of the behavior. Just close this graph to start the actual task.
+ * Press `escape` to skip the eye tracking calibration (unless this is necessary for some reason).
+ * Now tell the subject *"We are now ready to start the last part of the experiment. It consists of 6 more runs, so 30 minutes in total. Once you are ready to start, press a button."*.
+ * Now you go over the 6 runs of the task. Just skip the eye tracking by pressing `escape` at the beginning of the task and `q` at the end of the task.
+ * After closing the 6th run the 
+ 
 
  --> now the subject goes into the single-subject room, fills our the forms and then does the instruction on the computer
  
-## calibration
-### set up calibration on *stimulus computer*
-* on the *stimulus computer* :
-  * Open `Windows PowerShell` by pushing the start button and type `powershell`
-  * Go to the right directory: `cd .\Documents\SNS\Gilles\virtualenv\risk\Scripts`
-  * Activate the environment: `.\activate` (the `.\` is important!)
-  * run:  `python .\make_calibration_settings.py <subject number>`
-
-### run calibration while anatomical scans
-* subject is now in the scanner, MRI scan sequence is ready. 
-* ?!? run `calibration.py` 
-
-## risk-experiment
-* prepare experiment settings
-  * Go to the experiment folder cd `C:\Users\Econ_Experimenter\Documents\SNS\Gilles\tms_risk\experiment`
-  * Use the calibration script to make a settings file for the task: `python make_trial_design.py <subject n> 1 1`.
-* Now you can run the actual task with `task.py <subject n> <session> <run> --settings 3t`.
-```
-for ($i=1; $i -lt 7; $i++){
-     python .\task.py <subject> <sessions> $i --settings 3t
-}
-```
-
-  * the script basically runs itself. Just:
-    * Use q to exit the script after the last volume has been colleceted
-    * Press escape when you see the calibration screen to exit the calibration phase and start the next run (unless you want to recalibrate, but during TMS you never want this).
-    
-After the last (6th) run, immediately run python payout.py <subject> <session> --settings 3t to show the subject how much money they made on this session. This should also be noted down on the 1st sheeft of the Google spreadsheet document.
+ 
+ ## Scanning
 
 
 * check movement while fMRI:
