@@ -1,16 +1,18 @@
-function Risk_task_Wrapper(subjID, sessionID, RESTART )
+function Risk_task_Wrapper(subjID,  RESTART )
 %
-% GÖKI'S SCRIPT!!!!
+% GOEKI'S SCRIPT!!!!
 %
-
+sessionID = 2;
 % if nargin > 2, and RESTART = 1, then search for existing file and continue at run_start 
 
 %% check input
-if nargin < 3 | (RESTART == 0 & nargin == 3)
+if nargin < 2 | (RESTART == 0 & nargin == 2)
     RESTART = 0;
     data.run_start = 1;
     skip_FirstMIST = 0;
-elseif nargin == 3 & RESTART == 1      
+elseif nargin == 2 & RESTART == 1
+ 
+    a = system(['cd C:\ExpFiles\Maike\stress_risk\experiment & C:\ExpFiles\Maike\virtualenv\risk\Scripts\python.exe ' [ 'C:\ExpFiles\Maike\stress_risk\experiment\make_trial_design.py ' sprintf('%02d', subjID) ' 1 1']]);
     data.run_start = 0;
     while ~(data.run_start > 1 & data.run_start <= 6)
         run_start = input('Restarting!!!\n At which run do you want to restart?');
@@ -200,7 +202,7 @@ for iRUN = data.run_start:data.numRUNS
     ListenChar();
     sca
     if F.RISK_TASK == 1
-        func_RISK(data.SUBID,data.sessionID, data.iRUN, F.MAC);
+        func_RISK(data.SUBID, data.iRUN, F.MAC);
     else
         data = open_new_scr(data);
         drawText(data.w, ['Risk task RUN ' num2str(iRUN) ], data.PTB.colors.textcolor, data.PTB.fontsizes.text);
