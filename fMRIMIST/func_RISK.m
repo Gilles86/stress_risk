@@ -1,6 +1,6 @@
-function a = func_RISK(SUBID,sessionID, iRUN, MAC)
-
-flags2pass = [num2str(SUBID) ' ' num2str(sessionID) ' ' num2str(iRUN)];
+function a = func_RISK(SUBID, iRUN, MAC)
+sessionID = 2;
+flags2pass = [sprintf('%02d', SUBID) ' ' num2str(sessionID) ' ' num2str(iRUN)];
 
 cmd = [];
 if MAC == 1
@@ -11,9 +11,9 @@ if MAC == 1
 
 else
     orig_path = pwd;
-    cmd = [cmd 'cd ' orig_path '\risk_task & '];
+    cmd = [cmd 'cd C:\ExpFiles\Maike\stress_risk\experiment & '];
     %cd C:\Users\Econ_Experimenter\Documents\SNS\Gilles\stress_risk\experiment
-    cmd = [cmd [ orig_path '\virtualenv\risk\Scripts\python.exe '] [ orig_path '\risk_task\task.py ' flags2pass ' --settings 3t --overwrite ']];
+    cmd = [cmd 'C:\ExpFiles\Maike\virtualenv\risk\Scripts\python.exe ' [ 'C:\ExpFiles\Maike\stress_risk\experiment\task.py ' flags2pass ' --settings 3t --overwrite ']];
     cd(orig_path);
 end
 a = system(cmd, '-echo');

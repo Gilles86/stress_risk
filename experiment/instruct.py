@@ -114,13 +114,27 @@ class InstructionSession(PileSession):
 
         During the course of the experiment, you will make many different choices. After each session, we will randomly select one such choice you made during the task. When you selected the 55%-lottery option, we will perform a digital lottery that determines whether you win the offered amount.
 
-        *** AFTER EVERY SESSION, YOU WILL BE PAID OUT THE REAL AMOUNT CORRESPONDING TO THE RANDOMLY SELECTED TRIAL. ***
+        *** WE WILL ADD UP THE AMOUNTS YOU COLLECTED ACROSS THE THREE SESSIONS AND YOU WILL BE PAID OUT THE AVERAGE OF THOSE AMOUNTS AFTER THE FOURTH SESSION. ***
 
         Press key 1 to continue
         """
 
         self.trials.append(InstructionTrial(self, 5,
                                             txt=txt, keys=[self.buttons[0]]))
+
+        txt = """
+
+        Let's say you won 0 CHF on the first session, 100 CHF in the second session, and 0 CHF in the third session and . How much actual money will you be paid out at the end of the fourth session, on top of your hourly 30CHF/hour rate?
+
+        1. 100CHF
+        2. 33CHF
+        3. 0CHF
+
+        Press the key that corresponds to the correct answer.
+        """
+
+        self.trials.append(InstructionTrial(self, 6,
+                                            txt=txt, keys=[self.buttons[1]]))
 
         txt = """
         Please note that if you do not respond to a trial in time, you will earn 0 CHF if that trial gets selected. So be sure to always indicate a choice in time.

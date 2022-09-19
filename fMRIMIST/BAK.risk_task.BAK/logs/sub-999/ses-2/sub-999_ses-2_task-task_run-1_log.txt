@@ -1,0 +1,8 @@
+0.1370 	WARNING 	We strongly recommend you activate the PTB sound engine in PsychoPy prefs as the preferred audio engine. Its timing is vastly superior. Your prefs are currently set to use ['sounddevice', 'PTB', 'pyo', 'pygame'] (in that order).
+1.1724 	WARNING 	Using eyetracker
+1.1724 	WARNING 	Using C:\ExpFiles\Maike\stress_risk\fMRIMIST\risk_task\settings\3t.yml as settings
+1.1724 	WARNING 	Writing results to  C:\ExpFiles\Maike\stress_risk\fMRIMIST\risk_task\logs\sub-999
+1.1724 	WARNING 	Writing results to: C:\ExpFiles\Maike\stress_risk\fMRIMIST\risk_task\logs\sub-999\ses-2\sub-999_ses-2_task-task_run-1_log.txt
+2.0139 	WARNING 	Actual framerate: 59.93235 (1 frame = 0.01669)
+3.7307 	WARNING 	1
+4.1524 	WARNING 	Writing results to: C:\ExpFiles\Maike\stress_risk\fMRIMIST\risk_task\logs\sub-999\ses-2\sub-999_ses-2_task-task_run-1
