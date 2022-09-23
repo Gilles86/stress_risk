@@ -56,6 +56,11 @@
   * push `start acquisition`
   * what to take care of: lower right panel `Volume deviation`
 
+
+!!! after each scanning:
+* copy new log files (behavioral data) to:'??/g_econ_department$/projects/2022/renkert_dehollander_aydogan_ruff_stressrisk/data/logs/'
+* fill in the subject in the scanning overview table: https://docs.google.com/spreadsheets/d/133hnl9zbJ4RDN4olc57Q2fLO6ALtdK4T7De-kMySyug/edit#gid=0
+
 # Session 2
 * prepare scanner screen
   * open webcam (camera feedback; res.=1024x576; press 'start'; press on arrow box to make boarder disappear)
