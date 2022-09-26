@@ -21,7 +21,7 @@
 ## Prepare task instructions script in single subject room
 
  * Put the instruction papers in the middle of the desk.
- * Open "Stress study isntructions"-shortcut. It should be on the Desktop. Otherwise, it can be found in `C:\Users\Public\Documents\stress_risk`.
+ * Open "Stress study isntructions"-shortcut. It should be on the Desktop. Otherwise, it can be found in `C:\Users\Public\Public Documents\stress_risk`.
  * Explain the subject to carefully read the instructions. After that they can perform the instruction task on the computer. "It should be pretty self-explanatory. Otherwise, don't hesitate to ask".
  * After they finish the instruction task, the subjects can be placed in the scanner room.
  
