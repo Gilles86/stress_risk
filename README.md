@@ -7,7 +7,7 @@
   * Start the projector and eye-tracker 
   * Start the stimulus computer
 * Put the forms ready **in the single subject room**.
-* prepare button box configuration
+* prepare button box configuration (green up --> yellow = index (choose pile 1), red = middle (choose pile 2))
 
 
 ## Prepare subject
