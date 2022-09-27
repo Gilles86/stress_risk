@@ -84,15 +84,15 @@ class InstructionSession(PileSession):
 
         Welcome to the instruction part of the experiment. During this part, we will explain what a single trial in this experiment looks like, and what choices you can make.
 
-        First of all, during the experiment, you will always have 4 buttons that you can press.
+        First of all, during the experiment, you will always have 2 buttons that you can press.
 
         On this computer, these are:
         * the j-key (index finger)
         * the k-key (middle finger)
 
-        TIP: let your index-/middle-/ring-finger and pinky lie down on these keys during the experiment. Note that, on the computer, key 1 (j) has a little bar on top that you can feel.
+        TIP: let your index-/middle-finger and pinky lie down on these keys during the experiment. Note that, on the computer, key 1 (j) has a little bar on top that you can feel.
 
-        In the scanner, there will be a red, blue, yellow, and green key.
+        In the scanner, there will be two keys asd well.
 
         From now on, we will call them key 1 (index finger), key 2 (middle finger).
 
@@ -114,24 +114,9 @@ class InstructionSession(PileSession):
 
         During the course of the experiment, you will make many different choices. After each session, we will randomly select one such choice you made during the task. When you selected the 55%-lottery option, we will perform a digital lottery that determines whether you win the offered amount.
 
-        *** WE WILL ADD UP THE AMOUNTS YOU COLLECTED ACROSS THE THREE SESSIONS AND YOU WILL BE PAID OUT THE AVERAGE OF THOSE AMOUNTS AFTER THE FOURTH SESSION. ***
-
         Press key 1 to continue
         """
 
-        self.trials.append(InstructionTrial(self, 5,
-                                            txt=txt, keys=[self.buttons[0]]))
-
-        txt = """
-
-        Let's say you won 0 CHF on the first session, 100 CHF in the second session, and 0 CHF in the third session and . How much actual money will you be paid out at the end of the fourth session, on top of your hourly 30CHF/hour rate?
-
-        1. 100CHF
-        2. 33CHF
-        3. 0CHF
-
-        Press the key that corresponds to the correct answer.
-        """
 
         self.trials.append(InstructionTrial(self, 6,
                                             txt=txt, keys=[self.buttons[1]]))
@@ -250,9 +235,6 @@ class InstructionSession(PileSession):
 
         2. I had to choose between 2 CHF for sure,
         or a lottery with a 55% probability to win 4 CHF.
-
-        3. I had to choose between 4 CHF for sure,
-        or 2 CHF for sure.
 
         Press the key that corresponds to the correct answer.
         """
