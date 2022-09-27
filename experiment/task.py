@@ -105,7 +105,7 @@ class TaskInstructionTrial(InstructionTrial):
             Swiss Francs represented by the pile.
 
             Your task is to either select the first lottery or
-            the second lottery, by using your index or middle finger.
+            the second lottery, by using your index or ring finger.
 
             NOTE: if you are to late in responding, or you do not 
             respond. You will gain no money for that trial.
