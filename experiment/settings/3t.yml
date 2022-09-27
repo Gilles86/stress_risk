@@ -10,7 +10,7 @@ window:
   color: [0, 0, 0]
   fullscr: True
   winType: pyglet
-  screen: 0
+  screen: 1
   viewPos: [0, 0]
 
 monitor:
