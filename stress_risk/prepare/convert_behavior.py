@@ -15,12 +15,11 @@ def main(subject, session, bids_folder, max_rt=1.0):
 
     for run in range(1, 7):
         print(subject, session, run)
-        nii = op.join(target_dir, f'sub-{subject}_ses-{session}_task-task_run-{run}_bold.nii')
+        nii = op.join(target_dir, f'sub-{subject}_ses-{session}_task-risk_run-{run}_bold.nii')
         print(nii)
 
-        if (subject == '04') & (run == 6) & (session == '3'):
-            n_volumes = 101
-        elif op.exists(nii):
+
+        if op.exists(nii):
             n_volumes = image.load_img(nii).shape[-1]
         else:
             n_volumes = 135
@@ -67,7 +66,7 @@ def main(subject, session, bids_folder, max_rt=1.0):
         # result['choice'] = result['choice'].astype(int)
         events = events[['trial_nr', 'onset', 'trial_type', 'prob1', 'prob2', 'n1', 'n2', 'choice']]
 
-        fn = op.join(target_dir, f'sub-{subject}_ses-{session}_task-task_run-{run}_events.tsv')
+        fn = op.join(target_dir, f'sub-{subject}_ses-{session}_task-risk_run-{run}_events.tsv')
         events.to_csv(fn, index=False, sep='\t')
 
 
@@ -90,7 +89,7 @@ if __name__ == '__main__':
     parser.add_argument('subject', default=None)
     parser.add_argument('session', default=None)
     parser.add_argument(
-        '--bids_folder', default='/data')
+        '--bids_folder', default='~/data/ds-stressrisk')
     args = parser.parse_args()
 
     main(args.subject, args.session, args.bids_folder)
