@@ -1,0 +1,69 @@
+#  analysis pipeline StressRisk
+
+## 1. data preparation and preprocessing
+### 1.1. Copy data
+
+* behavioral: `/Volumes/g_department$/projects/2022/renkert_dehollander_aydogan_ruff_stress_risk_fMRI/data/logs`
+
+* MRI: `/Volumes/g_econ_rawdata$/rawdata/2022/*mont*/*day*/SNS_MRI_MRISK_S......`
+
+--> into ~/data/ds-stressrisk/sourcedata\
+
+### 1.2. put into correct data format:
+
+* (`conda activate numrefields`)
+* `cd /Users/mrenke/git/stress_risk/stress_risk/prepare`
+* `for subject in 16; do python convert_raw_mri_data.py $subject 1 --bids_folder /Users/mrenke/data/ds-stressrisk ; done;`
+* `for subject in 08 09 10 11 12 13 14 15 16 17 ; do python convert_behavior.py $subject 1 --bids_folder /Users/mrenke/data/ds-stressrisk ; done;`
+
+### 1.3. Frmiprep 
+#### 1.3.1. on sciencecloud
+
+* put data on sciencecloud: `rsync -r  ~/data/ds-stressrisk/sub-03 sciencecloud:/data/ds-stressrisk/` or `for subject in 04 05 06 07; do rsync -r  ~/data/ds-stressrisk/sub-$subject sciencecloud:/data/ds-stressrisk/ ; done;`
+* `tmux attach-session -t 0` [other tmux commands: `tmux ls`; start new session`tmux` ; end all session: `tmux kill-server`, ]
+* `fmriprep-docker --fs-license-file $HOME/freesurfer/license.txt /data/ds-stressrisk /data/ds-stressrisk/derivatives/ --output-spaces MNI152NLin2009cAsym T1w fsaverage fsnative  --dummy-scans 3 --skip_bids_validation --participant_label 03 --work-dir /data/tmp` #carefull the -- does not become
+    * check fmriprep created temporary files (/tmp/workflow...) that can take up a lot of space on the VM. /data should be mounted to the attached Volume (1 TB)
+* put preprcoessed data back on my computer: `rsync -r  sciencecloud:/data/ds-stressrisk/derivatives ~/data/ds-stressrisk/derivatives`
+#### 1.3.2. on sciencecluster
+* `rsync -rcvz ....`
+`cd /home/cluster/mrenke/git/stress_risk/stress_risk/cluster_preprocess/`
+`sbatch --array=03,04 fmriprep.sh`
+`squeue -u mrenke`
+`squeue -u mrenke --array -j --format="%.25i %.9P %.30j %.10u %.2t %.10M %.6D %R"`
+* then `rsync -r sciencecluster:/data/mrenke/ds-stressrisk/derivatives/fmriprep/sub-19 ~/data/ds-stressrisk/derivatives/fmriprep` (correct folder format!!)
+* rsync -rcvz data/ds-stressrisk/sub-{18,19}
+
+### 1.4. retrcoir confounds
+* open `Matlab`, go to folder `/Users/mrenke/git/stress_risk/stress_risk/physiology`
+* run `tapas_init`
+* run 
+
+## 2. fMRI-analysis pipeline
+* (`conda activate numrefields`)
+* `cd /Users/mrenke/git/stress_risk/stress_risk/fmri_analysis`
+
+### 2.1. get activations: fit betas to single trials
+* `python fit_single_trials.py 03 1` [= subject session; '--bids_folder', default='/data/ds-stressrisk', '--smoothed', action='store_true', --pca_confounds', action='store_true'] 
+
+### 2.2. encoder: fit nprfs
+* `python fit_nprf.py 03 1` [= subject session; '--bids_folder', default='/data/ds-stressrisk', '--smoothed', action='store_true', --pca_confounds', action='store_true'] 
+
+### 2.3. construct sub specific IPS-masks
+* `cd /Users/mrenke/git/stress_risk/stress_risk/fmri_analysis/surface`
+* 1. `python transform_npc.py 01` [--hemi R = default]
+* 2. `python npc_to_volume.py 01`
+
+### 2.4. decoder: crossVal-encoder and then decoder
+* `cd /Users/mrenke/git/stress_risk/stress_risk/fmri_analysis`
+* `fit_task_crossVal.py`
+* `decoder.py`
+
+### 
+
+## Visualize and R2-based subject filtering
+
+
+## Analysis on sciencecluster
+
+* set up environment: `conda env create -n numrefields --file ENV.yml`
+* log into GPU node: `srun --time=1:00:00 --partition=volta --gres gpu:1 --pty /bin/bash -i `
