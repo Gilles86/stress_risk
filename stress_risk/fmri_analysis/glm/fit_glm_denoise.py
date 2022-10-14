@@ -17,9 +17,6 @@ def main(subject, session, bids_folder, smoothed=False):
 
     runs = range(1, 7)
 
-    if (str(subject) == '10') & (str(session) == '1'):
-        runs = range(1, 6)
-
     sub = Subject(subject, bids_folder=bids_folder)
 
     ims = sub.get_preprocessed_bold(session=session)
@@ -56,6 +53,8 @@ def main(subject, session, bids_folder, smoothed=False):
     print(dm)
 
     X = [dm.loc[run].values for run in runs]
+
+    print(len(X))
 
     # create a directory for saving GLMsingle outputs
 
