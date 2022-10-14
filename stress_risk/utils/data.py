@@ -24,10 +24,6 @@ def get_all_behavior(bids_folder='/data/ds-stressrisk', correct_behavior=True, c
     behavior = [s.get_behavior(drop_no_responses=drop_no_responses) for s in subjects]
     return pd.concat(behavior)
 
-def get_tms_conditions():
-    with pkg_resources.resource_stream('tms_risk', '/data/tms_keys.yml') as stream:
-        return yaml.safe_load(stream)
-
 
 class Subject(object):
 
@@ -36,24 +32,6 @@ class Subject(object):
         self.subject = '%02d' % int(subject)
         self.bids_folder = bids_folder
 
-        self.tms_conditions = {1:'baseline', 2:None, 3:None}
-
-
-        if self.subject in get_tms_conditions():
-            tc = get_tms_conditions()[self.subject]
-            for session in [2, 3]:
-                if session in tc:
-                    self.tms_conditions[session] = tc[session]
-
-    def get_stimulation_condition(self, session):
-        if session == 1:
-            return 'baseline'
-        else:
-            tms_conditions = get_tms_conditions()
-            if self.subject in tms_conditions:
-                if session in tms_conditions[self.subject]:
-                    return tms_conditions[self.subject][session]
-            return None
 
     def get_volume_mask(self, roi='NPC12r'):
 
@@ -124,19 +102,17 @@ class Subject(object):
         df = []
         for session, run in product(sessions, runs):
 
-            tms_condition = self.tms_conditions[session]
-
             fn = op.join(self.bids_folder, f'sub-{self.subject}/ses-{session}/func/sub-{self.subject}_ses-{session}_task-risk_run-{run}_events.tsv')
 
             if op.exists(fn):
                 d = pd.read_csv(fn, sep='\t',
                             index_col=['trial_nr', 'trial_type'])
-                d['subject'], d['session'], d['run'], d['stimulation_condition'] = int(self.subject), session, run, tms_condition
+                d['subject'], d['session'], d['run'] = int(self.subject), session, run 
                 df.append(d)
 
         if len(df) > 0:
             df = pd.concat(df)
-            df = df.reset_index().set_index(['subject', 'session', 'stimulation_condition', 'run', 'trial_nr', 'trial_type']) 
+            df = df.reset_index().set_index(['subject', 'session', 'run', 'trial_nr', 'trial_type']) 
             df = df.unstack('trial_type')
             return self._cleanup_behavior(df, drop_no_responses=drop_no_responses)
         else:
@@ -296,8 +272,7 @@ class Subject(object):
             mask = op.join(self.derivatives_dir
             ,'ips_masks',
             f'sub-{self.subject}',
-            'anat',
-            f'sub-{self.subject}_space-T1w_desc-{roi}_mask.nii.gz'
+            f'sub-{self.subject}_space-T1w_desc-{roi}.nii.gz'
             )
         else:
             raise NotImplementedError
