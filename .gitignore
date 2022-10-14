@@ -64,3 +64,4 @@ fMRIMIST/payment
 fMRIMIST/virtualenv
 fMRIMIST/risk_task/logs
 fMRIMIST/MIST_PTB/logfiles
+*.job
