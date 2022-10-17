@@ -27,17 +27,17 @@ def get_target_dir(subject, session, sourcedata, base, modality='func'):
 
     return target_dir
 
-def main(subject, session, bids_folder, smoothed=True,
+def main(subject, session, bids_folder, denoise=False, smoothed=True,
         pca_confounds=False):
     
     runs = range(1, 7)
-    ## subs bei denen runs nicht geklappt haben
-    #if subject == '03':
-    #    runs = [1, 3, 4, 5, 6]
 
     key = 'glm_stim1'
     target_dir = 'encoding_model'
 
+    if denoise:
+        key += '.denoise'
+        target_dir += '.denoise'
     if smoothed:
         key += '.smoothed'
         target_dir += '.smoothed'
@@ -102,9 +102,10 @@ if __name__ == '__main__':
     parser.add_argument('subject', default=None)
     parser.add_argument('session', default=None)
     parser.add_argument('--bids_folder', default='/Users/mrenke/data/ds-stressrisk')
+    parser.add_argument('--denoise', action='store_true')
     parser.add_argument('--smoothed', action='store_true')
     parser.add_argument('--pca_confounds', action='store_true')
     args = parser.parse_args()
 
-    main(args.subject, args.session, bids_folder=args.bids_folder, smoothed=args.smoothed,
+    main(args.subject, args.session, bids_folder=args.bids_folder, denoise=args.denoise, smoothed=args.smoothed,
             pca_confounds=args.pca_confounds)
