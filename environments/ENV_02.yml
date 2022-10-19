@@ -1,0 +1,18 @@
+name: tf2-gpu
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - scikit-learn
+  - pytables
+  - nilearn
+  - ipython
+  - tqdm
+  - tensorflow-probability
+  - seaborn
+  - pandas
+  - matplotlib
+  - nipype
+  - python=3.8
+  - tensorflow-gpu=2
+prefix: /data/gdehol/conda/envs/tf2-gpu
