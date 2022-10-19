@@ -52,12 +52,12 @@ def main(subject, session, bids_folder='/data'):
         os.makedirs(target_dir)
 
     for run, fn in zip(runs, funcs):
-        shutil.copy(fn, op.join(target_dir, f'sub-{subject:02d}_ses-{session}_task-task_run-{run}_bold.nii'))
+        shutil.copy(fn, op.join(target_dir, f'sub-{subject:02d}_ses-{session}_task-risk_run-{run}_bold.nii'))
 
         json_sidecar = json_template
         json_sidecar['PhaseEncodingDirection'] = 'i' if (run % 2 == 1) else 'i-'
 
-        with open(op.join(target_dir, f'sub-{subject:02d}_ses-{session}_task-task_run-{run}_bold.json'), 'w') as f:
+        with open(op.join(target_dir, f'sub-{subject:02d}_ses-{session}_task-risk_run-{run}_bold.json'), 'w') as f:
             json.dump(json_sidecar, f)
 
 
@@ -66,7 +66,7 @@ def main(subject, session, bids_folder='/data'):
     runs = [int(reg.match(fn).group(1)) for fn in physiologs]
 
     for run, fn in zip(runs, physiologs):
-        shutil.copy(fn, op.join(target_dir, f'sub-{subject:02d}_ses-{session}_task-task_run-{run}_physio.log'))
+        shutil.copy(fn, op.join(target_dir, f'sub-{subject:02d}_ses-{session}_task-risk_run-{run}_physio.log'))
 
     # *** Fieldmaps ***
     func_dir = op.join(bids_folder, f'sub-{subject:02d}', f'ses-{session}', 'func')
@@ -79,7 +79,7 @@ def main(subject, session, bids_folder='/data'):
         print(json_template)
   
     for target_run in range(1, 7):
-        bold =  op.join(func_dir, f'sub-{subject:02d}_ses-{session}_task-task_run-{target_run}_bold.nii')
+        bold =  op.join(func_dir, f'sub-{subject:02d}_ses-{session}_task-risk_run-{target_run}_bold.nii')
 
         if not op.exists(bold):
             print(f"Skipping EPI search for run {target_run}")
@@ -94,7 +94,7 @@ def main(subject, session, bids_folder='/data'):
         
         direction = 'RL' if (source_run % 2 == 1) else 'LR'
 
-        epi = op.join(func_dir, f'sub-{subject:02d}_ses-{session}_task-task_run-{source_run}_bold.nii')
+        epi = op.join(func_dir, f'sub-{subject:02d}_ses-{session}_task-risk_run-{source_run}_bold.nii')
         
         if not op.exists(epi):
             print(f"PROBLEM with target run {target_run}")
@@ -108,7 +108,7 @@ def main(subject, session, bids_folder='/data'):
 
             for source_run in potential_source_runs:
                 print(source_run)
-                epi = op.join(func_dir, f'sub-{subject:02d}_ses-{session}_task-task_run-{source_run}_bold.nii')
+                epi = op.join(func_dir, f'sub-{subject:02d}_ses-{session}_task-risk_run-{source_run}_bold.nii')
                 if op.exists(epi):
                     print(f'Using {source_run} as EPI for target {target_run}')
                     print(epi)
@@ -126,7 +126,7 @@ def main(subject, session, bids_folder='/data'):
 
         json_sidecar = json_template
         json_sidecar['PhaseEncodingDirection'] = 'i' if (source_run % 2 == 1) else 'i-'
-        json_sidecar['IntendedFor'] = f'ses-{session}/func/sub-{subject:02d}_ses-{session}_task-task_run-{target_run}_bold.nii'
+        json_sidecar['IntendedFor'] = f'ses-{session}/func/sub-{subject:02d}_ses-{session}_task-risk_run-{target_run}_bold.nii'
 
         with open(op.join(target_dir, f'sub-{subject:02d}_ses-{session}_dir-{direction}_run-{target_run}_epi.json'), 'w') as f:
             json.dump(json_sidecar, f)
