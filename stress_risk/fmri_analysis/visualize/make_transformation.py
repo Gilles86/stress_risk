@@ -10,8 +10,9 @@ import argparse
 
 bids_folder = '/Users/mrenke/data/ds-stressrisk'
 ses = 1
-sub = '09'
-subject = 9
+
+subject = 8
+sub = '08'
 base = 'encoding_model.smoothed'
 
 def import_freesurfer_subject(subject, bids_folder):
