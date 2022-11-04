@@ -18,7 +18,7 @@ from brainspace.utils.parcellation import reduce_by_labels
 # %%
 bids_folder = '/Users/mrenke/data/ds-stressrisk'
 
-sub = '04' 
+sub = '06' 
 ses = 1
 runs = range(1, 7)
 
@@ -138,7 +138,6 @@ for n_grad in [1,2]:
 
 
 #%% plot gradients
-# Load fsaverage5 surfaces
 surf_lh, surf_rh = load_fsa5()
 
 # sphinx_gallery_thumbnail_number = 2
@@ -157,8 +156,9 @@ from brainspace.utils.parcellation import map_to_labels
 # grad1 range was weird: plt.hist(grad_noParcel[0]) --> solution: remove regions with weird eigenvector value
 
 mask = ~np.isin(labeling, masked_labels)
-mask[labeling == 113] = False # 37 = labeling[ grad_noParcel[0] == max(grad_noParcel[0])], sub-01; 113 sub-04
-mask[labeling == 120] = False # 44 = labeling[grad_noParcel[0] == min(grad_noParcel[0]) ], sub-01; sub-09: 120 (R, = b'S_central',on L: 44 (+ 76 )); 
+mask[labeling == 103] = False # labeling[ grad_noParcel[0] == max(grad_noParcel[0])],37 sub-01; 113 sub-04 ?
+mask[labeling == 69] = False # labeling[grad_noParcel[0] == min(grad_noParcel[0]) ], 44 sub-01; sub-09 120 (R, = b'S_central',on L: 44 (+ 76 )); 
+mask[labeling == 118] = False 
 
 seed_ts_noParcel = clean_ts[mask]
 
@@ -188,9 +188,12 @@ plot_hemispheres(surf_lh, surf_rh, array_name=grad_noParcel, size=(1200, 400), c
 
 
 # %% save 
+import os
+
 removedLabels = '_no37-44' # sub-01
 removedLabels = '_no120' #sub-09
 removedLabels = '_no113-120' # sub-04
+removedLabels = ''
 
 grad = grad_noParcel
 
