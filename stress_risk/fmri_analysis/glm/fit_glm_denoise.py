@@ -38,13 +38,13 @@ def main(subject, session, bids_folder, smoothed=False,  retroicor=False):
     if not op.exists(base_dir):
         os.makedirs(base_dir)
 
-    print(data)
-
     onsets = sub.get_fmri_events(1)
     tr = 2.3
     n = 135
     frametimes = np.linspace(tr/2., (n - .5)*tr, n)
     onsets['onset'] = ((onsets['onset']+tr/2.) // 2.3) * 2.3
+
+    print(onsets)
 
     dm = [make_first_level_design_matrix(frametimes, onsets.loc[run], hrf_model='fir', oversampling=100.,
                                          drift_order=0,
@@ -54,6 +54,8 @@ def main(subject, session, bids_folder, smoothed=False,  retroicor=False):
     dm.columns = [c.replace('_delay_0', '') for c in dm.columns]
     dm /= dm.max()
     print(dm)
+    dm[dm < 1.0] = 0.0
+    print(dm.shape)
 
     X = [dm.loc[run].values for run in runs]
 
