@@ -74,7 +74,7 @@ data_file = fullfile(data_folder, filename);
 
 % screen
 if F.MRISCREEN
-    num_screen = 1; % scanner
+    num_screen = 2; % scanner
 else
     num_screen = 0; %find_screen();
 end
@@ -298,9 +298,9 @@ end
 
 save(data_file,'data');
 sca
-RestrictKeysForKbCheck([]);
-func_payment_calc(data.SUBID,data.sessionID);
 
+func_payment_calc(data.SUBID,data.sessionID);
+RestrictKeysForKbCheck([]);
 %drawText(data.w, 'Bye...', textcolor, fontsizes.text);
 %Screen(data.w, 'Flip');
 WaitSecs(2/speedup_factor);

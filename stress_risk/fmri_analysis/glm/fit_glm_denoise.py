@@ -11,7 +11,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-def main(subject, session, bids_folder, smoothed=False):
+def main(subject, session, bids_folder, smoothed=False,  retroicor=False):
 
     derivatives = op.join(bids_folder, 'derivatives')
 
@@ -22,11 +22,14 @@ def main(subject, session, bids_folder, smoothed=False):
     ims = sub.get_preprocessed_bold(session=session)
 
     base_dir = 'glm_stim1.denoise'
-
+       
+    if retroicor:
+            base_dir += '.retroicor'
+            confounds = sub.get_retroicor_confounds(session)
     if smoothed:
         base_dir += '.smoothed'
         ims = [image.smooth_img(im, fwhm=5.0) for im in ims]
-
+ 
     data = [image.load_img(im).get_fdata() for im in ims]
 
     base_dir = op.join(derivatives, base_dir, f'sub-{subject}',
@@ -35,13 +38,13 @@ def main(subject, session, bids_folder, smoothed=False):
     if not op.exists(base_dir):
         os.makedirs(base_dir)
 
-    print(data)
-
     onsets = sub.get_fmri_events(1)
     tr = 2.3
     n = 135
     frametimes = np.linspace(tr/2., (n - .5)*tr, n)
     onsets['onset'] = ((onsets['onset']+tr/2.) // 2.3) * 2.3
+
+    print(onsets)
 
     dm = [make_first_level_design_matrix(frametimes, onsets.loc[run], hrf_model='fir', oversampling=100.,
                                          drift_order=0,
@@ -51,6 +54,8 @@ def main(subject, session, bids_folder, smoothed=False):
     dm.columns = [c.replace('_delay_0', '') for c in dm.columns]
     dm /= dm.max()
     print(dm)
+    dm[dm < 1.0] = 0.0
+    print(dm.shape)
 
     X = [dm.loc[run].values for run in runs]
 
@@ -68,6 +73,10 @@ def main(subject, session, bids_folder, smoothed=False):
     # for the purpose of this example we will keep the relevant outputs in memory
     # and also save them to the disk
     opt['wantfileoutputs'] = [0, 0, 0, 1]
+
+    if retroicor:
+        opt['extra_regressors'] = [cf.values for cf in confounds]
+        print(opt)
 
     # running python GLMsingle involves creating a GLM_single object
     # and then running the procedure using the .fit() routine
@@ -92,7 +101,9 @@ if __name__ == '__main__':
     parser.add_argument('session', default=None)
     parser.add_argument('--bids_folder', default='/data')
     parser.add_argument('--smoothed', action='store_true')
+    parser.add_argument('--retroicor', action='store_true')
+
     args = parser.parse_args()
 
     main(args.subject, args.session,
-         bids_folder=args.bids_folder, smoothed=args.smoothed)
+         bids_folder=args.bids_folder, smoothed=args.smoothed, retroicor=args.retroicor)
