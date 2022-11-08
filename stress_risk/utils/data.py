@@ -12,7 +12,7 @@ from nilearn.maskers import NiftiMasker
 from collections.abc import Iterable
 
 def get_subjects(bids_folder='/data/ds-stressrisk', correct_behavior=True, correct_npc=False):
-    subjects = list(range(1, 100))
+    subjects = list(range(1, 200))
 
     subjects = [Subject(subject, bids_folder) for subject in subjects]
 
@@ -235,18 +235,25 @@ class Subject(object):
     def get_single_trial_volume(self, session, roi=None, 
             denoise=False,
             smoothed=False,
-            pca_confounds=False):
+            pca_confounds=False,
+            retroicor=False):
 
         key= 'glm_stim1'
 
         if denoise:
             key += '.denoise'
 
-        if smoothed:
-            key += '.smoothed'
-
         if pca_confounds:
             key += '.pca_confounds'
+
+        if (retroicor) and (not denoise):
+            raise Exception("When not using GLMSingle RETROICOR is *always* used!")
+
+        if retroicor:
+            key += '.retroicor'
+
+        if smoothed:
+            key += '.smoothed'
 
         fn = op.join(self.bids_folder, 'derivatives', key, f'sub-{self.subject}', f'ses-{session}', 'func', 
                 f'sub-{self.subject}_ses-{session}_task-risk_space-T1w_desc-stims1_pe.nii.gz')
@@ -286,6 +293,7 @@ class Subject(object):
     
     def get_prf_parameters_volume(self, session, 
             run=None,
+            retroicor=False,
             smoothed=False,
             pca_confounds=False,
             denoise=False,
@@ -303,6 +311,12 @@ class Subject(object):
 
         if denoise:
             dir += '.denoise'
+
+        if (retroicor) and (not denoise):
+            raise Exception("When not using GLMSingle RETROICOR is *always* used!")
+
+        if retroicor:
+            key += '.retroicor'
             
         if smoothed:
             dir += '.smoothed'

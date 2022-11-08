@@ -1,12 +1,12 @@
 function func_payment_calc(SUBID,sessionID)
 
-flags2pass = [num2str(SUBID) ' ' num2str(sessionID) ];
+flags2pass = [sprintf('%02d', SUBID) ' ' num2str(sessionID) ];
 
 cmd = [];
 orig_path = pwd;
-cmd = [cmd 'cd ' orig_path '\risk_task & '];
+cmd = [cmd 'cd C:\ExpFiles\Maike\stress_risk\experiment & '];
 %cd C:\Users\Econ_Experimenter\Documents\SNS\Gilles\stress_risk\experiment
-cmd = [cmd [ orig_path '\virtualenv\risk\Scripts\python.exe '] [ orig_path '\risk_task\payout.py ' flags2pass ' --settings 3t ']];
+cmd = [cmd 'C:\ExpFiles\Maike\virtualenv\risk\Scripts\python.exe ' [ 'C:\ExpFiles\Maike\stress_risk\experiment\payout.py ' flags2pass ' --settings 3t ']];
 cd(orig_path);
 
 

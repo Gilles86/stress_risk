@@ -33,7 +33,7 @@ switch exp_language
 
         text.exp_end =          ['You completed the experiment!'];
         
-        text.t1_scan =          ['Now, we will conduct an anatomical scan.\nPlease don''t move during the scan!'];
+        text.t1_scan =          ['We are done with the main part of the experiment!'];
                              
     case 'DE'
         
