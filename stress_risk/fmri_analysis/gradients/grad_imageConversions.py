@@ -8,7 +8,7 @@ import numpy as np
 import os.path as op
 from nipype.interfaces.freesurfer import SurfaceTransform
 
-sub = '09'
+sub = '06'
 ses = 1
 bids_folder = '/Users/mrenke/data/ds-stressrisk'
 
@@ -66,7 +66,7 @@ for i, hemi in enumerate(['L', 'R']):
 #%% 3.2. for _noLabels_noXX, both gradients
 
 from nipype.interfaces.freesurfer import SurfaceTransform
-removedLabels = '_no120'
+#removedLabels = '_no120'
 
 target_space = 'fsnative'
 

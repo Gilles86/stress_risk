@@ -58,8 +58,8 @@ grad2 = cortex.dataset.Vertex(np.concatenate([ims[1][0].agg_data(), ims[1][1].ag
 ds = cortex.Dataset(r2=r2_surf,
                     r2_thr=r2_surf_thr,
                     mu=mu_surf, 
-                    grad1 = grad1)
-                    #grad2 = grad2) somehow does not work to display both in one webshow...."TypeError: byte indices must be integers or slices, not tuple"
+                   # grad1 = grad1,
+                    grad2 = grad2) #somehow does not work to display both in one webshow...."TypeError: byte indices must be integers or slices, not tuple"
                     
 cortex.webshow(ds)    # here change the IP to "localhost" for the webapplication to work!! e.g. http://localhost:47789/mixer.html
                 
