@@ -18,8 +18,7 @@ if not op.exists(job_directory):
 
 bids_folder = '/scratch/gdehol/ds-stressrisk'
 
-subjects = [f'{subject:02d}' for subject in range(3, 31)]
-# subjects = range(35, 40)
+subjects = [f'{subject:02d}' for subject in range(45, 49)]
 
 sessions = ['1']
 masks = ['NPC_R']
@@ -30,6 +29,9 @@ smoothed = [False]
 pca_confounds = [False]
 
 denoises = [True]
+
+subjects = [46]
+n_voxels = [250]
 
 for ix, (subject, session, mask, nv, smooth, pcc, denoise) in enumerate(product(subjects, sessions, masks, n_voxels, smoothed, pca_confounds, denoises)):
 # for ix, (nv, subject, session, mask) in enumerate(missing):
@@ -55,15 +57,16 @@ for ix, (subject, session, mask, nv, smooth, pcc, denoise) in enumerate(product(
 
         fh.writelines(f"#SBATCH --job-name=decode_volume.{id}.job\n")
         fh.writelines(f"#SBATCH --output={os.environ['HOME']}/.out/decode_volume.stressrisk.{id}.txt\n")
-        # fh.writelines("#SBATCH --partition=volta\n")
-        fh.writelines("#SBATCH --partition=generic\n")
+        fh.writelines("#SBATCH --partition=volta\n")
+        # fh.writelines("#SBATCH --partition=vesta\n")
+        # fh.writelines("#SBATCH --partition=generic\n")
         fh.writelines("#SBATCH --time=30:00\n")
         fh.writelines("#SBATCH --ntasks=1\n")
         fh.writelines("#SBATCH --mem=96G\n")
-        fh.writelines("#SBATCH -c8\n")
-        # fh.writelines("#SBATCH --gres gpu:1\n")
-        # fh.writelines("module load volta\n")
-        # fh.writelines("module load nvidia/cuda11.2-cudnn8.1.0\n")
+        # fh.writelines("#SBATCH -c8\n")
+        fh.writelines("#SBATCH --gres gpu:1\n")
+        fh.writelines("module load volta\n")
+        fh.writelines("module load nvidia/cuda11.2-cudnn8.1.0\n")
         fh.writelines(". $HOME/init_conda.sh\n")
         fh.writelines(". $HOME/init_freesurfer.sh\n")
         fh.writelines("conda activate tf2-gpu\n")

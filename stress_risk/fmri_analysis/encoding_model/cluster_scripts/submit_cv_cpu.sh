@@ -3,7 +3,7 @@
 #SBATCH --output=/home/cluster/gdehol/logs/fit_nprf_smoothed_surf_%A-%a.txt
 #SBATCH --partition=generic
 #SBATCH --ntasks=1
-#SBATCH -c16
+#SBATCH -c32
 #SBATCH --mem=96G
 #SBATCH --time=2:00:00
 
