@@ -12,7 +12,7 @@ from nilearn.maskers import NiftiMasker
 from collections.abc import Iterable
 
 def get_subjects(bids_folder='/data/ds-stressrisk', correct_behavior=True, correct_npc=False):
-    subjects = list(range(1, 100))
+    subjects = list(range(1, 200))
 
     subjects = [Subject(subject, bids_folder) for subject in subjects]
 
