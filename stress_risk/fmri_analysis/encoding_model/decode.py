@@ -1,6 +1,6 @@
 import argparse
 import os
-import pingouin
+#import pingouin
 import numpy as np
 import os.path as op
 import pandas as pd
@@ -102,7 +102,7 @@ def main(subject, session, smoothed, pca_confounds, denoise, n_voxels=1000, bids
         E = (pdf * pdf.columns).sum(1) / pdf.sum(1)
 
         print(pd.concat((E, test_paradigm['log(n1)']), axis=1))
-        print(pingouin.corr(E, test_paradigm['log(n1)']))
+        #print(pingouin.corr(E, test_paradigm['log(n1)']))
 
         pdfs.append(pdf)
 

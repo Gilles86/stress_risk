@@ -28,7 +28,7 @@ def main(subject, session, bids_folder, smoothed=True,
 
     derivatives = op.join(bids_folder, 'derivatives')
 
-    runs = range(1, 7)
+    runs = range(2, 7)
     ## subs bei denen runs nicht geklappt haben
     #if subject == '03':
     #    runs = [1, 3, 4, 5, 6]
