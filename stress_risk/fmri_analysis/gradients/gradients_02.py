@@ -18,7 +18,8 @@ subList = ['01','02','03','04','05','08','09']
 subList = ['10','11','12','13']
 subList = ['14','16','17','18','19']
 ses = 1
-
+specification=''
+specification='_dmask'
 #%%
 
 atlas = datasets.fetch_atlas_surf_destrieux()
@@ -59,8 +60,8 @@ for sub in subList:
     for i, g in enumerate(gm_noParcel.gradients_.T):
         grad_noParcel[i] = map_to_labels(g, labeling_noParcel, mask=mask, fill=np.nan)
 
-    saveGradToFiles(grad_noParcel, sub,ses,specification='')
-    fs5Tofsnative(sub,ses)
+    saveGradToFiles(grad_noParcel, sub,ses,specification)
+    fs5Tofsnative(sub,ses,specification)
 
 #%%
 def cleanTS(sub, ses, runs = range(1, 7),space = 'fsaverage5'):
@@ -95,7 +96,7 @@ def cleanTS(sub, ses, runs = range(1, 7),space = 'fsaverage5'):
 
 #%% 
 
-def saveGradToFiles(grad, sub,ses, specification=''):
+def saveGradToFiles(grad, sub,ses, specification='',bids_folder='/Users/mrenke/data/ds-stressrisk'):
     target_dir = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}')
 
     if not op.exists(target_dir):
@@ -119,7 +120,7 @@ def saveGradToFiles(grad, sub,ses, specification=''):
 #%%
 from nipype.interfaces.freesurfer import SurfaceTransform
 
-def fs5Tofsnative(sub,ses, bids_folder='/Users/mrenke/data/ds-stressrisk'):
+def fs5Tofsnative(sub,ses, specification='', bids_folder='/Users/mrenke/data/ds-stressrisk'):
 
     target_space = 'fsnative'
 
@@ -131,8 +132,8 @@ def fs5Tofsnative(sub,ses, bids_folder='/Users/mrenke/data/ds-stressrisk'):
 
             grad_sub_dir = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}')
 
-            in_file = op.join(grad_sub_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsaverage5_hemi-{hemi}_grad{n_grad}_noParcel.surf.gii')
-            out_file = op.join(grad_sub_dir, f'sub-{sub}_ses-{ses}_task-risk_space-{target_space}_hemi-{hemi}_grad{n_grad}_noParcel.surf.gii')
+            in_file = op.join(grad_sub_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsaverage5_hemi-{hemi}_grad{n_grad}_noParcel{specification}.surf.gii')
+            out_file = op.join(grad_sub_dir, f'sub-{sub}_ses-{ses}_task-risk_space-{target_space}_hemi-{hemi}_grad{n_grad}_noParcel{specification}.surf.gii')
 
             sxfm.inputs.source_file = in_file
             sxfm.inputs.out_file = out_file
