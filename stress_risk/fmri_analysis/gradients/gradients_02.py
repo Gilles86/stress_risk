@@ -37,7 +37,7 @@ labeling_noParcel = np.arange(0,len(labeling),1,dtype = int)     # Map gradients
 for sub in subList:
 
     mask = ~np.isin(labeling, masked_labels)
-    mask[mask == False] =  True
+    #mask[mask == False] =  True
     clean_ts = cleanTS(sub, ses)
     seed_ts_noParcel = clean_ts[mask]
 
