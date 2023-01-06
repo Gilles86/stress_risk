@@ -8,7 +8,7 @@ import numpy as np
 import os.path as op
 from nipype.interfaces.freesurfer import SurfaceTransform
 
-sub = '06'
+sub = '17'
 ses = 1
 bids_folder = '/Users/mrenke/data/ds-stressrisk'
 

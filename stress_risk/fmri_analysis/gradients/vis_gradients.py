@@ -17,10 +17,10 @@ bids_folder = '/Users/mrenke/data/ds-stressrisk'
 ses = 1
 base = 'encoding_model.smoothed'
 specification=''
-specification='_dmask'
+#specification='_dmask'
 
 #%%
-sub = '01'
+sub = '03'
 subject = f'sub-{sub}'
 
 r2_data =  op.join(bids_folder, 'derivatives', base , f'sub-{sub}', f'ses-{ses}', 'func', 
@@ -77,23 +77,39 @@ def loadGradAsCortexVertex(sub,ses,bids_folder,specification, parcel = '_noParce
 
 #%% 2. save r2_surf to fsnative.surf.gii file
 
-target_dir = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}')
+def saveR2toNativeSurfFile(sub,ses,bids_folder):
+    target_dir = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}')
 
-dat = r2_surf.map().data
+    # load r2 data from volume
+    subject = f'sub-{sub}'
+    r2_data =  op.join(bids_folder, 'derivatives', base , f'sub-{sub}', f'ses-{ses}', 'func', 
+        f'sub-{sub}_ses-{ses}_desc-r2.optim_space-T1w_pars.nii.gz')
+    r2_data = image.load_img(r2_data).get_data().T
+    r2_surf = cortex.Volume(r2_data, subject, xfm)
 
-datL, datR = np.split(dat,[139846]) # look at grad1[0].agg_data().shape
-#data = np.split(dat, 2); datL, datR = data[0], data[1]
+    # get shape
+    grad_n, hemi = 1, 'L'
+    file = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}',
+                f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-{hemi}_grad{grad_n}{parcel}{specification}.surf.gii')
+    im1L = nib.load(file)
 
-# left 
-gii_im_datar = nib.gifti.gifti.GiftiDataArray(data=datL)
-gii_im = nib.gifti.gifti.GiftiImage(darrays= [gii_im_datar])
-out_file = op.join(target_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-L_r2.surf.gii')
-gii_im.to_filename(out_file)
-# right
-gii_im_datar = nib.gifti.gifti.GiftiDataArray(data=datR)
-gii_im = nib.gifti.gifti.GiftiImage(darrays= [gii_im_datar])
-out_file = op.join(target_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-R_r2.surf.gii')
-gii_im.to_filename(out_file)
+
+    dat = r2_surf.map().data
+    datL, datR = np.split(dat,[im1L.agg_data().shape[0]]) # look at grad1[0].agg_data().shape, grad1.left.shape
+
+    # left 
+    gii_im_datar = nib.gifti.gifti.GiftiDataArray(data=datL)
+    gii_im = nib.gifti.gifti.GiftiImage(darrays= [gii_im_datar])
+    out_file = op.join(target_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-L_r2.surf.gii')
+    gii_im.to_filename(out_file)
+    # right
+    gii_im_datar = nib.gifti.gifti.GiftiDataArray(data=datR)
+    gii_im = nib.gifti.gifti.GiftiImage(darrays= [gii_im_datar])
+    out_file = op.join(target_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-R_r2.surf.gii')
+    gii_im.to_filename(out_file)
+
+
+
 #%%
 mu_data = op.join(bids_folder, 'derivatives', base , f'sub-{sub}', f'ses-{ses}', 'func', 
     f'sub-{sub}_ses-{ses}_desc-mu.optim_space-T1w_pars.nii.gz')

@@ -14,12 +14,11 @@ from scipy.sparse.csgraph import connected_components
 
 bids_folder = '/Users/mrenke/data/ds-stressrisk'
 
-subList = ['01','02','03','04','05','08','09']
-subList = ['10','11','12','13']
+subList = ['01','02','03','04','05','08','09','10','11','12','13','14']
 subList = ['14','16','17','18','19']
 ses = 1
 specification=''
-specification='_dmask'
+#specification='_dmask'
 #%%
 
 atlas = datasets.fetch_atlas_surf_destrieux()
@@ -37,7 +36,7 @@ labeling_noParcel = np.arange(0,len(labeling),1,dtype = int)     # Map gradients
 for sub in subList:
 
     mask = ~np.isin(labeling, masked_labels)
-    #mask[mask == False] =  True
+    #mask[mask == False] =  True # remove "brainspace's default regions excluded"
     clean_ts = cleanTS(sub, ses)
     seed_ts_noParcel = clean_ts[mask]
 
@@ -60,7 +59,8 @@ for sub in subList:
     for i, g in enumerate(gm_noParcel.gradients_.T):
         grad_noParcel[i] = map_to_labels(g, labeling_noParcel, mask=mask, fill=np.nan)
 
-    saveGradToFiles(grad_noParcel, sub,ses,specification)
+    saveGradToNPFile(grad, sub,ses, specification)
+    npFileTofs5Gii(sub,ses, specification)
     fs5Tofsnative(sub,ses,specification)
 
 #%%
@@ -96,22 +96,25 @@ def cleanTS(sub, ses, runs = range(1, 7),space = 'fsaverage5'):
 
 #%% 
 
-def saveGradToFiles(grad, sub,ses, specification='',bids_folder='/Users/mrenke/data/ds-stressrisk'):
+def saveGradToNPFile(grad, sub,ses, specification='',bids_folder='/Users/mrenke/data/ds-stressrisk'):
     target_dir = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}')
 
     if not op.exists(target_dir):
         os.makedirs(target_dir)
 
-    for i, n_grad  in enumerate([1,2]):
-        np.save(op.join(target_dir,f'grad{n_grad}_noParcel{specification}.npy'), grad[i])
+    for g, n_grad  in enumerate([1,2]):
+        np.save(op.join(target_dir,f'grad{n_grad}_noParcel{specification}.npy'), grad[g])
+
+def npFileTofs5Gii(sub,ses, specification='',bids_folder='/Users/mrenke/data/ds-stressrisk'):
+    target_dir = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}')
 
     for n_grad in [1,2]:
         grad = np.load(op.join(target_dir, f'grad{n_grad}_noParcel{specification}.npy'))
         grad = np.split(grad,2) # for i, hemi in enumerate(['L', 'R']): --> left first
 
-        for s, hemi in enumerate(['L', 'R']):    
+        for h, hemi in enumerate(['L', 'R']):    
 
-            gii_im_datar = nib.gifti.gifti.GiftiDataArray(data=grad[i])
+            gii_im_datar = nib.gifti.gifti.GiftiDataArray(data=grad[h])
             gii_im = nib.gifti.gifti.GiftiImage(darrays= [gii_im_datar])
 
             out_file = op.join(target_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsaverage5_hemi-{hemi}_grad{n_grad}_noParcel{specification}.surf.gii')
