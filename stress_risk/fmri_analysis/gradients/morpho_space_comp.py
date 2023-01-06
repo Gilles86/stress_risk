@@ -12,9 +12,6 @@ import pandas as pd
 bids_folder = '/Users/mrenke/data/ds-stressrisk'
 
 sub = '01' 
-#removedLabels = '_no120' # sub-09
-removedLabels = '_no37-44' # sub-01
-
 ses = 1
 
 source_dir = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}')
@@ -26,14 +23,14 @@ grad1 = [None]*2
 grad2 = [None]*2
 
 for i, hemi in enumerate(['L', 'R']):
-    grad1[i] = nib.load(op.join(source_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-{hemi}_grad1_noLabels{removedLabels}.surf.gii'))
-    grad2[i] = nib.load(op.join(source_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-{hemi}_grad2_noLabels{removedLabels}.surf.gii'))
+    grad1[i] = nib.load(op.join(source_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-{hemi}_grad1_noParcel.surf.gii'))
+    grad2[i] = nib.load(op.join(source_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-{hemi}_grad2_noParcel.surf.gii'))
 
 
 r2_L = nib.load(op.join(source_dir,f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-L_r2.surf.gii'))
 r2_R = nib.load(op.join(source_dir,f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-R_r2.surf.gii'))
 
-#%%
+#%% mask if wanted
 
 ips_L= nib.load(op.join(mask_dir, f'sub-{sub}_desc-NPC_L_space-fsnative_hemi-lh.ips.gii'))
 ips_R= nib.load(op.join(mask_dir, f'sub-{sub}_desc-NPC_R_space-fsnative_hemi-rh.ips.gii'))
@@ -69,7 +66,7 @@ grad1_ = grad1[1].agg_data()
 grad2_ = grad2[1].agg_data()
 r2 = r2_R.agg_data()
 
-ips_mask =  ips_R.agg_data()
+#ips_mask =  ips_R.agg_data()
 #r2[ips_mask == 0] = np.NaN # add or rmove this line to look at only point lying within IPS-mask
 
 plt.scatter(grad2_, grad1_, s=0.1, c = r2, cmap = mpl.colormaps['hot'])
