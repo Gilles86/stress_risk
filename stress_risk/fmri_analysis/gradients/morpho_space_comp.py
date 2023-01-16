@@ -1,4 +1,5 @@
 # see where r2 responsive vertices lie in grad1 - grad2 morhpospace
+# needs `....r2.surf.gii` from gradients/vis_gradients.py
 
 # %%
 
@@ -11,30 +12,32 @@ import pandas as pd
 bids_folder = '/Users/mrenke/data/ds-stressrisk'
 
 sub = '01' 
-removedLabels = '_no120' # sub-09
-removedLabels = '_no37-44' # sub-01
-
 ses = 1
-#%%
+
 source_dir = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}')
 mask_dir = op.join(bids_folder, 'derivatives', 'ips_masks', f'sub-{sub}')
+
+#%%
 
 grad1 = [None]*2
 grad2 = [None]*2
 
 for i, hemi in enumerate(['L', 'R']):
-    grad1[i] = nib.load(op.join(source_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-{hemi}_grad1_noLabels{removedLabels}.surf.gii'))
-    grad2[i] = nib.load(op.join(source_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-{hemi}_grad2_noLabels{removedLabels}.surf.gii'))
+    grad1[i] = nib.load(op.join(source_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-{hemi}_grad1_noParcel.surf.gii'))
+    grad2[i] = nib.load(op.join(source_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-{hemi}_grad2_noParcel.surf.gii'))
 
 
 r2_L = nib.load(op.join(source_dir,f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-L_r2.surf.gii'))
 r2_R = nib.load(op.join(source_dir,f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-R_r2.surf.gii'))
 
+#%% mask if wanted
 
 ips_L= nib.load(op.join(mask_dir, f'sub-{sub}_desc-NPC_L_space-fsnative_hemi-lh.ips.gii'))
 ips_R= nib.load(op.join(mask_dir, f'sub-{sub}_desc-NPC_R_space-fsnative_hemi-rh.ips.gii'))
 
-# %% plot vertices' grad-values in 2D
+# %%
+
+#  plot vertices' grad-values in 2D
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
@@ -49,32 +52,29 @@ r_hemi_mask = ips_R.agg_data() #(137677,) ndarray
 l_hemi_mask = [False] * (len(grad1_) - len(r_hemi_mask))
 ips_mask = np.concatenate([l_hemi_mask, r_hemi_mask])
 
+#r2[ips_mask == 0] = np.NaN
 
-r2[ips_mask == 0] = np.NaN
+plt.scatter(grad2_, grad1_, s=0.1, c = r2, cmap = mpl.colormaps['hot'])
+plt.axvline(x=0, color = 'black')
+plt.axhline(y=0, color = 'black')
+plt.show
+#%% 
+# only right [1] hemisphere
+ips_R= nib.load(op.join(mask_dir, f'sub-{sub}_desc-NPC_R_space-fsnative_hemi-rh.ips.gii'))
 
+grad1_ = grad1[1].agg_data()
+grad2_ = grad2[1].agg_data()
+r2 = r2_R.agg_data()
+
+#ips_mask =  ips_R.agg_data()
+#r2[ips_mask == 0] = np.NaN # add or rmove this line to look at only point lying within IPS-mask
 
 plt.scatter(grad2_, grad1_, s=0.1, c = r2, cmap = mpl.colormaps['hot'])
 plt.axvline(x=0, color = 'black')
 plt.axhline(y=0, color = 'black')
 plt.show
 
-# %%
-plt.hist(grad2_, bins = 1000)
-plt.xlabel('grad2')
-plt.axvline(x=0, color = 'black')
-plt.show
-
-plt.hist(grad1_, bins = 1000)
-plt.xlabel('grad1')
-plt.axvline(x=0, color = 'black')
-plt.show
-
 # %% Scatter plot with histograms
-
-# some random data
-x = np.random.randn(1000)
-y = np.random.randn(1000)
-
 
 x = grad2_
 y = grad1_
@@ -118,3 +118,15 @@ ax_histy = fig.add_subplot(gs[1, 1], sharey=ax)
 # Draw the scatter plot and marginals.
 scatter_hist(x, y, ax, ax_histx, ax_histy)
 # %%
+
+
+# %% overlay of histograms
+plt.hist(grad2_, bins = 1000)
+plt.xlabel('grad2')
+plt.axvline(x=0, color = 'black')
+plt.show
+
+plt.hist(grad1_, bins = 1000)
+plt.xlabel('grad1')
+plt.axvline(x=0, color = 'black')
+plt.show

@@ -18,7 +18,7 @@ from brainspace.utils.parcellation import reduce_by_labels
 # %%
 bids_folder = '/Users/mrenke/data/ds-stressrisk'
 
-sub = '06' 
+sub = '10' 
 ses = 1
 runs = range(1, 7)
 
@@ -105,8 +105,7 @@ from brainspace.gradient import GradientMaps
 gm = GradientMaps(n_components=2, random_state=0) # Default is 'dm' = DiffusionMaps
 gm.fit(correlation_matrix)
 
-from brainspace.datasets import load_fsa5
-from brainspace.plotting import plot_hemispheres
+
 from brainspace.utils.parcellation import map_to_labels
 
 # Map gradients to original parcels
@@ -138,6 +137,9 @@ for n_grad in [1,2]:
 
 
 #%% plot gradients
+from brainspace.datasets import load_fsa5
+from brainspace.plotting import plot_hemispheres
+
 surf_lh, surf_rh = load_fsa5()
 
 # sphinx_gallery_thumbnail_number = 2
@@ -185,7 +187,11 @@ surf_lh, surf_rh = load_fsa5()
 plot_hemispheres(surf_lh, surf_rh, array_name=grad_noParcel, size=(1200, 400), cmap='viridis_r',
                  color_bar=True, label_text=['Grad1', 'Grad2'], zoom=1.5)
 
+#%%
 
+plt.hist(grad_noParcel[0], bins=100)
+#plt.imshow(correlation_matrix_noParcel)
+labeling[ grad_noParcel[0] == max(grad_noParcel[0])]
 
 # %% save 
 import os
@@ -193,7 +199,7 @@ import os
 removedLabels = '_no37-44' # sub-01
 removedLabels = '_no120' #sub-09
 removedLabels = '_no113-120' # sub-04
-removedLabels = ''
+removedLabels = '' # filter by unconnected nodes of graph
 
 grad = grad_noParcel
 
@@ -203,10 +209,10 @@ if not op.exists(target_dir):
     os.makedirs(target_dir)
 
 for i, n_grad  in enumerate([1,2]):
-    np.save(op.join(target_dir,f'grad{n_grad}_noLabels{removedLabels}.npy'), grad[i])
+    np.save(op.join(target_dir,f'grad{n_grad}_noParcel{removedLabels}.npy'), grad[i])
 
 for n_grad in [1,2]:
-    grad = np.load(op.join(target_dir, f'grad{n_grad}_noLabels{removedLabels}.npy'))
+    grad = np.load(op.join(target_dir, f'grad{n_grad}_noParcel{removedLabels}.npy'))
     grad = np.split(grad,2) # for i, hemi in enumerate(['L', 'R']): --> left first?!
 
     for s, hemi in enumerate(['L', 'R']):    
@@ -214,7 +220,7 @@ for n_grad in [1,2]:
         gii_im_datar = nib.gifti.gifti.GiftiDataArray(data=grad[i])
         gii_im = nib.gifti.gifti.GiftiImage(darrays= [gii_im_datar])
 
-        out_file = op.join(target_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsaverage5_hemi-{hemi}_grad{n_grad}_noLabels{removedLabels}.surf.gii')
+        out_file = op.join(target_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsaverage5_hemi-{hemi}_grad{n_grad}_noParcel{removedLabels}.surf.gii')
         gii_im.to_filename(out_file) # https://nipy.org/nibabel/reference/nibabel.spatialimages.html
 
 

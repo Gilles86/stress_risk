@@ -7,6 +7,7 @@
 [on stimulus computer: `C:\expFiles\Maie\stress_risk\experiments\logs`]
 
 * MRI: `/Volumes/g_econ_rawdata$/rawdata/2022/*mont*/*day*/SNS_MRI_MRISK_S......`
+
 * on sciencecloud `for day in 11 16 17 18; do cp -rv /econ_rawdata/rawdata/2022/11/${day}/SNS_MRI_MRISK_S* /data/ds-stressrisk/sourcedata/mri/; done;`
 --> into ~/data/ds-stressrisk/sourcedata\
 
@@ -90,3 +91,8 @@ sbatch --array=16,17,18,19,20,21,22,23,24,25,26,27,28,29,30 cluster_fit_cv.sh
 # SubList
 
 * for preprocessing on sciencecluster: `01,05,12,17,22,26,32,37,41,45,49,53,58,02,07,13,18,23,28,34,38,42,46,50,54,59,03,09,14,19,24,30,35,39,43,47,51,55,04,10,16,21,25,31,36,40,44,48,52,57`
+
+* from `...stress_risk/prepare/get_subList-String.py`:
+* * on local: `13 14 22 25 49 40 47 24 23 15 12 46 41 48 13 10 15 16 16 14 52 55 30 08 37 01 39 06 54 53 38 07 09 36 31 44 43 17 28 10 26 19 21 42 45 20 27 18 11 16 29 13 15 11 34 33 05 02 56 51 58 03 04 32 35 59 50 57` 
+
+* * on sciencecloud: `12 17 18 61 22 21 34 40 33 14 09 57 41 03 50 04 44 13 51 26 59 48 19 52 11 46 56 10 23 39 31 25 08 42 05 53 20 28 47 54 45 35 29 07 36 16 01 32 58 37 43 49 55 27 38 15 24 30 06 02 `
