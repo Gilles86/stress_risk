@@ -11,8 +11,6 @@ import argparse
 bids_folder = '/Users/mrenke/data/ds-stressrisk'
 ses = 1
 
-subject = 8
-sub = '08'
 base = 'encoding_model.smoothed'
 
 def import_freesurfer_subject(subject, bids_folder):
@@ -23,19 +21,20 @@ def import_freesurfer_subject(subject, bids_folder):
             freesurfer_subject_dir=op.join(bids_folder, 'derivatives', 'freesurfer'))
 
 # %% create folder in pycortex-Database: ~mambaforge/share/pycortex/db/sub-
-import_freesurfer_subject(subject, bids_folder)
 
+for subject in range(10,15):
+    import_freesurfer_subject(subject, bids_folder)
 
-# %%
-par_file = op.join(bids_folder, 'derivatives', base , f'sub-{sub}', f'ses-{ses}', 'func', 
-    f'sub-{sub}_ses-{ses}_desc-r2.optim_space-T1w_pars.nii.gz')
+    sub = f'{subject:02d}'
+    par_file = op.join(bids_folder, 'derivatives', base , f'sub-{sub}', f'ses-{ses}', 'func', 
+        f'sub-{sub}_ses-{ses}_desc-r2.optim_space-T1w_pars.nii.gz')
 
-pars = image.load_img(par_file)
+    pars = image.load_img(par_file)
 
-print(pars.shape)
+    print(pars.shape)
 
-transform = cortex.xfm.Transform(np.identity(4), pars)
-transform.save(f'sub-{sub}', 'identity.bold')
+    transform = cortex.xfm.Transform(np.identity(4), pars)
+    transform.save(f'sub-{sub}', 'identity.bold')
 
 # %%
  #ExpiredDeprecationError: get_affine method is deprecated. Please use the ``img.affine`` property instead.
