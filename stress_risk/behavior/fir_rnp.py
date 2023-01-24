@@ -1,8 +1,7 @@
 # env: behav_fit
 
 #%%
-from stress_risk.utils.data import get_all_behavior
-#from tms_risk.utils.data import Subject as TMSSubject
+from stress_risk.behavior.utils import get_data
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -10,27 +9,8 @@ import numpy as np
 
 
 # %%
-df = get_all_behavior(bids_folder='/Users/mrenke/data/ds-stressrisk')
-df_cond = pd.read_csv('/Users/mrenke/data/ds-stressrisk/StressRiskNum_ConditionAssigned.csv')
+df = get_data()
 
-df_c = pd.DataFrame({'subject' : df_cond['SUBID'], 'group': np.asarray(df_cond['condition']).astype(int)})
-df_c = df_c[df_c['subject'] < 100] # drop TMS subs
-
-
-#%% add groups according to df_c to df
-
-gr = []
-for i in range(0,len(df)):
-    sub = df.index[i][0] #subject is the first (0th) index
-    #print(sub)
-    group = df_c['group'][df_c['subject'] == sub]
-    if len(group) == 1:
-        gr.append(int(group))
-    else:
-        gr.append(np.NaN)
-
-df['group'] = gr    
-df
 # %%
 import bambi
 
@@ -47,6 +27,7 @@ for ax in fac.axes.ravel():
 # %%
 # formulae : https://bambinos.github.io/formulae/notebooks/getting_started.html#Adding-interactions
 formulae = 'chose_risky ~ x*session + session:group + x:session:group + (x*session|subject)'
+formulae = 'chose_risky ~ x*session*group + (x*session|subject)'
 model = bambi.Model(formulae, link='probit', family='bernoulli', data=df.reset_index())
 #model = bambi.Model('chose_risky ~ x + (x|subject) + (x|(group*session))', link='probit', family='bernoulli', data=df.reset_index())
 #model = bambi.Model('chose_risky ~ x + (x:group:session|subject)', link='probit', family='bernoulli', data=df.reset_index())
