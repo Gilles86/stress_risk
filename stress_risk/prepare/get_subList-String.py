@@ -6,7 +6,7 @@ from os.path import isfile, join
 import os
 
 bids_folder = '/Users/mrenke/data/ds-stressrisk'
-
+bids_folder = '/Volumes/mrenkeED/data/ds-stressrisk/derivatives/freesurfer'
 #%%
 subFolders = [f for f in listdir(bids_folder) if f[0:3] == 'sub']
 
