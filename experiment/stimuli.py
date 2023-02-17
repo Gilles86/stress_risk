@@ -95,10 +95,12 @@ class ProbabilityPieChart(object):
         deg = prob * 360.
 
         self.piechart_pos = Pie(window, end=deg, fillColor=color_pos,
+                                colorSpace='rgb',
                                 pos=pos,
                                 size=size)
         self.piechart_neg = Pie(window, start=deg, end=360, fillColor=color_neg,
                                 pos=pos,
+                                colorSpace='rgb',
                                 size=size)
 
         txt = f'{prefix}{int(prob*100):d}%'

@@ -42,7 +42,7 @@ def main(subject, bids_folder, hemi, roi):
         sxfm.inputs.source_subject = source_subject
         sxfm.inputs.target_subject = target_subject
         sxfm.inputs.hemi = fs_hemi
-
+        # sxfm.cmdline #helps with debugging 
         r = sxfm.run()
         return r
 
