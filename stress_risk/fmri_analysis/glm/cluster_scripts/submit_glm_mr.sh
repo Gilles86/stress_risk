@@ -3,7 +3,7 @@
 #SBATCH --output=/home/mrenke/logs/fit_st_denoise_%A-%a.txt
 #SBATCH --ntasks=1
 #SBATCH -c 16
-#SBATCH --time=45:00
+#SBATCH --time=2:00:00
 
 . $HOME/.bashrc
 
