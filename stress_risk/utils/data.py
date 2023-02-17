@@ -93,7 +93,7 @@ class Subject(object):
 
     def get_behavior(self, sessions=None, drop_no_responses=True):
         if sessions is None:
-            sessions = [1, 2, 3]
+            sessions = [1, 2]
 
         if not isinstance(sessions, Iterable):
             sessions = [sessions]

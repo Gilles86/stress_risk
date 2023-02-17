@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 bids_folder = '/Users/mrenke/data/ds-stressrisk'
 data = get_data(bids_folder)
 
+#%%
 d = pd.DataFrame(data.groupby(['subject','session'])['chose_risky'].mean())
 d = add_cond2df(d)
 
