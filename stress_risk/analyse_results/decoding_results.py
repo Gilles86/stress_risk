@@ -8,10 +8,11 @@ from tqdm.contrib.itertools import product
 import matplotlib.pyplot as plt
 import pingouin
 import seaborn as sns
+from os import listdir
 
 bids_folder = '/Users/mrenke/data/ds-stressrisk'
 # %%
-def get_decoding_info(subject, session, pca_confounds=False, denoise=True, smoothed=False, bids_folder=bids_folder, mask='NPC_R', n_voxels=100):
+def get_decoding_info(subject, session, pca_confounds=False, denoise=True, smoothed=False, bids_folder='/Users/mrenke/data/ds-stressrisk', mask='NPC_R', n_voxels=250):
 
     key = 'decoded_pdfs.volume'
 
@@ -43,10 +44,9 @@ def get_decoding_info(subject, session, pca_confounds=False, denoise=True, smoot
         return pd.DataFrame(np.zeros((0, 0)))
 # %%
 
+subjects = [int(f[4:6]) for f in listdir(op.join(bids_folder, 'derivatives','decoded_pdfs.volume.denoise')) if f[0:3] == 'sub']
 
-#subjects = list(range(1, 49)) + [116, 150, 141, 152, 130, 163, 165]
-subjects = list([55,56,57,58,59])
-sessions = [1]
+sessions = [1, 2]
 pca_confounds = [True]
 denoise = [True]
 smoothed = [False]
@@ -54,8 +54,8 @@ mask = ['NPC_R']
 n_voxels = [50, 100, 250]
 
 pred = []
-for sub in subjects:
-    pred.append(get_decoding_info(sub, session))
+for (sub, ses) in product(subjects, sessions):
+    pred.append(get_decoding_info(sub, ses))
 
 
 # %%
