@@ -2,7 +2,7 @@ import os.path as op
 import os
 import numpy as np
 import pandas as pd
-from bauer.models import RiskRegressionModel
+#from bauer.models import RiskRegressionModel
 from stress_risk.utils.data import get_all_behavior
 import arviz as az
 import matplotlib.pyplot as plt
