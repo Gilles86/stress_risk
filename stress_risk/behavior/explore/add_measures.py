@@ -18,6 +18,8 @@ df_pan = pd.read_csv('/Users/mrenke/data/ds-stressrisk/addMeasures/AllRunsSummar
 df_w = pd.DataFrame({'subject' : df_wm['SUBID'], 'wm_begin': np.asarray(df_wm['WM_score_begin']).astype(float), 'wm_end': np.asarray(df_wm['WM_score_end']).astype(float)})
 df_p = pd.DataFrame({'subject' : np.asarray(df_pan['Subject ID']).astype(int), 'weber_fraction': np.asarray(df_pan['Weber Fraction']).astype(float)})
 df_p = df_p.drop_duplicates(subset='subject', keep='last')
+
+df_decod = pd.read_csv('~/data/ds-stressrisk/derivatives/decoding_accuracy_allSub_allSes.tsv')
 #%%
 df = df_w.set_index('subject').join(df_p.set_index('subject'))
 df['wm_mean'] = (df['wm_begin']+df['wm_end'])/2
