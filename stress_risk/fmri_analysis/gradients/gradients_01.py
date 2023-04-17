@@ -122,6 +122,7 @@ np.save(op.join(target_dir,'grad1.npy'), grad[0])
 np.save(op.join(target_dir,'grad2.npy'), grad[1])
 
 #%% 6. save as fsaverage_hemi-{l/R}.surf.gii
+target_dir = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}')
 
 for n_grad in [1,2]:
     grad = np.load(op.join(target_dir, f'grad{n_grad}.npy'))

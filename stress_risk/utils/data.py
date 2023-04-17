@@ -11,6 +11,37 @@ from nilearn import image
 from nilearn.maskers import NiftiMasker
 from collections.abc import Iterable
 
+def get_data(bids_folder='/Users/mrenke/data/ds-stressrisk'):
+    df = get_all_behavior(bids_folder=bids_folder)
+    df['choice'] = df['choice'] == 2.0
+    df['p1'] = df['prob1']
+    df['p2'] = df['prob2']
+
+    df = add_cond2df(df) # adds 
+    df = df.dropna() # automatially removes subs without group assignment
+    df = df.reset_index(level= 'session', drop=False) 
+    return df
+
+def add_cond2df(df):
+    #df_cond = pd.read_csv('/Users/mrenke/data/ds-stressrisk/StressRiskNum_ConditionAssigned.csv')
+    df_cond = pd.read_excel('/Users/mrenke/data/ds-stressrisk/addMeasures/data_combined.xlsx')
+    df_c = pd.DataFrame({'subject' : df_cond['SUBID'], 'group': np.asarray(df_cond['condition']).astype(int)})
+    df_c = df_c[df_c['subject'] < 100] # drop TMS subs
+    gr = []
+    for i in range(0,len(df)):
+        sub = df.index[i][0] #subject is the first (0th) index
+        #print(sub)
+        group = df_c['group'][df_c['subject'] == sub]
+        if len(group) == 1:
+            gr.append(int(group))
+        else:
+            gr.append(np.NaN)
+
+    df['group'] = gr 
+
+    return df
+
+
 def get_subjects(bids_folder='/data/ds-stressrisk', correct_behavior=True, correct_npc=False):
     subjects = list(range(1, 200))
 
@@ -93,7 +124,7 @@ class Subject(object):
 
     def get_behavior(self, sessions=None, drop_no_responses=True):
         if sessions is None:
-            sessions = [1, 2, 3]
+            sessions = [1, 2]
 
         if not isinstance(sessions, Iterable):
             sessions = [sessions]

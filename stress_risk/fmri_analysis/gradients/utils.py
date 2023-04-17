@@ -1,70 +1,48 @@
-#%%
-import matplotlib.pyplot as plt
-from nilearn.connectome import ConnectivityMeasure
-from brainspace.gradient import GradientMaps
-from brainspace.utils.parcellation import map_to_labels
+#import cortex
+from nilearn import image
 import numpy as np
-import nibabel as nib
-from nilearn import datasets
 import os.path as op
+import nibabel as nib
 import os
 from nilearn import signal
 import pandas as pd
-from scipy.sparse.csgraph import connected_components
-
-bids_folder = '/Users/mrenke/data/ds-stressrisk'
-
-subList = ['01','02','03','04','05','08','09','10','11','12','13','14']
-subList = ['14','16','17','18','19']
-ses = 1
-specification=''
-#specification='_dmask'
-#%%
-
-atlas = datasets.fetch_atlas_surf_destrieux()
-regions = atlas['labels'].copy()
-masked_regions = [b'Medial_wall', b'Unknown']
-masked_labels = [regions.index(r) for r in masked_regions]
-for r in masked_regions:
-    regions.remove(r)
-
-# Build Destrieux parcellation and mask
-labeling = np.concatenate([atlas['map_left'], atlas['map_right']])
-labeling_noParcel = np.arange(0,len(labeling),1,dtype = int)     # Map gradients to original parcels
+from nipype.interfaces.freesurfer import SurfaceTransform
 
 
-for sub in subList:
+def loadGradAsNpArray(sub,ses,bids_folder,specification, parcel = '_noParcel'): # looping did not work (dont understand why)
+    grad_n = 1
+    hemi = 'L'
+    file = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}',
+                f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-{hemi}_grad{grad_n}{parcel}{specification}.surf.gii')
+    im1L = nib.load(file)
 
-    mask = ~np.isin(labeling, masked_labels)
-    #mask[mask == False] =  True # remove "brainspace's default regions excluded"
-    clean_ts = cleanTS(sub, ses)
-    seed_ts_noParcel = clean_ts[mask]
+    hemi = 'R'
+    file = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}',
+            f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-{hemi}_grad{grad_n}{parcel}{specification}.surf.gii')
+    im1R = nib.load(file)
 
-    # filter out nodes that are not connected to the rest
-    correlation_measure_noParcel = ConnectivityMeasure(kind='correlation')
-    graph = correlation_measure_noParcel.fit_transform([seed_ts_noParcel.T])[0] #correlation_matrix_noParcel
-    cc = connected_components(graph)
-    mask_cc = cc[1] == 0 # all nodes in 0 belong to the largest connected component, check #-components in cc[0]
-    mask[mask == True] = mask_cc # mark nodes not in component 0  as False in mask
 
-    seed_ts_noParcel = clean_ts[mask]
+    grad_n = 2
+    hemi = 'L'
+    file = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}',
+                f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-{hemi}_grad{grad_n}{parcel}{specification}.surf.gii')
+    im2L = nib.load(file)
 
-    #now perform embedding on cleaned data
-    correlation_measure_noParcel = ConnectivityMeasure(kind='correlation')
-    correlation_matrix_noParcel = correlation_measure_noParcel.fit_transform([seed_ts_noParcel.T])[0]
-    gm_noParcel = GradientMaps(n_components=2, random_state=0)
-    gm_noParcel.fit(correlation_matrix_noParcel)
 
-    grad_noParcel = [None] * 2
-    for i, g in enumerate(gm_noParcel.gradients_.T):
-        grad_noParcel[i] = map_to_labels(g, labeling_noParcel, mask=mask, fill=np.nan)
+    hemi = 'R'
+    file = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}',
+                f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-{hemi}_grad{grad_n}{parcel}{specification}.surf.gii')
+    im2R = nib.load(file)
 
-    saveGradToNPFile(grad, sub,ses, specification)
-    npFileTofs5Gii(sub,ses, specification)
-    fs5Tofsnative(sub,ses,specification)
 
-#%%
-def cleanTS(sub, ses, runs = range(1, 7),space = 'fsaverage5'):
+    grad1 = np.concatenate([im1L.agg_data(), im1R.agg_data()], axis=0)
+    grad2 = np.concatenate([im2L.agg_data(), im2R.agg_data()], axis=0)
+
+    return grad1,grad2
+
+
+
+def cleanTS(sub, ses, runs = range(1, 7),space = 'fsaverage5', bids_folder='/Users/mrenke/data/ds-stressrisk'):
     # load in data as timeseries and regress out confounds (for each run sepeprately)
     number_of_vertex = 20484  # 'fsaverage5', 10242 * 2
 
@@ -120,10 +98,10 @@ def npFileTofs5Gii(sub,ses, specification='',bids_folder='/Users/mrenke/data/ds-
             out_file = op.join(target_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsaverage5_hemi-{hemi}_grad{n_grad}_noParcel{specification}.surf.gii')
             gii_im.to_filename(out_file) # https://nipy.org/nibabel/reference/nibabel.spatialimages.html
 
-#%%
-from nipype.interfaces.freesurfer import SurfaceTransform
 
-def fs5Tofsnative(sub,ses, specification='', bids_folder='/Users/mrenke/data/ds-stressrisk'):
+# nipype transformations
+
+def fsav5Tofsnative(sub,ses, specification='', bids_folder='/Users/mrenke/data/ds-stressrisk'):
 
     target_space = 'fsnative'
 
@@ -131,7 +109,8 @@ def fs5Tofsnative(sub,ses, specification='', bids_folder='/Users/mrenke/data/ds-
 
         for i, hemi in enumerate(['L', 'R']):   
 
-            sxfm = SurfaceTransform(subjects_dir='/Users/mrenke/data/ds-stressrisk/derivatives/freesurfer')
+            sxfm = SurfaceTransform(subjects_dir=op.join
+            (bids_folder,'derivatives','freesurfer'))
 
             grad_sub_dir = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}')
 
@@ -151,4 +130,27 @@ def fs5Tofsnative(sub,ses, specification='', bids_folder='/Users/mrenke/data/ds-
 
             r = sxfm.run()
 
-# %%
+
+def fsavTofsav5(sub,ses, bids_folder='/Users/mrenke/data/ds-stressrisk'):
+    runs = range(1,7)
+
+    for run in runs:
+        for hemi in ['L', 'R']:
+            sxfm = SurfaceTransform(subjects_dir=op.join(bids_folder,'derivatives','freesurfer'))
+            in_file = f'sub-{sub}_ses-{ses}_task-risk_run-{run}_space-fsaverage_hemi-{hemi}_bold.func.gii'
+            in_file_path = op.join(bids_folder, 'derivatives', 'fmriprep', f'sub-{sub}',f'ses-{ses}','func',in_file)
+            out_file = f'sub-{sub}_ses-{ses}_task-risk_run-{run}_space-fsaverage5_hemi-{hemi}_bold.func.gii'
+            out_file_path = op.join(bids_folder, 'derivatives', 'fmriprep', f'sub-{sub}',f'ses-{ses}','func',out_file)
+
+            sxfm.inputs.source_file = in_file_path
+            sxfm.inputs.out_file = out_file_path
+
+            sxfm.inputs.source_subject = 'fsaverage'
+            sxfm.inputs.target_subject = 'fsaverage5'
+
+            if hemi == 'L':
+                sxfm.inputs.hemi = 'lh'
+            elif hemi == 'R':
+                sxfm.inputs.hemi = 'rh'
+
+            r = sxfm.run()

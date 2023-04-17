@@ -2,7 +2,7 @@ import os.path as op
 import os
 import numpy as np
 import pandas as pd
-from bauer.models import RiskRegressionModel
+#from bauer.models import RiskRegressionModel
 from stress_risk.utils.data import get_all_behavior
 import arviz as az
 import matplotlib.pyplot as plt
@@ -54,23 +54,14 @@ def build_model(model_label, df):
         model = RiskRegressionModel(df, regressors={'n1_evidence_sd':'session*group', 'n2_evidence_sd':'session*group',
         'risky_prior_mu':'session*group'},
          prior_estimate='full')
-    elif model_label == '2':
+    elif model_label == '2': # only evidence_sd 
         model = RiskRegressionModel(df, regressors={'n1_evidence_sd':'session*group',
-         'n2_evidence_sd':'session*group', 'risky_prior_mu':'session*group', 'risky_prior_std':'session*group'},
-         prior_estimate='different')
-    elif model_label == '2a':
-        model = RiskRegressionModel(df, regressors={'n2_evidence_sd':'session*group', 'risky_prior_mu':'session*group'},
-         prior_estimate='different')
-    elif model_label == '2_null':
-        model = RiskRegressionModel(df, regressors={},
-         prior_estimate='different')
-    elif model_label == '3':
-        model = RiskRegressionModel(df, regressors={'n1_evidence_sd':'session*group',
-         'n2_evidence_sd':'session*group', 'prior_mu':'session*group', 'prior_std':'session*group'},
-         prior_estimate='shared')
-    elif model_label == '3_null':
-        model = RiskRegressionModel(df, regressors={},
-         prior_estimate='different')
+         'n2_evidence_sd':'session*group'},
+         prior_estimate='full')   
+    elif model_label == '3': # only priors
+        model = RiskRegressionModel(df, regressors={'risky_prior_mu':'session*group', 'risky_prior_std':'session*group',
+          'safe_prior_mu':'session*group', 'safe_prior_std':'session*group'},
+         prior_estimate='full')                
     elif model_label == '4':
          model = RiskRegressionModel(df, regressors={'n1_evidence_sd':'session*group',
           'risky_prior_mu':'session*group'},
