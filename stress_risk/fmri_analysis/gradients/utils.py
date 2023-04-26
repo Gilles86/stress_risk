@@ -6,7 +6,7 @@ import nibabel as nib
 import os
 from nilearn import signal
 import pandas as pd
-from nipype.interfaces.freesurfer import SurfaceTransform
+from nipype.interfaces.freesurfer import SurfaceTransform # needs the fsaverage & fsaverage5 in ..derivatives/freesurfer folder!
 
 
 def loadGradAsNpArray(sub,ses,bids_folder,specification, parcel = '_noParcel'): # looping did not work (dont understand why)
@@ -53,11 +53,20 @@ def cleanTS(sub, ses, runs = range(1, 7),space = 'fsaverage5', bids_folder='/Use
 
     clean_ts_runs = np.empty([number_of_vertex,0])
 
+    ex_file = op.join(bids_folder,'derivatives', 'fmriprep', f'sub-{sub}', f'ses-{ses}', 'func', 
+            f'sub-{sub}_ses-{ses}_task-risk_run-1_space-{space}_hemi-L_bold.func.gii')
+    
+    if (os.path.exists(ex_file) == False):
+        print(f'sub-{sub} fsaverage5.gii missing, fsavTofsav5 will be performed')
+        fsavTofsav5(sub,ses, bids_folder)
+
     for run in runs:
         timeseries = [None] * 2
         for i, hemi in enumerate(['L', 'R']):
             filename = op.join(bids_folder,'derivatives', 'fmriprep', f'sub-{sub}', f'ses-{ses}', 'func', 
             f'sub-{sub}_ses-{ses}_task-risk_run-{run}_space-{space}_hemi-{hemi}_bold.func.gii')
+            
+            
             timeseries[i] = nib.load(filename).agg_data()
         timeseries = np.vstack(timeseries) # (20484, 135)
 
