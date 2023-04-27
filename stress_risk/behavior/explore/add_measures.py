@@ -43,6 +43,11 @@ df_n2 = softplus_np(d2[d2['n2_evidence_sd_regressors'] == 'Intercept'].groupby('
 
 df = df.join(df_n2['n2_evidence_sd']).join(df_n1['n1_evidence_sd'])
 
+
+risky_prior_mu_post = idata.posterior['risky_prior_mu'].to_dataframe()
+rpmu = risky_prior_mu_post.reset_index()
+df_rpmu = softplus_np(rpmu[rpmu['risky_prior_mu_regressors']=='Intercept'].groupby('subject').mean())
+
 # %%
 from itertools import product
 
