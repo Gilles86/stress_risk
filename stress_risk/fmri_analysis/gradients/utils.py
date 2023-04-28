@@ -163,3 +163,32 @@ def fsavTofsav5(sub,ses, bids_folder='/Users/mrenke/data/ds-stressrisk'):
                 sxfm.inputs.hemi = 'rh'
 
             r = sxfm.run()
+
+def fsav5Tofsav(sub,ses, specification='',bids_folder='/Users/mrenke/data/ds-stressrisk'):
+
+    target_space = 'fsaverage'
+
+    for n_grad in [1,2]:
+
+        for i, hemi in enumerate(['L', 'R']):   
+
+            sxfm = SurfaceTransform(subjects_dir=op.join
+            (bids_folder,'derivatives','freesurfer'))
+
+            grad_sub_dir = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}')
+
+            in_file = op.join(grad_sub_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsaverage5_hemi-{hemi}_grad{n_grad}_noParcel{specification}.surf.gii')
+            out_file = op.join(grad_sub_dir, f'sub-{sub}_ses-{ses}_task-risk_space-{target_space}_hemi-{hemi}_grad{n_grad}_noParcel{specification}.surf.gii')
+
+            sxfm.inputs.source_file = in_file
+            sxfm.inputs.out_file = out_file
+
+            sxfm.inputs.source_subject = 'fsaverage5'
+            sxfm.inputs.target_subject = 'fsaverage'
+
+            if hemi == 'L':
+                sxfm.inputs.hemi = 'lh'
+            elif hemi == 'R':
+                sxfm.inputs.hemi = 'rh'
+
+            r = sxfm.run()
