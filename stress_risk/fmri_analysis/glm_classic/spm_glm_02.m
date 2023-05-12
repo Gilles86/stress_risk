@@ -19,7 +19,7 @@ clear matlabbatch
 
 pattern = '_space-MNI152NLin2009cAsym_desc-preproc_bold';
 
-for sub = 46:49
+for sub =31:32
     for ses = 1:length(sesList)
        try
            data_path = strcat(bids_folder,'/derivatives/fmriprep/',subList{sub},'/',sesList{ses},'/func/');
