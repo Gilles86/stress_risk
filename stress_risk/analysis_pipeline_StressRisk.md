@@ -98,3 +98,27 @@ rsync -rzcv  --include="*/" --include="*.tsv" --include="*/ses-2/*" --exclude="*
 * from `...stress_risk/prepare/get_subList-String.py` (only files for final data analysis):
 * * `01 02 03 04 05 09 10 12 13 14 16 17 18 19 21 22 23 24 25 26 28 30 31 32 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 57 58 59 61`
 * * `01,02,03,04,05,09,10,12,13,14,16,17,18,19,21,22,23,24,25,26,28,30,31,32,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,57,58,59,61`
+
+## file placing for GLM on sciencecloud2
+
+* copy physio files
+ses=1
+for sub in 01 02 03 05; do rsync -avz --include='*/' --include='*physio.log' --exclude='*' sciencecloud:/data/ds-stressrisk/sub-${sub}/ses-${ses}/func/ /Volumes/mrenkeED/data/ds-stressrisk/sub-${sub}/ses-${ses}/func ; done;
+for sub in 01 02 03 05; do rsync /Volumes/mrenkeED/data/ds-stressrisk/sub-${sub}/ses-${ses}/func/*physio.log sciencecloud2:/mnt/ds-stressrisk/sub-${sub}/ses-${ses}/func ; done;
+(repeat with ses=2)
+
+* copy fmriprep/...confounds
+do rsync -rvz /Volumes/mrenkeED/data/ds-stressrisk/derivatives/fmriprep/sub-${sub}/ses-${ses}/func/*_desc-confounds_timeseries.tsv sciencecloud2:/mnt/ds-stressrisk/derivatives/fmriprep/sub-${sub}/ses-${ses}/func ; done;
+
+* events.txt to sciencecloud
+do rsync -rcvz /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub} sciencecloud2:/mnt/ds-stressrisk/derivatives/spm; done;
+do for ses in 1 2; do rsync -avz --include='*/' --include='*NLCn.txt' --exclude='*' /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/ sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}; done; done;
+
+
+14 34 40 41 57
+# sync back SPMs from sciencecloud2 to local/ED
+
+* 2ndLevel-SPM folders: 
+rsync -avzr --include='2ndlevel_*/' --exclude='*/' sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/ /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm
+# prepare 
+ fslmaths in-file.nii -nan out-file 

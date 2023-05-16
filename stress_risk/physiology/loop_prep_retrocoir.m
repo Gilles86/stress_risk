@@ -1,13 +1,19 @@
 % loop for running
 
-sub_list = ['03'; '04'; '05'; '06'; '07';'08'; '09'; '10'; '11'; '12'; '13'; '14'; '15'; '16'; '17'];
-sub_list = ['21'; '22'; '23'; '24'; '25';'26'; '27'; '28'; '29'; '30'];
+bids_folder='/Volumes/mrenkeED/data/ds-stressrisk' % Replace with the actual path to your BIDS folder
+
+files = dir(bids_folder); % Get list of files in the folder
+subFolders = {files(strncmp({files.name}, 'sub', 3)).name}; % Extract subfolder names using logical indexing and array indexing
+subFolders = cellfun(@(x) x(5:6), subFolders, 'UniformOutput', false); % Extract 5th and 6th characters from subfolder names
+
 errorL = [];
-for sub = 1:length(sub_list)
-    try 
-       prepare_retroicor(sub_list(sub,:),'1');
-    catch
-        errorL = [errorL; sub_list(sub,:)];
+for sub = 1:length(subFolders)
+    for ses = 1:2
+        try 
+           prepare_retroicor(subFolders{sub},num2str(ses), bids_folder);
+        catch
+            errorL = [errorL; subFolders{sub}];
+        end
     end
 end
 

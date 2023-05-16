@@ -1,5 +1,5 @@
 
-function physio = prepare_retroicor(subject, session)
+function physio = prepare_retroicor(subject, session, bids_folder)
     subject
     session
    
@@ -14,6 +14,6 @@ function physio = prepare_retroicor(subject, session)
     
     for run = runs
         close all;
-        retroicor(subject, session, task, run)
+        retroicor(subject, session, task, run,bids_folder)
     end
 end
