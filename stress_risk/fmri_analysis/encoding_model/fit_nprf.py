@@ -1,33 +1,19 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Created on Wed Jul 13  2022
 
 @author: mrenke
 """
-
 import argparse
 import pandas as pd
 from braincoder.models import GaussianPRF
 from braincoder.optimize import ParameterFitter
-#from risk_experiment.utils import get_surf_data, get_mapper_paradigm, write_gifti, get_target_dir
-#from risk_experiment.utils.surface import transform_data
 from nilearn.input_data import NiftiMasker
-
+from stress_risk.utils import get_target_dir
 import os
 import os.path as op
 import numpy as np
 
-def get_target_dir(subject, session, sourcedata, base, modality='func'):
-    target_dir = op.join(sourcedata, 'derivatives', base, f'sub-{subject}', f'ses-{session}',
-                         modality)
-
-    if not op.exists(target_dir):
-        os.makedirs(target_dir)
-
-    return target_dir
-
-def main(subject, session, bids_folder, denoise=False, smoothed=True,
+def main(subject, session, bids_folder, denoise=False, retroicor=False, smoothed=True,
         pca_confounds=False):
     
     runs = range(1, 7)
@@ -38,6 +24,9 @@ def main(subject, session, bids_folder, denoise=False, smoothed=True,
     if denoise:
         key += '.denoise'
         target_dir += '.denoise'
+    if retroicor:
+        key += '.retroicor'
+        target_dir += '.retroicor'
     if smoothed:
         key += '.smoothed'
         target_dir += '.smoothed'
@@ -47,9 +36,6 @@ def main(subject, session, bids_folder, denoise=False, smoothed=True,
         key += '.pca_confounds'
 
     target_dir = get_target_dir(subject, session, bids_folder, target_dir)
-
-
-
 
     paradigm = [pd.read_csv(op.join(bids_folder, f'sub-{subject}', f'ses-{session}',
                                'func', f'sub-{subject}_ses-{session}_task-risk_run-{run}_events.tsv'), sep='\t')
@@ -61,6 +47,7 @@ def main(subject, session, bids_folder, denoise=False, smoothed=True,
     paradigm = paradigm['log(n1)']
 
     model = GaussianPRF()
+
     # SET UP GRID
     mus = np.log(np.linspace(5, 80, 60, dtype=np.float32))
     sds = np.log(np.linspace(2, 30, 60, dtype=np.float32))
@@ -103,9 +90,10 @@ if __name__ == '__main__':
     parser.add_argument('session', default=None)
     parser.add_argument('--bids_folder', default='/Users/mrenke/data/ds-stressrisk')
     parser.add_argument('--denoise', action='store_true')
+    parser.add_argument('--retroicor', action='store_true')
     parser.add_argument('--smoothed', action='store_true')
     parser.add_argument('--pca_confounds', action='store_true')
     args = parser.parse_args()
 
-    main(args.subject, args.session, bids_folder=args.bids_folder, denoise=args.denoise, smoothed=args.smoothed,
+    main(args.subject, args.session, bids_folder=args.bids_folder, denoise=args.denoise, smoothed=args.smoothed,retroicor=args.retroicor,
             pca_confounds=args.pca_confounds)
