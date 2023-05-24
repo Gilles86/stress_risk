@@ -1,4 +1,4 @@
-function first_level_spm_EU-chosen-unchosen(subject,session,bids_folder, model)
+function first_level_spm_EUchoice(subject,session,bids_folder, model)
    
    model_name = ['1stlevel_' model]
    target_folder= strcat(bids_folder,'/derivatives','/spm/',subject,'/',session);
@@ -37,42 +37,27 @@ function first_level_spm_EU-chosen-unchosen(subject,session,bids_folder, model)
 
             % Conditions --> columns in design matrix
             matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).name = 'v1_chosen';
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).onset = v1_chosen(:,1);    % vetor like data
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).duration = 0.6;
-                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).pmod.name = 'value';
+            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).onset = v2_unchosen(:,1);    % vetor like data
+            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).duration = v2_unchosen(:,2);
+                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).pmod.name = 'v1_chosen';
                 matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).pmod(1).param = v1_chosen(:,3);
                 matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).pmod(1).poly = 1;
-                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).pmod(2).name = 'diff';
-                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).pmod(2).param = v1_chosen(:,4);
-                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(2).pmod(2).poly = 1;
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(2).orth = 0;
+                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).pmod(2).name = 'v2_unchosen';
+                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).pmod(2).param = v2_unchosen(:,3);
+                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).pmod(2).poly = 1;
+            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).orth = 0;
             
             matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(2).name = 'v2_chosen';
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(2).onset = onsets_n2(:,1);    % vetor like data
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(2).duration = onsets_diff(:,2); %reaction times
-                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(2).pmod(1).name = 'value';
+            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(2).onset = v2_chosen(:,1);    % vetor like data
+            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(2).duration = v2_chosen(:,2); %reaction times
+                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(2).pmod(1).name = 'v2_chosen';
                 matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(2).pmod(1).param = v2_chosen(:,3);
                 matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(2).pmod(1).poly = 1;
-                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(2).pmod(2).name = 'diff';
-                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(2).pmod(2).param = v2_chosen(:,4);
+                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(2).pmod(2).name = 'v1_unchosen';
+                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(2).pmod(2).param = v1_unchosen(:,3);
                 matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(2).pmod(2).poly = 1;
             matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(2).orth = 0;
 
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).name = 'v1_unchosen';
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).onset = v1_unchosen(:,1);    % vetor like data
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).duration = 0.6;
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).pmod.name = 'value';
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).pmod.param = v1_unchosen(:,3);
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).pmod.poly = 1;
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).orth = 0; 
-            
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).name = 'v2_unchosen';
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).onset = v2_unchosen(:,1);    % vetor like data
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).duration = 0.6;
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).pmod.name = 'value';
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).pmod.param = v2_unchosen(:,3);
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).pmod.poly = 1;
-            matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(1).orth = 0; 
 
         matlabbatch{2}.spm.stats.fmri_spec.sess(run).multi_reg   = cellstr(file_nuisance);
    
@@ -83,24 +68,32 @@ function first_level_spm_EU-chosen-unchosen(subject,session,bids_folder, model)
     % automatically generate the contrast vectors dependant on the number
     % of regressors, dependant on the number of confounds from the multReg
     load(file_nuisance);
-    n_cond_reg = 5 % 2 von n1, 3 from n2 (cond, value, diff-choice)
+    n_cond_reg = 6 % 2 x 3 (event, pmod1, pmod2)
     n_conf = size(R,2);
     n_reg = (n_cond_reg + n_conf) * 6 + 6;
-    y = zeros(1, n_reg); n1 = y; n2 = y; n3 = y;
-    x1 = 2:n_cond_reg + n_conf:n_reg-6; 
-    x2 = 4:n_cond_reg + n_conf:n_reg-6;
-    x3 = 5:n_cond_reg + n_conf:n_reg-6;
+    y = zeros(1, n_reg); n1 = y; n2 = y; n3 = y; n4 = y; n5 = y; n6=y;
+    x1 = 2:n_cond_reg + n_conf:n_reg-6; % v1_ch
+    x2 = 3:n_cond_reg + n_conf:n_reg-6; % v2_unch
+    x3 = 5:n_cond_reg + n_conf:n_reg-6; % v2_ch
+    x4 = 6:n_cond_reg + n_conf:n_reg-6; % v1_unch
 
-    n1(x1) = 1; n2(x2)=1; n3(x3)=1;
+    n1(x1) = 1; n2(x2)=1; n3(x3)=1; n4(x4)= 1;
+    n5(x1) = 1; n5(x2) = -1; 
+    n6(x3) = 1; n6(x4) = -1;    
 
     matlabbatch{4}.spm.stats.con.spmmat = cellstr(fullfile(target_folder,model_name,'SPM.mat'));
-    matlabbatch{4}.spm.stats.con.consess{1}.tcon.name = 'n1_EU';
+    matlabbatch{4}.spm.stats.con.consess{1}.tcon.name = 'v1_ch';
     matlabbatch{4}.spm.stats.con.consess{1}.tcon.weights = n1;
-    matlabbatch{4}.spm.stats.con.consess{2}.tcon.name = 'n2_EU';
+    matlabbatch{4}.spm.stats.con.consess{2}.tcon.name = 'v2_ch';
     matlabbatch{4}.spm.stats.con.consess{2}.tcon.weights = n2;
-    matlabbatch{4}.spm.stats.con.consess{3}.tcon.name = 'diff_chosenEU';
+    matlabbatch{4}.spm.stats.con.consess{3}.tcon.name = 'v1_unch';
     matlabbatch{4}.spm.stats.con.consess{3}.tcon.weights = n3;
-
+    matlabbatch{4}.spm.stats.con.consess{4}.tcon.name = 'v2_unch';
+    matlabbatch{4}.spm.stats.con.consess{4}.tcon.weights = n4;
+    matlabbatch{4}.spm.stats.con.consess{5}.tcon.name = 'v1_ch_dif';
+    matlabbatch{4}.spm.stats.con.consess{5}.tcon.weights = n5;
+    matlabbatch{4}.spm.stats.con.consess{6}.tcon.name = 'v2_ch_dif';
+    matlabbatch{4}.spm.stats.con.consess{6}.tcon.weights = n6;
     
     spm_jobman('run',matlabbatch);
 end

@@ -111,9 +111,9 @@ for sub in 01 02 03 05; do rsync /Volumes/mrenkeED/data/ds-stressrisk/sub-${sub}
 do rsync -rvz /Volumes/mrenkeED/data/ds-stressrisk/derivatives/fmriprep/sub-${sub}/ses-${ses}/func/*_desc-confounds_timeseries.tsv sciencecloud2:/mnt/ds-stressrisk/derivatives/fmriprep/sub-${sub}/ses-${ses}/func ; done;
 
 * events.txt to sciencecloud
-do rsync -rcvz /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub} sciencecloud2:/mnt/ds-stressrisk/derivatives/spm; done;
-do for ses in 1 2; do rsync -avz --include='*/' --include='*NLCn.txt' --exclude='*' /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/ sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}; done; done;
-
+    * do rsync -rcvz /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub} sciencecloud2:/mnt/ds-stressrisk/derivatives/spm; done;
+    * do for ses in 1 2; do rsync -avz --include='*/' --include='*NLCn.txt' --exclude='*' /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/ sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}; done; done;
+    * do for ses in 1 2; do rsync -rcvz /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/event_files sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}; done; done;
 
 14 34 40 41 57
 # sync back SPMs from sciencecloud2 to local/ED
