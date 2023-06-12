@@ -55,7 +55,7 @@ for sub = 3:numel(subList)
             strcat(subList{sub}, 'starting')% print
             cd(target_folder)  
 
-           for run= 5:6
+           for run= 1:6
             %smoothing
             f = spm_select('ExtList',target_folder,strcat('^*run-', string(run),'_space-MNI152NLin2009cAsym_desc-preproc_bold.*\.nii$') ,Inf); % fMRI       
             
