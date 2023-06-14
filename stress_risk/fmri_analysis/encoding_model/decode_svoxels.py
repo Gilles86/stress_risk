@@ -1,6 +1,6 @@
 import argparse
 import os
-import pingouin
+#import pingouin
 import numpy as np
 import os.path as op
 import pandas as pd
@@ -15,17 +15,24 @@ from braincoder.optimize import ParameterFitter
 from nilearn import image
 from nilearn.maskers import NiftiMasker
 
+# needs:
+# encoding_model.cv.denoise/../ses-1; vor CV voxel selection
+# encoding_model.denoise/../ses-1 ; 
+# ginel-trial-estimates: glm_stim1.denoise/../ses-1 & ses-2 ! ; 
+# paradigm: ..run-..events.txt ses1 & ses-2
+# IPS-mask
 
 stimulus_range = np.linspace(0, 6, 1000)
 space = 'T1w'
 
-def main(subject, session, smoothed, pca_confounds, bids_folder='/data',
+def main(subject,  smoothed, pca_confounds, bids_folder='/data', #session,
 denoise=False, retroicor=False, roi='NPC_R'):
     
     session1 = 1
     target_dir = op.join(bids_folder, 'derivatives', 'decoded_pdfs.volume.svoxels.ses1-en_ses2-de')
 
-    key =  'encoding_model'
+    key =  'encoding_model.cv'
+
     if denoise:
         target_dir += '.denoise'
         key += '.denoise'
@@ -67,10 +74,10 @@ denoise=False, retroicor=False, roi='NPC_R'):
     data2 = sub.get_single_trial_volume(2, roi=roi, smoothed=smoothed, pca_confounds=pca_confounds, denoise=denoise, retroicor=retroicor).astype(np.float32)
     data2.index = paradigm2.index
 
-    test_data, test_paradigm = data1.copy(), paradigm1.copy()
-    train_data, train_paradigm = data2.copy(), paradigm2.copy()
+    train_data, train_paradigm = data1.copy(), paradigm1.copy() # train with sesssion 1
+    test_data, test_paradigm = data2.copy(), paradigm2.copy() # test with session 2
 
-    # get average r2 map from seesion 1 for voxel selection
+    # get average cv-r2 map from seesion 1 for voxel selection
     fn = op.join(bids_folder, 'derivatives', key, f'sub-{subject}', f'ses-{session1}','func', f'sub-{subject}_ses-{session1}_desc-cvr2.optim_space-T1w_pars.nii.gz')
     im_cvr2 = image.load_img(fn)
 
@@ -80,6 +87,7 @@ denoise=False, retroicor=False, roi='NPC_R'):
     cv_r2 = pd.DataFrame(masker.fit_transform(im_cvr2))
     r2_mask = cv_r2 > 0.0
     r2_mask = r2_mask.to_numpy().T
+    n_voxels = r2_mask.sum()
 
     # filter data wtih r2-mask
     train_data = train_data.loc[:, r2_mask]
@@ -94,6 +102,8 @@ denoise=False, retroicor=False, roi='NPC_R'):
 
     model.apply_mask(r2_mask)
     model.init_pseudoWWT(stimulus_range, model.parameters)
+    
+    # train
     residfit = ResidualFitter(model, train_data,
                                 train_paradigm.astype(np.float32))
 
@@ -104,7 +114,7 @@ denoise=False, retroicor=False, roi='NPC_R'):
     print('DOF', dof)
 
     bins = stimulus_range.astype(np.float32)
-
+    # test
     pdf = model.get_stimulus_pdf(test_data, bins,
             model.parameters,
             omega=omega,
@@ -114,23 +124,23 @@ denoise=False, retroicor=False, roi='NPC_R'):
 
     E = (pdf * pdf.columns).sum(1) / pdf.sum(1)
 
-    target_fn = op.join(target_dir, f'sub-{subject}_ses-{session}_mask-{roi}_space-{space}_pars.tsv')
+    target_fn = op.join(target_dir, f'sub-{subject}_ses1-en_ses2-de_mask-{roi}_nvoxels-{n_voxels}_space-{space}_pars.tsv')
     pdf.to_csv(target_fn, sep='\t')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('subject', default=None)
-    parser.add_argument('session', default=None)
+    #parser.add_argument('session', default=None)
     parser.add_argument('--bids_folder', default='/data')
     parser.add_argument('--smoothed', action='store_true')
     parser.add_argument('--pca_confounds', action='store_true')
     parser.add_argument('--denoise', action='store_true')
     parser.add_argument('--retroicor', action='store_true')
-    parser.add_argument('--mask', default='npcr')
+    parser.add_argument('--mask', default='NPC_R')
     args = parser.parse_args()
 
-    main(args.subject, args.session, args.smoothed, args.pca_confounds,
+    main(args.subject,  args.smoothed, args.pca_confounds, #args.session,
             denoise=args.denoise,
             retroicor=args.retroicor,
-            bids_folder=args.bids_folder, mask=args.mask)
+            bids_folder=args.bids_folder, roi=args.mask)
