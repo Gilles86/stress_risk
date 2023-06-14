@@ -14,11 +14,12 @@ def get_decoding_info(subject, session,  bids_folder='/data/ds-stressrisk',key =
     subject = f'{subject:02d}'
     
 
-    pdf = op.join(bids_folder, 'derivatives', key, f'sub-{subject}', 'func', f'sub-{subject}_ses-{session}_mask-{mask}_nvoxels-{n_voxels}_space-T1w_pars.tsv')
+    pdf = op.join(bids_folder, 'derivatives', f'{key}.{n_voxels}voxels', f'sub-{subject}', 'func', f'sub-{subject}_ses-{session}_mask-{mask}_nvoxels-{n_voxels}_space-T1w_pars.tsv')
 
     if op.exists(pdf):
         pdf = pd.read_csv(pdf, sep='\t', index_col=[0])
         pdf.columns = pdf.columns.astype(float)
+        pdf = pdf.loc[:, np.log(5):np.log(28*4)] # restrict range to actually presensted numeroisities
 
         E = (pdf*pdf.columns.values[np.newaxis, :] / pdf.sum(1).values[:, np.newaxis]).sum(1)
 
