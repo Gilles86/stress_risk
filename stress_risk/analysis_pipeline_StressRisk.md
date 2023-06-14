@@ -120,5 +120,14 @@ do rsync -rvz /Volumes/mrenkeED/data/ds-stressrisk/derivatives/fmriprep/sub-${su
 
 * 2ndLevel-SPM folders: 
 rsync -avzr --include='2ndlevel_*/' --exclude='*/' sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/ /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm
+
+rsync -avzr --include='1stlevel_*/' --exclude='*.*' sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/ /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}
+
+* 1stlevel back to /Volumes to make space on /mnt
+--> loop ofer sub, ses, model
+rsync -rcvz sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/1stlevel_${model} /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}
+
+for sub in 01 02 03 04 05 09 10 12 13 14 16 17 18 19 21 22 23 24 25 26 28 30 31 32 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 57 58 59 61; do for ses in 1 2; do rsync -rcvz sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/1stlevel_${model} /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}; done; done;
+
 # prepare 
  fslmaths in-file.nii -nan out-file 
