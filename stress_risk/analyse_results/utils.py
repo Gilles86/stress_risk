@@ -9,12 +9,15 @@ import seaborn as sns
 
 # E['sd'] = np.trapz(np.abs(E.values - pdf.columns.astype(float).values[np.newaxis, :]) * pdf, pdf.columns, axis=1)
 
-def get_decoding_info(subject, session,  bids_folder='/data/ds-stressrisk',key = 'decoded_pdfs.volume.denoise', mask='NPC_R', n_voxels=250):
+def get_decoding_info(subject, session,  bids_folder='/data/ds-stressrisk',key = 'decoded_pdfs.volume.denoise', mask='NPC_R', n_voxels=250, select_voxels=False):
 
     subject = f'{subject:02d}'
     
-
-    pdf = op.join(bids_folder, 'derivatives', f'{key}.{n_voxels}voxels', f'sub-{subject}', 'func', f'sub-{subject}_ses-{session}_mask-{mask}_nvoxels-{n_voxels}_space-T1w_pars.tsv')
+    if n_voxels =='select':
+        key = 'decoded_pdfs.volume.cv_voxel_selection.denoise.retroicor'
+        pdf = op.join(bids_folder, 'derivatives', key, f'sub-{subject}', 'func', f'sub-{subject}_ses-{session}_mask-{mask}_space-T1w_pars.tsv')
+    else:
+        pdf = op.join(bids_folder, 'derivatives', f'{key}.{n_voxels}voxels', f'sub-{subject}', 'func', f'sub-{subject}_ses-{session}_mask-{mask}_nvoxels-{n_voxels}_space-T1w_pars.tsv')
 
     if op.exists(pdf):
         pdf = pd.read_csv(pdf, sep='\t', index_col=[0])
@@ -47,3 +50,9 @@ def get_data(bids_folder='/Users/mrenke/data/ds-stressrisk'):
     df = df.dropna() # automatially removes subs without group assignment
     df = df.reset_index(level= 'session', drop=False) 
     return df
+
+def get_stress_level():
+    df_auc = pd.read_excel('/Users/mrenke/Desktop/StressRisk/2022-StressRisk/Data-Final/auc_cortisol.xlsx')
+    df_auc = df_auc.rename(columns={'SubjectID':'subject'}).set_index('subject')[['AUC']] # double brackets --> dataframe
+    df_auc = df_auc[['AUC']].groupby('subject').mean()
+    return df_auc
