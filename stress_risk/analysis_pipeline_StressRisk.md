@@ -131,3 +131,9 @@ for sub in 01 02 03 04 05 09 10 12 13 14 16 17 18 19 21 22 23 24 25 26 28 30 31 
 
 # prepare 
  fslmaths in-file.nii -nan out-file 
+
+# working on the clluster:
+* check which jobs finished/failed on which nodes: sacct -S '2023-06-14' -u mrenke -o jobid%25,start,exitcode,nodelist%25,state
+* exclude nodes that dont work: --exclude=u20-computeibmgpu-vesta19
+* 02,03,04,05,14,16,17,18,19,21,22,23,24,25,37,38,45,46,47,52,53,54,58,59
+
