@@ -7,7 +7,7 @@ function first_level_spm_Vchoice3(subject,session,bids_folder, model)
    
    
    
-   if model == 'EV' % to lazy to rename files 
+   if model == 'EV'
        naming_err = '';
    else
        naming_err = '_';
@@ -42,9 +42,9 @@ function first_level_spm_Vchoice3(subject,session,bids_folder, model)
     file_nuisance = fullfile(bids_folder,'derivatives','spm', subject, session,[subject '_' session '_task-risk_run-' num2str(run) '_mult-reg-confounds.mat']);
 
     v1_chosen = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_v1-chosen' naming_err model '-2.txt']));
-    v2_chosen = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_v2-chosen' naming_err model '-2.txt']));
-    v1_unchosen = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_v1-unchosen' naming_err model '-2.txt']));
-    v2_unchosen = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_v2-unchosen' naming_err model '-2.txt']));
+    v2_chosen = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_v2-chosen_' model '-2.txt']));
+    v1_unchosen = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_v1-unchosen_' model '-2.txt']));
+    v2_unchosen = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_v2-unchosen_' model '-2.txt']));
    
     matlabbatch{2}.spm.stats.fmri_spec.sess(run).scans = cellstr(spm_file(ff));
 

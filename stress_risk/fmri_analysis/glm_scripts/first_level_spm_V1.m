@@ -1,6 +1,11 @@
-function first_level_spm_EU(subject,session,bids_folder, model)
+function first_level_spm_V1(subject,session,bids_folder, model) % was: first_level_spm_EU()
+   % plein modelling of value (EV/EU/NLC-estimate*prob) at timepoint of
+   % stimulus presentation, no differentiation which was chosen
+   % at v2 presentation also pmod of dif_chosen-unchosen
    
-   model_name = ['1stlevel_' model]
+   
+   extra = '/event_files' % for EV, '' for EU
+   model_name = ['1stlevel_' model '-1']
    target_folder= strcat(bids_folder,'/derivatives','/spm/',subject,'/',session);
    cd(target_folder)  
    clear matlabbatch
@@ -28,9 +33,9 @@ function first_level_spm_EU(subject,session,bids_folder, model)
     
     file_nuisance = fullfile(bids_folder,'derivatives','spm', subject, session,[subject '_' session '_task-risk_run-' num2str(run) '_mult-reg-confounds.mat']);
 
-    onsets_n1 = load(strcat(target_folder,'/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_n1_' model '.txt']));
-    onsets_n2 = load(strcat(target_folder,'/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_n2_' model '.txt']));
-    onsets_diff = load(strcat(target_folder,'/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_diff_' model '.txt']));
+    onsets_n1 = load(strcat(target_folder,extra,'/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_n1_' model '-1.txt']));
+    onsets_n2 = load(strcat(target_folder,extra,'/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_n2_' model '-1.txt']));
+    onsets_diff = load(strcat(target_folder,extra,'/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_diff_' model '-1.txt']));
 
     matlabbatch{2}.spm.stats.fmri_spec.sess(run).scans = cellstr(spm_file(ff));
 
@@ -78,11 +83,11 @@ function first_level_spm_EU(subject,session,bids_folder, model)
     n1(x1) = 1; n2(x2)=1; n3(x3)=1;
 
     matlabbatch{4}.spm.stats.con.spmmat = cellstr(fullfile(target_folder,model_name,'SPM.mat'));
-    matlabbatch{4}.spm.stats.con.consess{1}.tcon.name = 'n1_EU';
+    matlabbatch{4}.spm.stats.con.consess{1}.tcon.name = 'v1';
     matlabbatch{4}.spm.stats.con.consess{1}.tcon.weights = n1;
-    matlabbatch{4}.spm.stats.con.consess{2}.tcon.name = 'n2_EU';
+    matlabbatch{4}.spm.stats.con.consess{2}.tcon.name = 'v2';
     matlabbatch{4}.spm.stats.con.consess{2}.tcon.weights = n2;
-    matlabbatch{4}.spm.stats.con.consess{3}.tcon.name = 'diff_chosenEU';
+    matlabbatch{4}.spm.stats.con.consess{3}.tcon.name = 'diff_chosenV';
     matlabbatch{4}.spm.stats.con.consess{3}.tcon.weights = n3;
 
     

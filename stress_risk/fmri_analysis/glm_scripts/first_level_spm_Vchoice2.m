@@ -1,4 +1,10 @@
 function first_level_spm_Vchoice2(subject,session,bids_folder, model)
+   % differentiates between trials where v2 or v1 was chosen, but models
+   % everything at timepoint of v2 presentation (choice, duration
+   % =choice-RT; pmod = v1 & v2
+   % con = v1_ch, v1_unch; v2_ch; v2_unch; v1_ch_dif (v1_ch - v2_unch);
+   % v2_ch_dif (v2_ch - v1_unch)
+   
    
    model_name = ['1stlevel_' model]
    target_folder= strcat(bids_folder,'/derivatives','/spm/',subject,'/',session);

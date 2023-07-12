@@ -73,9 +73,6 @@ function first_level_spm_Vchoice3(subject,session,bids_folder, model)
                 matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(3).pmod(1).name = 'v2_chosen';
                 matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(3).pmod(1).param = v2_chosen(:,3);
                 matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(3).pmod(1).poly = 1;
-                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(3).pmod(2).name = 'v2_chosen_diff';
-                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(3).pmod(2).param = v2_chosen(:,4);
-                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(3).pmod(2).poly = 1;
             matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(3).orth = 0;
             
             % v2_unchosen
@@ -85,9 +82,6 @@ function first_level_spm_Vchoice3(subject,session,bids_folder, model)
                 matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(4).pmod(1).name = 'v2_unchosen';
                 matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(4).pmod(1).param = v2_unchosen(:,3);
                 matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(4).pmod(1).poly = 1;
-                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(4).pmod(2).name = 'v2_unchosen_diff';
-                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(4).pmod(2).param = v1_chosen(:,4); % is stored in this file !
-                matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(4).pmod(2).poly = 1;
             matlabbatch{2}.spm.stats.fmri_spec.sess(run).cond(4).orth = 0;
 
         matlabbatch{2}.spm.stats.fmri_spec.sess(run).multi_reg   = cellstr(file_nuisance);
@@ -99,21 +93,25 @@ function first_level_spm_Vchoice3(subject,session,bids_folder, model)
     % automatically generate the contrast vectors dependant on the number
     % of regressors, dependant on the number of confounds from the multReg
     load(file_nuisance);
-    n_cond_reg = 10; % 2*2 + 2*3 (event, pmod1, pmod2)
+    n_cond_reg = 8; % 2*2 + 2*2 (event, pmod1)
     n_conf = size(R,2);
     n_reg = (n_cond_reg + n_conf) * 6 + 6
     y = zeros(1, n_reg); n1 = y; n2 = y; n3 = y; n4 = y; n5 = y; n6=y;
     x1 = 2:n_cond_reg + n_conf:n_reg-6; % v1_ch
     x2 = 4:n_cond_reg + n_conf:n_reg-6; % v1_unch
     x3 = 6:n_cond_reg + n_conf:n_reg-6; % v2_ch
-    x4 = 7:n_cond_reg + n_conf:n_reg-6; % v2_ch_diff
-    x5 = 9:n_cond_reg + n_conf:n_reg-6; % v2_unch
-    x6 = 10:n_cond_reg + n_conf:n_reg-6; % v2_unch_diff
+    x4 = 8:n_cond_reg + n_conf:n_reg-6; % v2_unch
+
+    %x4 = 7:n_cond_reg + n_conf:n_reg-6; % v2_ch_diff
+    %x5 = 9:n_cond_reg + n_conf:n_reg-6; % v2_unch
+    %x6 = 10:n_cond_reg + n_conf:n_reg-6; % v2_unch_diff
    
     n1(x1)=1; 
     n2(x2)=1; 
-    n3(x3)=1; n4(x4)= 1;
-    n5(x5)=1; n6(x6) = 1;
+    n3(x3)=1; 
+    n4(x4)= 1;
+    n5(x1)=1; n5(x4)=-1;% v1_ch_diff
+    n6(x3) = 1; n6(x2) = 1;% v2_ch_diff
 
     matlabbatch{4}.spm.stats.con.spmmat = cellstr(fullfile(target_folder,model_name,'SPM.mat'));
     matlabbatch{4}.spm.stats.con.consess{1}.tcon.name = 'v1_ch';

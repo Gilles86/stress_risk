@@ -1,5 +1,7 @@
 function first_level_spm(subject,session,bids_folder)
-   target_folder= strcat(bids_folder,'/derivatives','/spm/',subject,'/',session);
+  % models plein numerosities (not EV/utility/NLC-estimate)
+
+    target_folder= strcat(bids_folder,'/derivatives','/spm/',subject,'/',session);
    cd(target_folder)  
    clear matlabbatch
 
