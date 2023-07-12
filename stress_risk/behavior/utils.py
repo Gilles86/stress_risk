@@ -78,7 +78,11 @@ def build_model(model_label, df):
          'n2_evidence_sd':'session*group', 'risky_prior_mu':'session*group', 'risky_prior_std':'session*group',
           'safe_prior_mu':'session*group', 'safe_prior_std':'session*group'},
          prior_estimate='full')
-        
+    elif model_label=='5' :
+        model = RiskRegressionModel(df,regressors={'n1_evidence_sd':'session*group',
+         'n2_evidence_sd':'session*group', 'prior_mu':'0 + session*group', 'risky_prior_std':'session*group', # 0 == no intercept for that regressor
+        'safe_prior_std':'session*group'},
+         prior_estimate='full')
     else:
         raise Exception(f'Do not know model label {model_label}')
 
