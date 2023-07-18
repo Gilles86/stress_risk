@@ -112,10 +112,17 @@ errorL_V = [];
 
 model='EV'; % numer - 3 will be added automatically here
 
-for sub=37:numel(subList)
+for sub=1:numel(subList)
     for ses=1:2
         try 
-            first_level_spm_Vchoice3(subList{sub},sesList{ses},bids_folder,model);
+            target_folder= strcat(bids_folder,'/derivatives','/spm/',subList{sub},'/',sesList{ses});
+            cd(target_folder)
+            try
+                rmdir('1stlevel_EV-1','s')
+                rmdir('1stlevel_EV-2','s')
+
+            end
+            first_level_spm_Vchoice3b(subList{sub},sesList{ses},bids_folder,model);
             
         catch
             errorL_V = [errorL_V; [subList{sub} '-' num2str(ses)]];
