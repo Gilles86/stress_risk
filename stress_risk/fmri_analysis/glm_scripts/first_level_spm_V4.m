@@ -29,10 +29,10 @@ function first_level_spm_V4(subject,session,bids_folder, model)
     
     file_nuisance = fullfile(bids_folder,'derivatives','spm', subject, session,[subject '_' session '_task-risk_run-' num2str(run) '_mult-reg-confounds.mat']);
 
-    risky_first = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_risky-first' model '-4.txt']));
-    risky_second = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_risky-second' model '-4.txt']));
-    safe_first = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_safe-first' model '-4.txt']));
-    safe_second = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_safe-second' model '-4.txt']));
+    risky_first = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_risky-first_' model '-4.txt']));
+    risky_second = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_risky-second_' model '-4.txt']));
+    safe_first = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_safe-first_' model '-4.txt']));
+    safe_second = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_safe-second_' model '-4.txt']));
    
     matlabbatch{2}.spm.stats.fmri_spec.sess(run).scans = cellstr(spm_file(ff));
 
