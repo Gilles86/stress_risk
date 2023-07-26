@@ -2,7 +2,7 @@ import os.path as op
 import os
 import numpy as np
 import pandas as pd
-#from bauer.models import RiskRegressionModel
+from bauer.models import RiskRegressionModel, ExpectedUtilityRiskRegressionModel
 from stress_risk.utils.data import get_all_behavior
 import arviz as az
 import matplotlib.pyplot as plt
@@ -26,6 +26,7 @@ def add_cond2df(df):
     df_cond = pd.read_excel('/Users/mrenke/data/ds-stressrisk/addMeasures/data_combined.xlsx')
     df_c = pd.DataFrame({'subject' : df_cond['SUBID'], 'group': np.asarray(df_cond['condition']).astype(int)})
     df_c = df_c[df_c['subject'] < 100] # drop TMS subs
+    # df_c.to_csv(op.join('/Users/mrenke/data/ds-stressrisk','sub-grou_assignmentList.csv'))
     gr = []
     for i in range(0,len(df)):
         sub = df.index[i][0] #subject is the first (0th) index
@@ -43,7 +44,7 @@ def add_cond2df(df):
 
 def build_model(model_label, df):
     if model_label == '1':
-        model = RiskRegressionModel(df, regressors={'n1_evidence_sd':'session*group',
+        model = RiskRegressionModel(df,regressors={'n1_evidence_sd':'session*group',
          'n2_evidence_sd':'session*group', 'risky_prior_mu':'session*group', 'risky_prior_std':'session*group',
           'safe_prior_mu':'session*group', 'safe_prior_std':'session*group'},
          prior_estimate='full')
@@ -66,6 +67,22 @@ def build_model(model_label, df):
          model = RiskRegressionModel(df, regressors={'n1_evidence_sd':'session*group',
           'risky_prior_mu':'session*group'},
          prior_estimate='different')
+    elif model_label =='EU_1':
+        model = ExpectedUtilityRiskRegressionModel(df, save_trialwise_eu= True, regressors=None) #subject is automatically a regressor
+    elif model_label =='EU_2':
+        model = ExpectedUtilityRiskRegressionModel(df, save_trialwise_eu= True, regressors={'alpha':'0 + C(session)','sigma':'0 + C(session)'}) #subject is automatically a regressor
+    elif model_label =='EU_3':
+        model = ExpectedUtilityRiskRegressionModel(df, save_trialwise_eu= True, regressors={'alpha':'0 + C(session)*group', 'sigma':'0 + C(session)*group'}) #subject is automatically a regressor
+    elif model_label =='NLC_1': # same as '1', just with save_trialwise_n_estimates
+        model = RiskRegressionModel(df,save_trialwise_n_estimates=True, regressors={'n1_evidence_sd':'session*group',
+         'n2_evidence_sd':'session*group', 'risky_prior_mu':'session*group', 'risky_prior_std':'session*group',
+          'safe_prior_mu':'session*group', 'safe_prior_std':'session*group'},
+         prior_estimate='full')
+    elif model_label=='5' :
+        model = RiskRegressionModel(df,regressors={'n1_evidence_sd':'session*group',
+         'n2_evidence_sd':'session*group', 'prior_mu':'0 + session*group', 'risky_prior_std':'session*group', # 0 == no intercept for that regressor
+        'safe_prior_std':'session*group'},
+         prior_estimate='full')
     else:
         raise Exception(f'Do not know model label {model_label}')
 
@@ -132,6 +149,8 @@ def plot_ppc(df, ppc, plot_type=1, var_name='ll_bernoulli', level='subject', col
         groupby = ['risky_first', 'log(risky/safe)', 'session','group']
     elif plot_type in [8, 9]:
         groupby = ['risky_first', 'log(risky/safe)', 'session','group' ,'n_safe']
+    elif plot_type in [10, 11]:
+        groupby = ['log(risky/safe)', 'session','group']
     else:
         raise NotImplementedError
 
@@ -145,7 +164,8 @@ def plot_ppc(df, ppc, plot_type=1, var_name='ll_bernoulli', level='subject', col
     p = df.groupby(groupby)[['chose_risky']].mean()
     ppc_summary = ppc_summary.join(p).reset_index()
 
-    ppc_summary['Order'] = ppc_summary['risky_first'].map({True:'Risky first', False:'Safe first'})
+    if 'risky_first' in groupby:
+        ppc_summary['Order'] = ppc_summary['risky_first'].map({True:'Risky first', False:'Safe first'})
 
     if 'n_safe' in groupby:
         ppc_summary['Safe offer'] = ppc_summary['n_safe'].astype(int)
@@ -240,13 +260,25 @@ def plot_ppc(df, ppc, plot_type=1, var_name='ll_bernoulli', level='subject', col
                             palette=sns.color_palette()[2:]
                             )
 
+    elif plot_type == 10:
+        fac = sns.FacetGrid(ppc_summary,
+                            hue='session',
+                            col='group',
+                            palette=sns.color_palette()[2:])
+        
+    elif plot_type == 11:
+        fac = sns.FacetGrid(ppc_summary,
+                            hue='group',
+                            col='session',
+                            palette=sns.color_palette()[4:])        
+        
 
-    if plot_type in [1,2,3, 5, 6, 7, 8, 9]:
+    if plot_type in [1,2,3, 5, 6, 7, 8, 9, 10, 11]:
         fac.map_dataframe(plot_prediction, x=x)
         fac.map(plt.scatter, x, 'Prop. chosen risky')
         fac.map(lambda *args, **kwargs: plt.axhline(.5, c='k', ls='--'))
 
-    if plot_type in [1, 3, 5, 7, 9]:
+    if plot_type in [1, 3, 5, 7, 9, 10, 11]:
         if level == 'subject':
             fac.map(lambda *args, **kwargs: plt.axvline(np.log(1./.55), c='k', ls='--'))
         else:
@@ -256,3 +288,61 @@ def plot_ppc(df, ppc, plot_type=1, var_name='ll_bernoulli', level='subject', col
     fac.add_legend()
 
     return fac    
+
+def format_bambi_ppc(trace, model, df):
+
+    preds = []
+    for key, kind in zip(['ll_bernoulli', 'p'], ['pps', 'mean']):
+        pred = model.predict(trace, kind=kind, inplace=False) 
+        if kind == 'pps':
+            pred = pred['posterior_predictive']['chose_risky'].to_dataframe().unstack(['chain', 'draw'])['chose_risky']
+        else:
+            pred = pred['posterior']['chose_risky_mean'].to_dataframe().unstack(['chain', 'draw'])['chose_risky_mean']
+        pred.index = df.index
+        pred = pred.set_index(pd.MultiIndex.from_frame(df), append=True)
+        preds.append(pred)
+
+    pred = pd.concat(preds, keys=['ll_bernoulli', 'p'], names=['variable'])
+    return pred
+
+import scipy.stats as ss
+def invprobit(x):
+    return ss.norm.ppf(x)
+
+
+def extract_rnp_precision(trace, model, data, group=False):
+
+    data = data.reset_index()
+
+    if group:
+        fake_data = pd.MultiIndex.from_product([data.reset_index()['subject'].unique()[[0]], # use just one subject
+                                                [0, 1],
+                                                data['session'].unique(),
+                                                data['group'].unique(),
+                                                data['risky_first'].unique(),
+                                                data['n_safe'].unique()],
+                                                names=['subject', 'x', 'session', 'group', 'risky_first', 'n_safe']
+                                                ).to_frame().reset_index(drop=True)
+    else:
+        fake_data = pd.MultiIndex.from_product([data.reset_index()['subject'].unique(),
+                                                [0, 1],
+                                                data['session'].unique(),
+                                                data['group'].unique(),
+                                                data['risky_first'].unique(),
+                                                data['n_safe'].unique()],
+                                                names=['subject', 'x', 'session', 'group', 'risky_first', 'n_safe']).to_frame().reset_index(drop=True)
+
+
+    #pred = model.predict(trace, 'mean', fake_data, inplace=False)['posterior']['chose_risky_mean']
+    pred = model.predict(trace, 'mean', fake_data, inplace=False, include_group_specific=not group)['posterior']['chose_risky_mean']
+
+    pred = pred.to_dataframe().unstack([0, 1])
+    pred = pred.set_index(pd.MultiIndex.from_frame(fake_data))
+
+    # return pred
+
+    pred0 = pred.xs(0, 0, 'x')
+    intercept = pd.DataFrame(invprobit(pred0), index=pred0.index, columns=pred0.columns)
+    gamma = invprobit(pred.xs(1, 0, 'x')) - intercept
+
+    return intercept, gamma

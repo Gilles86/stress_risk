@@ -24,6 +24,8 @@ def main(model_label, burnin=1000, samples=1000, bids_folder = '/Users/mrenke/da
 
     if model_label in ['0', '5']:
         target_accept = 0.9
+    elif model_label == 'NLC_1':
+        target_accept = 0.85
     else:
         target_accept = 0.8
 

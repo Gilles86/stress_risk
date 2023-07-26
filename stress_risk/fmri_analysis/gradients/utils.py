@@ -9,29 +9,29 @@ import pandas as pd
 from nipype.interfaces.freesurfer import SurfaceTransform # needs the fsaverage & fsaverage5 in ..derivatives/freesurfer folder!
 
 
-def loadGradAsNpArray(sub,ses,bids_folder,specification, parcel = '_noParcel'): # looping did not work (dont understand why)
+def loadGradAsNpArray(sub,ses,bids_folder,specification, space = 'fsnative', parcel = '_noParcel'): # looping did not work (dont understand why)
     grad_n = 1
     hemi = 'L'
     file = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}',
-                f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-{hemi}_grad{grad_n}{parcel}{specification}.surf.gii')
+                f'sub-{sub}_ses-{ses}_task-risk_space-{space}_hemi-{hemi}_grad{grad_n}{parcel}{specification}.surf.gii')
     im1L = nib.load(file)
 
     hemi = 'R'
     file = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}',
-            f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-{hemi}_grad{grad_n}{parcel}{specification}.surf.gii')
+            f'sub-{sub}_ses-{ses}_task-risk_space-{space}_hemi-{hemi}_grad{grad_n}{parcel}{specification}.surf.gii')
     im1R = nib.load(file)
 
 
     grad_n = 2
     hemi = 'L'
     file = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}',
-                f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-{hemi}_grad{grad_n}{parcel}{specification}.surf.gii')
+                f'sub-{sub}_ses-{ses}_task-risk_space-{space}_hemi-{hemi}_grad{grad_n}{parcel}{specification}.surf.gii')
     im2L = nib.load(file)
 
 
     hemi = 'R'
     file = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}',
-                f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-{hemi}_grad{grad_n}{parcel}{specification}.surf.gii')
+                f'sub-{sub}_ses-{ses}_task-risk_space-{space}_hemi-{hemi}_grad{grad_n}{parcel}{specification}.surf.gii')
     im2R = nib.load(file)
 
 
@@ -89,7 +89,7 @@ def saveGradToNPFile(grad, sub,ses, specification='',bids_folder='/Users/mrenke/
     if not op.exists(target_dir):
         os.makedirs(target_dir)
 
-    for g, n_grad  in enumerate([1,2]):
+    for g, n_grad  in enumerate(range(1,1+np.shape(grad)[0])):
         np.save(op.join(target_dir,f'grad{n_grad}_noParcel{specification}.npy'), grad[g])
 
 def npFileTofs5Gii(sub,ses, specification='',bids_folder='/Users/mrenke/data/ds-stressrisk'):
