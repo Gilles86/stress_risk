@@ -56,9 +56,9 @@ def cleanTS(sub, ses, runs = range(1, 7),space = 'fsaverage5', bids_folder='/Use
     ex_file = op.join(bids_folder,'derivatives', 'fmriprep', f'sub-{sub}', f'ses-{ses}', 'func', 
             f'sub-{sub}_ses-{ses}_task-risk_run-1_space-{space}_hemi-L_bold.func.gii')
     
-    if (os.path.exists(ex_file) == False):
-        print(f'sub-{sub} fsaverage5.gii missing, fsavTofsav5 will be performed')
-        fsavTofsav5(sub,ses, bids_folder)
+    #if (os.path.exists(ex_file) == False):
+    print(f'sub-{sub} fsaverage5.gii missing, fsavTofsav5 will be performed')
+    fsavTofsav5(sub,ses, bids_folder)
 
     for run in runs:
         timeseries = [None] * 2
