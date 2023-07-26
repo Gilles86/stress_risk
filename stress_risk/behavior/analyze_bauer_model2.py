@@ -1,7 +1,7 @@
 # part 2 of model analysis, posterior predictive checks
 
 from itertools import combinations
-import pingouin
+#import pingouin
 import matplotlib.pyplot as plt
 import seaborn
 import os

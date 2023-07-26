@@ -347,7 +347,7 @@ class Subject(object):
             raise Exception("When not using GLMSingle RETROICOR is *always* used!")
 
         if retroicor:
-            key += '.retroicor'
+            dir += '.retroicor'
             
         if smoothed:
             dir += '.smoothed'

@@ -96,7 +96,7 @@ rsync -rzcv  --include="*/" --include="*.tsv" --include="*/ses-2/*" --exclude="*
 
 # SubList
 * from `...stress_risk/prepare/get_subList-String.py` (only files for final data analysis):
-* * `01 02 03 04 05 09 10 12 13 14 16 17 18 19 21 22 23 24 25 26 28 30 31 32 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 55 57 58 59 61`
+* * `01 02 03 04 05 09 10 12 13 14 16 17 18 19 21 22 23 24 25 26 28 30 31 32 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 57 58 59 61`
 * * `01,02,03,04,05,09,10,12,13,14,16,17,18,19,21,22,23,24,25,26,28,30,31,32,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,57,58,59,61`
 
 ## file placing for GLM on sciencecloud2
@@ -105,17 +105,35 @@ rsync -rzcv  --include="*/" --include="*.tsv" --include="*/ses-2/*" --exclude="*
 ses=1
 for sub in 01 02 03 05; do rsync -avz --include='*/' --include='*physio.log' --exclude='*' sciencecloud:/data/ds-stressrisk/sub-${sub}/ses-${ses}/func/ /Volumes/mrenkeED/data/ds-stressrisk/sub-${sub}/ses-${ses}/func ; done;
 for sub in 01 02 03 05; do rsync /Volumes/mrenkeED/data/ds-stressrisk/sub-${sub}/ses-${ses}/func/*physio.log sciencecloud2:/mnt/ds-stressrisk/sub-${sub}/ses-${ses}/func ; done;
-* * repeat with ses=2
+(repeat with ses=2)
+
 * copy fmriprep/...confounds
 do rsync -rvz /Volumes/mrenkeED/data/ds-stressrisk/derivatives/fmriprep/sub-${sub}/ses-${ses}/func/*_desc-confounds_timeseries.tsv sciencecloud2:/mnt/ds-stressrisk/derivatives/fmriprep/sub-${sub}/ses-${ses}/func ; done;
 
-* rsync ../spm (events.txt & )
-do rsync -rcvz /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub} sciencecloud2:/mnt/ds-stressrisk/derivatives/spm; done;
+* events.txt to sciencecloud
+    * do rsync -rcvz /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub} sciencecloud2:/mnt/ds-stressrisk/derivatives/spm; done;
+    * do for ses in 1 2; do rsync -avz --include='*/' --include='*NLCn.txt' --exclude='*' /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/ sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}; done; done;
+    * do for ses in 1 2; do rsync -rcvz /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/event_files sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}; done; done;
 
 14 34 40 41 57
-# sync back SPMs from sciencecloud2 to loacl/ED
-* do rsync -cvzr sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/1stlevel /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses} ; done;
+# sync back SPMs from sciencecloud2 to local/ED
 
- do rsync -cvzr /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses} sciencecloud:/data/ds-stressrisk/derivatives/fmriprep/sub-${sub}/ses-${ses}/1stlevel; done;
+* 2ndLevel-SPM folders: 
+rsync -avzr --include='2ndlevel_*/' --exclude='*/' sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/ /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm
 
- rsync -cvzr sciencecluster2:/shares/zne.uzh/mrenke/ds-stressrisk/derivatives/fmriprep/sub-${sub} /data/ds-stressrisk/derivatives/fmriprep
+rsync -avzr --include='1stlevel_*/' --exclude='*.*' sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/ /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}
+
+* 1stlevel back to /Volumes to make space on /mnt
+--> loop ofer sub, ses, model
+rsync -rcvz sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/1stlevel_${model} /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}
+
+for sub in 01 02 03 04 05 09 10 12 13 14 16 17 18 19 21 22 23 24 25 26 28 30 31 32 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 57 58 59 61; do for ses in 1 2; do rsync -rcvz sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/1stlevel_${model} /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}; done; done;
+
+# prepare 
+ fslmaths in-file.nii -nan out-file 
+
+# working on the clluster:
+* check which jobs finished/failed on which nodes: sacct -S '2023-06-14' -u mrenke -o jobid%25,start,exitcode,nodelist%25,state
+* exclude nodes that dont work: --exclude=u20-computeibmgpu-vesta19
+* 02,03,04,05,14,16,17,18,19,21,22,23,24,25,37,38,45,46,47,52,53,54,58,59
+

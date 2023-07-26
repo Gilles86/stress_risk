@@ -10,7 +10,7 @@ import os.path as op
 import numpy as np
 
 
-def main(subject, session, bids_folder='/data/ds-stressrisk', smoothed=False, pca_confounds=False, denoise=False):
+def main(subject, session, bids_folder='/data/ds-stressrisk', retroicor=False, smoothed=False, pca_confounds=False, denoise=False):
          
 
     key = 'glm_stim1'
@@ -19,6 +19,10 @@ def main(subject, session, bids_folder='/data/ds-stressrisk', smoothed=False, pc
     if denoise:
         key += '.denoise'
         target_dir += '.denoise'
+
+    if retroicor:
+        key += '.retroicor'
+        target_dir += '.retroicor'
 
     if smoothed:
         key += '.smoothed'
@@ -116,10 +120,11 @@ if __name__ == '__main__':
     parser.add_argument('subject', default=None)
     parser.add_argument('session', default=None)
     parser.add_argument('--bids_folder', default='/data')
+    parser.add_argument('--retroicor', action='store_true')
     parser.add_argument('--smoothed', action='store_true')
     parser.add_argument('--pca_confounds', action='store_true')
     parser.add_argument('--denoise', action='store_true')
     args = parser.parse_args()
 
-    main(args.subject, args.session, bids_folder=args.bids_folder, smoothed=args.smoothed,
+    main(args.subject, args.session, bids_folder=args.bids_folder, smoothed=args.smoothed, retroicor=args.retroicor,
             pca_confounds=args.pca_confounds, denoise=args.denoise)
