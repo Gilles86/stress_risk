@@ -154,7 +154,7 @@ for sub=1:numel(subList)
             target_folder= strcat(bids_folder,'/derivatives','/spm/',subList{sub},'/',sesList{ses});
             cd(target_folder)
             try
-                rmdir('1stlevel_EV-3','s')
+                rmdir('1stlevel_NLC-4','s')
             end
             first_level_spm_V4(subList{sub},sesList{ses},bids_folder,model);
             
@@ -165,7 +165,35 @@ for sub=1:numel(subList)
     end
 end
 
+%% 2.4.1stlevel( - version 4 both sessions)
+
+errorL_V = [];
+
+model='NLC'; % numer - 3 will be added automatically here
+
+for sub=2:numel(subList)
+    for ses=1:2
+        target_folder= strcat(bids_folder,'/derivatives','/spm/',subList{sub},'/',sesList{ses});
+        cd(target_folder)
+        try
+            rmdir('1stlevel_NLC-4','s')
+        end
+    end
+    
+    try
+        first_level_spm_V4_bothSessions(subList{sub},bids_folder,model);
+            
+    catch
+            errorL_V = [errorL_V; [subList{sub} '-' num2str(ses)]];
+
+    end
+end
+
 %%
+
+
+
+
 %errorL = errorL_NLC
 model = 'EV'
 model='NLC-2';

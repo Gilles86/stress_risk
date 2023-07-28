@@ -20,7 +20,7 @@ specification=''
 #specification='_dmask'
 
 #%%
-sub = '03'
+sub = '01'
 subject = f'sub-{sub}'
 
 r2_data =  op.join(bids_folder, 'derivatives', base , f'sub-{sub}', f'ses-{ses}', 'func', 

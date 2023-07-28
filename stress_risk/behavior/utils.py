@@ -83,6 +83,16 @@ def build_model(model_label, df):
          'n2_evidence_sd':'session*group', 'prior_mu':'0 + session*group', 'risky_prior_std':'session*group', # 0 == no intercept for that regressor
         'safe_prior_std':'session*group'},
          prior_estimate='full')
+    elif model_label=='6' :
+            model = RiskRegressionModel(df,regressors={
+            'perceptual_noise_sd':'session*group',
+            'memory_noise_sd':'session*group', 
+            'prior_mu':'0 + session*group', 
+            'risky_prior_std':'session*group', # 0 == no intercept for that regressor
+            'safe_prior_std':'session*group'},
+            prior_estimate='full',
+            memory_model = 'shared_perceptual_noise')
+      
     else:
         raise Exception(f'Do not know model label {model_label}')
 
