@@ -54,5 +54,6 @@ def get_data(bids_folder='/Users/mrenke/data/ds-stressrisk'):
 def get_stress_level():
     df_auc = pd.read_excel('/Users/mrenke/Desktop/StressRisk/2022-StressRisk/Data-Final/auc_cortisol.xlsx')
     df_auc = df_auc.rename(columns={'SubjectID':'subject'}).set_index('subject')[['AUC']] # double brackets --> dataframe
+    # # df_auc.loc[34] --> sub 34 missing
     df_auc = df_auc[['AUC']].groupby('subject').mean()
     return df_auc
