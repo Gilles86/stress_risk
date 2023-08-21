@@ -134,6 +134,8 @@ for sub in 01 02 03 04 05 09 10 12 13 14 16 17 18 19 21 22 23 24 25 26 28 30 31 
 * mv folders around on sciencecloud in loops !! 
 for sub in 01; do cd /mnt/ds-stressrisk/derivatives/spm/sub-${sub}; for ses in 1 2; do  mv ses-${ses}/fwhm-* .;  done; done;
 
+for sub in 02; do cd /mnt/ds-stressrisk/derivatives/spm/sub-${sub}; for ses in 1 2; do  mv ./fwhm-8_sub-${sub}_ses-${ses}* ses-${ses}/;  done; done;
+
 # prepare 
  fslmaths in-file.nii -nan out-file 
 
