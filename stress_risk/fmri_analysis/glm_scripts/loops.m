@@ -59,7 +59,7 @@ end
 %% 2.1. 1stlevel( - version 1) loop + deleting old folders (for more space on Volume (/mnt))
 
 errorL = [];
-model = 'EV' % carefull, timing files are named inconsistently among different model types (e.g. '...n1_EV' vs ' '...n1-EU')
+model = 'NLC' % carefull, timing files are named inconsistently among different model types (e.g. '...n1_EV' vs ' '...n1-EU')
 
 for sub=1:numel(subList)
     for ses=1:2
@@ -74,7 +74,7 @@ for sub=1:numel(subList)
 
             end
             
-            first_level_spm_V1(subList{sub},sesList{ses},bids_folder, model); % scirpt adds automatically '-1'
+            first_level_spm_V1b(subList{sub},sesList{ses},bids_folder, model); % scirpt adds automatically '-1'
 
         catch
             [subList{sub} ' ' sesList{ses} 'problem']
