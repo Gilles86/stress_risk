@@ -312,6 +312,12 @@ class Subject(object):
             f'sub-{self.subject}',
             f'sub-{self.subject}_space-T1w_desc-{roi}.nii.gz'
             )
+        elif roi.startswith('mpfc'):
+            mask = op.join(self.derivatives_dir
+            ,'mpfc_masks',
+            f'sub-{self.subject}',
+            f'sub-{self.subject}_space-T1w_{roi}_hemi-both.nii.gz'
+            )
         else:
             raise NotImplementedError
 
