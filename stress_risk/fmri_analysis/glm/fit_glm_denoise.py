@@ -11,7 +11,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-def main(subject, session, bids_folder, smoothed=False,  retroicor=False):
+def main(subject, session, bids_folder, smoothed=False,  retroicor=False, value=False):
 
     derivatives = op.join(bids_folder, 'derivatives')
 
@@ -22,7 +22,10 @@ def main(subject, session, bids_folder, smoothed=False,  retroicor=False):
     ims = sub.get_preprocessed_bold(session=session)
 
     base_dir = 'glm_stim1.denoise'
-       
+
+    if value:
+        base_dir += '.value'
+
     if retroicor:
             base_dir += '.retroicor'
             confounds = sub.get_retroicor_confounds(session)
@@ -38,7 +41,7 @@ def main(subject, session, bids_folder, smoothed=False,  retroicor=False):
     if not op.exists(base_dir):
         os.makedirs(base_dir)
 
-    onsets = sub.get_fmri_events(session=session, runs = runs)
+    onsets = sub.get_fmri_events(session=session, runs = runs, value=value)
     tr = 2.3
     n = 135
     frametimes = np.linspace(tr/2., (n - .5)*tr, n)
@@ -102,8 +105,10 @@ if __name__ == '__main__':
     parser.add_argument('--bids_folder', default='/data')
     parser.add_argument('--smoothed', action='store_true')
     parser.add_argument('--retroicor', action='store_true')
+    parser.add_argument('--value', action='store_true')
 
     args = parser.parse_args()
 
     main(args.subject, args.session,
-         bids_folder=args.bids_folder, smoothed=args.smoothed, retroicor=args.retroicor)
+         bids_folder=args.bids_folder, smoothed=args.smoothed, retroicor=args.retroicor,
+         value=args.value)

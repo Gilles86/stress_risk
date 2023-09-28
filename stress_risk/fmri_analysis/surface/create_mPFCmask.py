@@ -60,7 +60,7 @@ def main(subject, bids_folder, roi):
 
     print('Generating volume...')
 
-    data = (mask_data_L, mask_data_R)
+    data = (mask_data_L, mask_data_R) # must give datarray for left and right
                 
     new_im = sub.cortex_to_image(data,
             im,
