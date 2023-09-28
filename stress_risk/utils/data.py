@@ -122,18 +122,20 @@ class Subject(object):
 
         return im
 
-    def get_behavior(self, sessions=None, drop_no_responses=True):
+    def get_behavior(self, sessions=None, drop_no_responses=True,value=False ):
         if sessions is None:
             sessions = [1, 2]
 
         if not isinstance(sessions, Iterable):
             sessions = [sessions]
+        
+        value_n = 'value_' if value else ''
 
         runs = range(1, 7)
         df = []
         for session, run in product(sessions, runs):
 
-            fn = op.join(self.bids_folder, f'sub-{self.subject}/ses-{session}/func/sub-{self.subject}_ses-{session}_task-risk_run-{run}_events.tsv')
+            fn = op.join(self.bids_folder, f'sub-{self.subject}/ses-{session}/func/sub-{self.subject}_ses-{session}_task-risk_run-{run}_{value_n}events.tsv')
 
             if op.exists(fn):
                 d = pd.read_csv(fn, sep='\t',
@@ -381,15 +383,17 @@ class Subject(object):
 
         return pd.concat(parameters, axis=1, keys=keys, names=['parameter'])
 
-    def get_fmri_events(self, session, runs=None):
+    def get_fmri_events(self, session, runs=None, value = False):
 
         if runs is None:
             runs = range(1,7)
 
+        value_n = 'value_' if value else ''
+
         behavior = []
         for run in runs:
             behavior.append(pd.read_table(op.join(
-                self.bids_folder, f'sub-{self.subject}/ses-{session}/func/sub-{self.subject}_ses-{session}_task-risk_run-{run}_events.tsv')))
+                self.bids_folder, f'sub-{self.subject}/ses-{session}/func/sub-{self.subject}_ses-{session}_task-risk_run-{run}_{value_n}events.tsv')))
 
         behavior = pd.concat(behavior, keys=runs, names=['run'])
         behavior = behavior.reset_index().set_index(
