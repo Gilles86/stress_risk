@@ -1,6 +1,6 @@
 import argparse
 import os
-import pingouin
+#import pingouin
 import numpy as np
 import os.path as op
 import pandas as pd
@@ -53,7 +53,7 @@ denoise=True, retroicor=False, mask='NPC_R'):
     print(data)
 
     pdfs = []
-    runs = range(1, 9)
+    runs = range(1, 7)
 
     # SET UP GRID
     mus = np.log(np.linspace(5, 80, 60, dtype=np.float32))
@@ -154,7 +154,7 @@ denoise=True, retroicor=False, mask='NPC_R'):
         E = (pdf * pdf.columns).sum(1) / pdf.sum(1)
 
         print(pd.concat((E, test_paradigm), axis=1))
-        print(pingouin.corr(E, test_paradigm))
+        #print(pingouin.corr(E, test_paradigm))
 
         pdfs.append(pdf)
 

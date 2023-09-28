@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=task_fit_cv
-#SBATCH --output=/home/mrenke/logs/fit_nPRF_ses1_r%A-%a.txt
+#SBATCH --output=/home/mrenke/logs/fit_nPRF_smoothed_bothSes_r%A-%a.txt
 #SBATCH --ntasks=1
 #SBATCH --mem=96G
 #SBATCH --gres gpu:1
@@ -18,4 +18,6 @@ source activate numrefields
 export PARTICIPANT_LABEL=$(printf "%02d" $SLURM_ARRAY_TASK_ID)
 
 source activate tf2-gpu
-python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/fit_nprf.py $PARTICIPANT_LABEL 1 --bids_folder /shares/zne.uzh/mrenke/ds-stressrisk --denoise --retroicor
+python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/fit_nprf.py $PARTICIPANT_LABEL 1 --bids_folder /shares/zne.uzh/mrenke/ds-stressrisk --denoise --retroicor --smoothed
+python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/fit_nprf.py $PARTICIPANT_LABEL 2 --bids_folder /shares/zne.uzh/mrenke/ds-stressrisk --denoise --retroicor --smoothed
+
