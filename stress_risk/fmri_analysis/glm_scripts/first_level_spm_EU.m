@@ -1,4 +1,4 @@
-function first_level_spm_EV(subject,session,bids_folder, model)
+function first_level_spm_EU(subject,session,bids_folder, model)
    
    model_name = ['1stlevel_' model]
    target_folder= strcat(bids_folder,'/derivatives','/spm/',subject,'/',session);

@@ -68,17 +68,37 @@ def build_model(model_label, df):
           'risky_prior_mu':'session*group'},
          prior_estimate='different')
     elif model_label =='EU_1':
-        model = ExpectedUtilityRiskRegressionModel(df, save_trialwise_eu= True, regressors=None) #subject is automatically a regressor
+        model = ExpectedUtilityRiskRegressionModel(df, save_trialwise_eu= True,probability_distortion=False, regressors=None) #subject is automatically a regressor
     elif model_label =='EU_2':
-        model = ExpectedUtilityRiskRegressionModel(df, save_trialwise_eu= True, regressors={'alpha':'0 + C(session)','sigma':'0 + C(session)'}) #subject is automatically a regressor
+        model = ExpectedUtilityRiskRegressionModel(df, save_trialwise_eu= True,probability_distortion=False, regressors={'alpha':'0 + C(session)','sigma':'0 + C(session)'}) #subject is automatically a regressor
     elif model_label =='EU_3':
-        model = ExpectedUtilityRiskRegressionModel(df, save_trialwise_eu= True, regressors={'alpha':'0 + C(session)*group', 'sigma':'0 + C(session)*group'}) #subject is automatically a regressor
+        model = ExpectedUtilityRiskRegressionModel(df, save_trialwise_eu= True, probability_distortion=False, regressors={'alpha':'0 + C(session)*group', 'sigma':'0 + C(session)*group'}) #subject is automatically a regressor
     elif model_label =='NLC_1': # same as '1', just with save_trialwise_n_estimates
-        model = RiskRegressionModel(df,save_trialwise_n_estimates=True, regressors={'n1_evidence_sd':'session*group',
-         'n2_evidence_sd':'session*group', 'risky_prior_mu':'session*group', 'risky_prior_std':'session*group',
-          'safe_prior_mu':'session*group', 'safe_prior_std':'session*group'},
+        model = RiskRegressionModel(df,save_trialwise_n_estimates=True, regressors={
+        'n1_evidence_sd':'session*group',
+         'n2_evidence_sd':'session*group', 
+         'risky_prior_mu':'session*group', 
+         'risky_prior_std':'session*group',
+          'safe_prior_mu':'session*group', 
+          'safe_prior_std':'session*group'},
          prior_estimate='full')
-        
+    elif model_label=='5' : # introduction on common-prior-effect(sesssion*group)
+        model = RiskRegressionModel(df,regressors={
+        'n1_evidence_sd':'session*group',
+        'n2_evidence_sd':'session*group', 
+        'prior_mu':'0 + session*group', 
+        'risky_prior_std':'session*group', # 0 == no intercept for that regressor
+        'safe_prior_std':'session*group'},
+         prior_estimate='full')
+    elif model_label=='6' : # perceptual and memory noise
+            model = RiskRegressionModel(df,regressors={
+            'perceptual_noise_sd':'session*group',
+            'memory_noise_sd':'session*group', 
+            'prior_mu':'0 + session*group', 
+            'risky_prior_std':'session*group', # 0 == no intercept for that regressor
+            'safe_prior_std':'session*group'},
+            prior_estimate='full',
+            memory_model = 'shared_perceptual_noise')
     else:
         raise Exception(f'Do not know model label {model_label}')
 
@@ -188,7 +208,8 @@ def plot_ppc(df, ppc, plot_type=1, var_name='ll_bernoulli', level='subject', col
         fac = sns.FacetGrid(ppc_summary,
                             col='subject' if level == 'subject' else None,
                             hue='Order',
-                            col_wrap=col_wrap if level == 'subject' else None)
+                            col_wrap=col_wrap if level == 'subject' else None,
+                            palette='husl') # for risky/safe first
 
     elif plot_type == 3:
         fac = sns.FacetGrid(ppc_summary,

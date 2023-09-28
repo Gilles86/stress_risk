@@ -26,7 +26,7 @@ for sub=1:4 %numel(subList)
     end 
 end
 
-%% 2.1. 1stlevel( - version 1) loop + deleting old folders (for more space on Volume (/mnt))
+%% 2.0. plein numerosities + checks smootehd file + mulreg + deleting old folders (for more space on Volume (/mnt))
 
 errorL = [];
 
@@ -56,22 +56,50 @@ for sub=1:numel(subList)
     end 
 end
 
+%% 2.1. 1stlevel( - version 1) loop + deleting old folders (for more space on Volume (/mnt))
+
+errorL = [];
+model = 'NLC' % carefull, timing files are named inconsistently among different model types (e.g. '...n1_EV' vs ' '...n1-EU')
+
+for sub=1:numel(subList)
+    for ses=1:2
+       try       
+            target_folder= strcat(bids_folder,'/derivatives','/spm/',subList{sub},'/',sesList{ses});
+            
+            %1stlevel, remove old
+            cd(target_folder)
+            try
+                rmdir('1stlevel_EV-1','s')
+                %rmdir('1stlevel_EU-3','s')
+
+            end
+            
+            first_level_spm_V1b(subList{sub},sesList{ses},bids_folder, model); % scirpt adds automatically '-1'
+
+        catch
+            [subList{sub} ' ' sesList{ses} 'problem']
+            errorL = [errorL; subList{sub}];
+        end
+        
+    end 
+end
+
 
 %% 2.2. 1stlevel( - version 2)
 
-errorL_EU = [];
+errorL = [];
 
 %model = 'EV'
-model='EU-2';
+model='EV-2';
 
-for sub=2:numel(subList)
+for sub=1:numel(subList)
     for ses=1:2
         try
             %first_level_spm_EVnoN2(subList{sub},sesList{ses},bids_folder,model);
             first_level_spm_Vchoice2(subList{sub},sesList{ses},bids_folder,model);
             
         catch
-            errorL_EU = [errorL_EU; [subList{sub} num2str(ses)]];
+            errorL = [errorL; [subList{sub} num2str(ses)]];
 
         end
     end
@@ -82,12 +110,19 @@ end
 
 errorL_V = [];
 
-model='EU'; % numer - 3 will be added automatically here
+model='EV'; % numer - 3 will be added automatically here
 
-for sub=2:numel(subList)
+for sub=1:numel(subList)
     for ses=1:2
         try 
-            first_level_spm_Vchoice3(subList{sub},sesList{ses},bids_folder,model);
+            target_folder= strcat(bids_folder,'/derivatives','/spm/',subList{sub},'/',sesList{ses});
+            cd(target_folder)
+            try
+                rmdir('1stlevel_EV-1','s')
+                rmdir('1stlevel_EV-2','s')
+
+            end
+            first_level_spm_Vchoice3b(subList{sub},sesList{ses},bids_folder,model);
             
         catch
             errorL_V = [errorL_V; [subList{sub} '-' num2str(ses)]];
@@ -95,6 +130,8 @@ for sub=2:numel(subList)
         end
     end
 end
+%%
+
 
 
 %%
@@ -105,13 +142,68 @@ end
                 rmdir('1stlevel','s')     
             end
 %% 
+%% 2.4.1stlevel( - version 4)
+
+errorL_V = [];
+
+model='NLC'; % numer - 3 will be added automatically here
+
+for sub=1:numel(subList)
+    for ses=1:2
+        try 
+            target_folder= strcat(bids_folder,'/derivatives','/spm/',subList{sub},'/',sesList{ses});
+            cd(target_folder)
+            try
+                rmdir('1stlevel_NLC-4','s')
+            end
+            first_level_spm_V4(subList{sub},sesList{ses},bids_folder,model);
+            
+        catch
+            errorL_V = [errorL_V; [subList{sub} '-' num2str(ses)]];
+
+        end
+    end
+end
+
+%% 2.4.1stlevel( - version 4 both sessions)
+
+errorL_V = [];
+
+model='NLC'; % numer - 3 will be added automatically here
+
+for sub=2:numel(subList)
+    for ses=1:2
+        target_folder= strcat(bids_folder,'/derivatives','/spm/',subList{sub},'/',sesList{ses});
+        cd(target_folder)
+        try
+            rmdir('1stlevel_NLC-4','s')
+        end
+    end
+    
+    try
+        first_level_spm_V4_bothSessions(subList{sub},bids_folder,model);
+            
+    catch
+            errorL_V = [errorL_V; [subList{sub} '-' num2str(ses)]];
+
+    end
+end
+
+%%
+
+
+
+
+%errorL = errorL_NLC
 model = 'EV'
 model='NLC-2';
 
-for i=2:length(errorL_NLC)
-    subject = errorL_NLC(i,1:6)
-    session = ['ses-' errorL_NLC(i,7)]
+for i=2:length(errorL)-1
+    subject = errorL(i,1:6)
+    session = ['ses-' errorL(i,7)]
     %first_level_spm_EVnoN2(subject,session,bids_folder,model);    
     first_level_spm_EUchoice(subject,session,bids_folder,model);
 
 end
+
+%%

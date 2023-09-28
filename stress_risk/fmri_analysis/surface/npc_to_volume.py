@@ -37,7 +37,7 @@ def main(subject, bids_folder, hemi, roi):
     im = to_image(image_clear(im, fill=0.0), dtype=np.int)
 
     print('Generating volume...')
-    new_im = sub.cortex_to_image((np.zeros(sub.lh.vertex_count), mask_data),
+    new_im = sub.cortex_to_image((np.zeros(sub.lh.vertex_count), mask_data), # must give datarray for left and right (here: one is mask and other array with only 0s/False)
             im,
             hemi=None,
             method='nearest',

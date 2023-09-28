@@ -1,4 +1,17 @@
 function first_level_spm_Vchoice3(subject,session,bids_folder, model)
+   % differentiates between trials where v2 or v1 was chosen
+   % models at 4 different timepoints (for 2 different trials) 
+   % v1 always at v1-stimulus presentationm --> v1_ch, v1_unch
+   % v2 has as also pmod of diff --> v2_ch + v2_ch_dif, v2_unch +
+   % v2_unch_diff
+   
+   
+   
+   if model == 'EV' % to lazy to rename files 
+       naming_err = '';
+   else
+       naming_err = '_';
+   end
    
    model_name = ['1stlevel_' model '-3']
    target_folder= strcat(bids_folder,'/derivatives','/spm/',subject,'/',session);
@@ -28,10 +41,10 @@ function first_level_spm_Vchoice3(subject,session,bids_folder, model)
     
     file_nuisance = fullfile(bids_folder,'derivatives','spm', subject, session,[subject '_' session '_task-risk_run-' num2str(run) '_mult-reg-confounds.mat']);
 
-    v1_chosen = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_v1-chosen_' model '-2.txt']));
-    v2_chosen = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_v2-chosen_' model '-2.txt']));
-    v1_unchosen = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_v1-unchosen_' model '-2.txt']));
-    v2_unchosen = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_v2-unchosen_' model '-2.txt']));
+    v1_chosen = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_v1-chosen' naming_err model '-2.txt']));
+    v2_chosen = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_v2-chosen' naming_err model '-2.txt']));
+    v1_unchosen = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_v1-unchosen' naming_err model '-2.txt']));
+    v2_unchosen = load(strcat(target_folder,'/event_files/',subject,'_',session,'_task-risk_run-',num2str(run),['_events_v2-unchosen' naming_err model '-2.txt']));
    
     matlabbatch{2}.spm.stats.fmri_spec.sess(run).scans = cellstr(spm_file(ff));
 
