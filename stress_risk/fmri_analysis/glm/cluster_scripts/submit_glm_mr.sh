@@ -11,5 +11,5 @@ source activate numrefields
 
 export PARTICIPANT_LABEL=$(printf "%02d" $SLURM_ARRAY_TASK_ID)
 
-python $HOME/git/stress_risk/stress_risk/fmri_analysis/glm/fit_glm_denoise.py $PARTICIPANT_LABEL 1 --bids_folder /shares/zne.uzh/mrenke/ds-stressrisk --value
-python $HOME/git/stress_risk/stress_risk/fmri_analysis/glm/fit_glm_denoise.py $PARTICIPANT_LABEL 2 --bids_folder /shares/zne.uzh/mrenke/ds-stressrisk --value
+python $HOME/git/stress_risk/stress_risk/fmri_analysis/glm/fit_glm_denoise.py $PARTICIPANT_LABEL 1 --bids_folder /scratch/mrenke/ds-stressrisk
+python $HOME/git/stress_risk/stress_risk/fmri_analysis/glm/fit_glm_denoise.py $PARTICIPANT_LABEL 2 --bids_folder /scratch/mrenke/ds-stressrisk

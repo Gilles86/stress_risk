@@ -1,6 +1,10 @@
 #!/bin/bash
 #SBATCH --job-name=decode_volume
+<<<<<<< HEAD:stress_risk/fmri_analysis/encoding_model/cluster_scripts/submit_decode_select_voxels_cv.sh
 #SBATCH --output=/home/mrenke/logs/decode_sel_vox_%A-%a.txt
+=======
+#SBATCH --output=/home/mrenke/logs/decode_svox_en1-de2_%A-%a.txt
+>>>>>>> 8e2ba6b5d3f94b2c78941255bd4c408fd3c8bcd2:stress_risk/fmri_analysis/encoding_model/cluster_scripts/submit_decode_en1de2.sh
 #SBATCH --ntasks=1
 #SBATCH --mem=96G
 #SBATCH --gres gpu:1
@@ -19,5 +23,9 @@ export PARTICIPANT_LABEL=$(printf "%02d" $SLURM_ARRAY_TASK_ID)
 
 source activate tf2-gpu
 
+<<<<<<< HEAD:stress_risk/fmri_analysis/encoding_model/cluster_scripts/submit_decode_select_voxels_cv.sh
 python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/decode_select_voxels_cv.py $PARTICIPANT_LABEL 1 --bids_folder /shares/zne.uzh/mrenke/ds-stressrisk --mask NPC_R  --denoise --retroicor
 python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/decode_select_voxels_cv.py $PARTICIPANT_LABEL 2 --bids_folder /shares/zne.uzh/mrenke/ds-stressrisk --mask NPC_R  --denoise --retroicor
+=======
+python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/decode_svoxels.py $PARTICIPANT_LABEL --bids_folder /shares/zne.uzh/mrenke/ds-stressrisk --mask NPC_R  --denoise --retroicor
+>>>>>>> 8e2ba6b5d3f94b2c78941255bd4c408fd3c8bcd2:stress_risk/fmri_analysis/encoding_model/cluster_scripts/submit_decode_en1de2.sh
