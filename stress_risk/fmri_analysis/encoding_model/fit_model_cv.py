@@ -10,7 +10,8 @@ import os.path as op
 import numpy as np
 
 
-def main(subject, session, bids_folder='/data/ds-stressrisk', retroicor=False, smoothed=False, pca_confounds=False, denoise=False):
+def main(subject, session, bids_folder='/data/ds-stressrisk', retroicor=False, smoothed=False, pca_confounds=False, denoise=True,
+         value=False):
          
 
     key = 'glm_stim1'
@@ -19,6 +20,10 @@ def main(subject, session, bids_folder='/data/ds-stressrisk', retroicor=False, s
     if denoise:
         key += '.denoise'
         target_dir += '.denoise'
+
+    if value:
+        target_dir += '.value'
+        key += '.value'
 
     if retroicor:
         key += '.retroicor'
@@ -34,8 +39,10 @@ def main(subject, session, bids_folder='/data/ds-stressrisk', retroicor=False, s
 
     target_dir = get_target_dir(subject, session, bids_folder, target_dir)
 
+    value_n = 'value_' if value else ''
+
     paradigm = [pd.read_csv(op.join(bids_folder, f'sub-{subject}', f'ses-{session}',
-                                    'func', f'sub-{subject}_ses-{session}_task-risk_run-{run}_events.tsv'), sep='\t')
+                                    'func', f'sub-{subject}_ses-{session}_task-risk_run-{run}_{value_n}events.tsv'), sep='\t')
                 for run in range(1, 7)]
     paradigm = pd.concat(paradigm, keys=range(1, 7), names=['run'])
     paradigm = paradigm[paradigm.trial_type ==
@@ -124,7 +131,10 @@ if __name__ == '__main__':
     parser.add_argument('--smoothed', action='store_true')
     parser.add_argument('--pca_confounds', action='store_true')
     parser.add_argument('--denoise', action='store_true')
+    parser.add_argument('--value', action='store_true')
+
     args = parser.parse_args()
 
     main(args.subject, args.session, bids_folder=args.bids_folder, smoothed=args.smoothed, retroicor=args.retroicor,
-            pca_confounds=args.pca_confounds, denoise=args.denoise)
+            pca_confounds=args.pca_confounds, denoise=args.denoise,
+            value=args.value)
