@@ -12,16 +12,19 @@ import numpy as np
 
 stimulus_range = np.linspace(0, 6, 1000)
 # stimulus_range = np.log(np.arange(400))
-mask = 'NPC_R'
 space = 'T1w'
 
-def main(subject, session, smoothed, pca_confounds, denoise, n_voxels=1000, bids_folder='/data',
-        mask='wang15_ips'):
+def main(subject, session, smoothed, pca_confounds, denoise, n_voxels=100, bids_folder='/data',
+        mask='NPC_R',
+        value = False):
 
     target_dir = op.join(bids_folder, 'derivatives', 'decoded_pdfs.volume')
 
     if denoise:
         target_dir += '.denoise'
+
+    if value:
+        target_dir += '.value'
 
     if smoothed:
         target_dir += '.smoothed'
@@ -121,10 +124,13 @@ if __name__ == '__main__':
     parser.add_argument('--smoothed', action='store_true')
     parser.add_argument('--pca_confounds', action='store_true')
     parser.add_argument('--denoise', action='store_true')
-    parser.add_argument('--mask', default='wang15_ips')
+    parser.add_argument('--mask', default='NPC_R')
     parser.add_argument('--n_voxels', default=100, type=int)
+    parser.add_argument('--value', action='store_true')
+
     args = parser.parse_args()
 
     main(subject=args.subject, session=args.session, smoothed=args.smoothed, pca_confounds=args.pca_confounds, denoise=args.denoise,
             n_voxels=args.n_voxels,
-            bids_folder=args.bids_folder, mask=args.mask)
+            bids_folder=args.bids_folder, mask=args.mask,
+            value=args.value)

@@ -18,12 +18,15 @@ stimulus_range = np.linspace(0, 6, 1000)
 space = 'T1w'
 
 def main(subject, session, smoothed, pca_confounds, bids_folder='/data',
-denoise=True, retroicor=False, mask='NPC_R'):
+denoise=True, retroicor=False, mask='NPC_R', value=False):
     
     target_dir = op.join(bids_folder, 'derivatives', 'decoded_pdfs.volume.cv_voxel_selection')
 
     if denoise:
         target_dir += '.denoise'
+
+    if value:
+        target_dir += '.value'
 
     if smoothed:
         target_dir += '.smoothed'
@@ -43,12 +46,12 @@ denoise=True, retroicor=False, mask='NPC_R'):
         os.makedirs(target_dir)
 
     sub = Subject(subject, bids_folder)
-    paradigm = sub.get_behavior(sessions=session, drop_no_responses=False)
+    paradigm = sub.get_behavior(sessions=session, drop_no_responses=False,value=value)
     paradigm['log(n1)'] = np.log(paradigm['n1'])
     paradigm = paradigm.droplevel(['subject', 'session'])
     paradigm = paradigm['log(n1)']
 
-    data = sub.get_single_trial_volume(session, roi=mask, smoothed=smoothed, pca_confounds=pca_confounds, denoise=denoise, retroicor=retroicor).astype(np.float32)
+    data = sub.get_single_trial_volume(session, roi=mask, smoothed=smoothed, pca_confounds=pca_confounds, denoise=denoise, retroicor=retroicor, value=value).astype(np.float32)
     data.index = paradigm.index
     print(data)
 
@@ -119,7 +122,8 @@ denoise=True, retroicor=False, mask='NPC_R'):
         pars = sub.get_prf_parameters_volume(session, cross_validated=True,
         denoise=denoise, retroicor=retroicor,
                 smoothed=smoothed, pca_confounds=pca_confounds,
-                run=test_run, roi=mask)
+                run=test_run, roi=mask,
+                value=value)
 
         model = GaussianPRF(parameters=pars)
 
@@ -174,9 +178,12 @@ if __name__ == '__main__':
     parser.add_argument('--denoise', action='store_true')
     parser.add_argument('--retroicor', action='store_true')
     parser.add_argument('--mask', default='NPC_R')
+    parser.add_argument('--value', action='store_true')
+
     args = parser.parse_args()
 
     main(args.subject, args.session, args.smoothed, args.pca_confounds,
             denoise=args.denoise,
             retroicor=args.retroicor,
-            bids_folder=args.bids_folder, mask=args.mask)
+            bids_folder=args.bids_folder, mask=args.mask,
+            value=args.value)

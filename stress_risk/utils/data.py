@@ -269,12 +269,15 @@ class Subject(object):
             denoise=False,
             smoothed=False,
             pca_confounds=False,
-            retroicor=False):
+            retroicor=False,
+            value=False):
 
         key= 'glm_stim1'
 
         if denoise:
             key += '.denoise'
+        if value:
+            key += '.value'
 
         if pca_confounds:
             key += '.pca_confounds'
@@ -339,7 +342,8 @@ class Subject(object):
             cross_validated=True,
             hemi=None,
             roi=None,
-            space='fsnative'):
+            space='fsnative',
+            value=False):
 
         dir = 'encoding_model'
         if cross_validated:
@@ -350,6 +354,8 @@ class Subject(object):
 
         if denoise:
             dir += '.denoise'
+        if value:
+            dir += '.value'
 
         if (retroicor) and (not denoise):
             raise Exception("When not using GLMSingle RETROICOR is *always* used!")
