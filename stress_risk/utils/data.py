@@ -11,8 +11,8 @@ from nilearn import image
 from nilearn.maskers import NiftiMasker
 from collections.abc import Iterable
 
-def get_data(bids_folder='/Users/mrenke/data/ds-stressrisk'):
-    df = get_all_behavior(bids_folder=bids_folder)
+def get_data(bids_folder='/Users/mrenke/data/ds-stressrisk',value=False ):
+    df = get_all_behavior(bids_folder=bids_folder,value=value )
     df['choice'] = df['choice'] == 2.0
     df['p1'] = df['prob1']
     df['p2'] = df['prob2']
@@ -49,10 +49,10 @@ def get_subjects(bids_folder='/data/ds-stressrisk', correct_behavior=True, corre
 
     return subjects
 
-def get_all_behavior(bids_folder='/data/ds-stressrisk', correct_behavior=True, correct_npc=False, drop_no_responses=True):
+def get_all_behavior(bids_folder='/data/ds-stressrisk', correct_behavior=True, correct_npc=False, drop_no_responses=True,value=False ):
 
     subjects = get_subjects(bids_folder, correct_behavior, correct_npc)
-    behavior = [s.get_behavior(drop_no_responses=drop_no_responses) for s in subjects]
+    behavior = [s.get_behavior(drop_no_responses=drop_no_responses, value=value) for s in subjects]
     return pd.concat(behavior)
 
 
