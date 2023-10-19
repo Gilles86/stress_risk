@@ -1,5 +1,8 @@
-import argparse
+# all steps of the gradient generation process combined,
+# hence: needs freesurfer directory for 1. fsavTofsav5 (laoding in), then fsav5Tofsnative (save)
+# 
 
+import argparse
 from nilearn.connectome import ConnectivityMeasure
 from brainspace.gradient import GradientMaps
 from brainspace.utils.parcellation import map_to_labels
@@ -34,7 +37,6 @@ def main(sub,ses,bids_folder,specification):
     print('raw connectivity matrix estimated')
 
     # filter out nodes that are not connected to the rest
-
     graph = correlation_measure_noParcel.fit_transform([seed_ts_noParcel.T])[0] #correlation_matrix_noParcel
     cc = connected_components(graph)
     mask_cc = cc[1] == 0 # all nodes in 0 belong to the largest connected component, check #-components in cc[0]
