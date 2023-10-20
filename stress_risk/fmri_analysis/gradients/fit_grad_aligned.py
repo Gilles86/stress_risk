@@ -19,6 +19,7 @@ def main(sub,ses,bids_folder):
     if op.isfile(cm_file):
         cm = np.load(cm_file)
     else:
+        print(cm_file)
         print('correlation matrix as to be generated first!!') 
         sys.exit()
 
