@@ -9,15 +9,22 @@ import seaborn as sns
 
 # E['sd'] = np.trapz(np.abs(E.values - pdf.columns.astype(float).values[np.newaxis, :]) * pdf, pdf.columns, axis=1)
 
-def get_decoding_info(subject, session,  bids_folder='/data/ds-stressrisk',key = 'decoded_pdfs.volume.denoise', mask='NPC_R', n_voxels=250, select_voxels=False):
+def get_decoding_info(subject, session,  bids_folder='/data/ds-stressrisk',key = 'decoded_pdfs.volume', mask='NPC_R', n_voxels=250,retroicor = True, value=False): # , select_voxels=False
 
     subject = f'{subject:02d}'
     
     if n_voxels =='select':
-        key = 'decoded_pdfs.volume.cv_voxel_selection.denoise.retroicor'
-        pdf = op.join(bids_folder, 'derivatives', key, f'sub-{subject}', 'func', f'sub-{subject}_ses-{session}_mask-{mask}_space-T1w_pars.tsv')
-    else:
-        pdf = op.join(bids_folder, 'derivatives', f'{key}.{n_voxels}voxels', f'sub-{subject}', 'func', f'sub-{subject}_ses-{session}_mask-{mask}_nvoxels-{n_voxels}_space-T1w_pars.tsv')
+        key = 'decoded_pdfs.volume.cv_voxel_selection.denoise'
+        fn = f'sub-{subject}_ses-{session}_mask-{mask}_space-T1w_pars.tsv'
+    else: 
+        key = f'{key}.denoise.{n_voxels}voxels' # bad coding, order of vselect-method & denoise different 
+        fn = f'sub-{subject}_ses-{session}_mask-{mask}_nvoxels-{n_voxels}_space-T1w_pars.tsv'
+    if value:
+        key += '.value'
+    if retroicor:
+        key += '.retroicor'
+
+    pdf = op.join(bids_folder, 'derivatives', key, f'sub-{subject}', 'func', fn)
 
     if op.exists(pdf):
         pdf = pd.read_csv(pdf, sep='\t', index_col=[0])
@@ -54,5 +61,6 @@ def get_data(bids_folder='/Users/mrenke/data/ds-stressrisk'):
 def get_stress_level():
     df_auc = pd.read_excel('/Users/mrenke/Desktop/StressRisk/2022-StressRisk/Data-Final/auc_cortisol.xlsx')
     df_auc = df_auc.rename(columns={'SubjectID':'subject'}).set_index('subject')[['AUC']] # double brackets --> dataframe
+    # # df_auc.loc[34] --> sub 34 missing
     df_auc = df_auc[['AUC']].groupby('subject').mean()
     return df_auc

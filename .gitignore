@@ -66,3 +66,6 @@ fMRIMIST/risk_task/logs
 fMRIMIST/MIST_PTB/logfiles
 */MIST_PTB/*
 *.job
+
+# on sciencecluster2:
+stress_risk/fmri_analysis/encoding_model/cluster_scripts/core

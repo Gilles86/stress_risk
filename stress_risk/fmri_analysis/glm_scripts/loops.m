@@ -59,7 +59,7 @@ end
 %% 2.1. 1stlevel( - version 1) loop + deleting old folders (for more space on Volume (/mnt))
 
 errorL = [];
-model = 'EV' % carefull, timing files are named inconsistently among different model types (e.g. '...n1_EV' vs ' '...n1-EU')
+model = 'NLC' % carefull, timing files are named inconsistently among different model types (e.g. '...n1_EV' vs ' '...n1-EU')
 
 for sub=1:numel(subList)
     for ses=1:2
@@ -74,7 +74,7 @@ for sub=1:numel(subList)
 
             end
             
-            first_level_spm_V1(subList{sub},sesList{ses},bids_folder, model); % scirpt adds automatically '-1'
+            first_level_spm_V1b(subList{sub},sesList{ses},bids_folder, model); % scirpt adds automatically '-1'
 
         catch
             [subList{sub} ' ' sesList{ses} 'problem']
@@ -130,6 +130,8 @@ for sub=1:numel(subList)
         end
     end
 end
+%%
+
 
 
 %%
@@ -140,6 +142,57 @@ end
                 rmdir('1stlevel','s')     
             end
 %% 
+%% 2.4.1stlevel( - version 4)
+
+errorL_V = [];
+
+model='NLC'; % numer - 3 will be added automatically here
+
+for sub=1:numel(subList)
+    for ses=1:2
+        try 
+            target_folder= strcat(bids_folder,'/derivatives','/spm/',subList{sub},'/',sesList{ses});
+            cd(target_folder)
+            try
+                rmdir('1stlevel_NLC-4','s')
+            end
+            first_level_spm_V4(subList{sub},sesList{ses},bids_folder,model);
+            
+        catch
+            errorL_V = [errorL_V; [subList{sub} '-' num2str(ses)]];
+
+        end
+    end
+end
+
+%% 2.4.1stlevel( - version 4 both sessions)
+
+errorL_V = [];
+
+model='NLC'; % numer - 3 will be added automatically here
+
+for sub=2:numel(subList)
+    for ses=1:2
+        target_folder= strcat(bids_folder,'/derivatives','/spm/',subList{sub},'/',sesList{ses});
+        cd(target_folder)
+        try
+            rmdir('1stlevel_NLC-4','s')
+        end
+    end
+    
+    try
+        first_level_spm_V4_bothSessions(subList{sub},bids_folder,model);
+            
+    catch
+            errorL_V = [errorL_V; [subList{sub} '-' num2str(ses)]];
+
+    end
+end
+
+%%
+
+
+
 
 %errorL = errorL_NLC
 model = 'EV'

@@ -56,6 +56,7 @@
 
 ### 2.1. get activations: fit betas to single trials
 * `python fit_single_trials.py 03 1` [= subject session; '--bids_folder', default='/data/ds-stressrisk', '--smoothed', action='store_true', --pca_confounds', action='store_true'] 
+* denoise (GLMsingle) variant: 
 
 ### 2.2. encoder: fit nprfs
 * `python fit_nprf.py 03 1` [= subject session; '--bids_folder', default='/data/ds-stressrisk', '--smoothed', action='store_true', --pca_confounds', action='store_true'] 
@@ -75,11 +76,12 @@
 ## Visualize and R2-based subject filtering
 
 
-## Analysis on sciencecluster
+## Analysis on sciencecluster2
 
 * set up environment: `conda env create -n numrefields_sc --file ENV.yml`
-* log into GPU node: `srun --time=2:00:00 --partition=volta --gres gpu:1 --pty /bin/bash -i `
-* activate env: `conda activate numrefields_02` [which works]
+* log into GPU node: 
+ `srun --pty -n 1 -c 2 --time=01:00:00 --gres=gpu:1 --mem=8G bash -l`
+* activate env: `conda activate numrefields` [which works]
 * load CUDA drivers (for GPU computing): `module load volta nvidia/cuda11.2-cudnn8.1.0`
 * then run loop:  `for subject in 23 24 25 26 27; do python fit_nprf.py $subject 1 
 smoothed; done;`
@@ -129,6 +131,11 @@ rsync -rcvz sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${se
 
 for sub in 01 02 03 04 05 09 10 12 13 14 16 17 18 19 21 22 23 24 25 26 28 30 31 32 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 57 58 59 61; do for ses in 1 2; do rsync -rcvz sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/1stlevel_${model} /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}; done; done;
 
+* mv folders around on sciencecloud in loops !! 
+for sub in 01; do cd /mnt/ds-stressrisk/derivatives/spm/sub-${sub}; for ses in 1 2; do  mv ses-${ses}/fwhm-* .;  done; done;
+
+for sub in 02; do cd /mnt/ds-stressrisk/derivatives/spm/sub-${sub}; for ses in 1 2; do  mv ./fwhm-8_sub-${sub}_ses-${ses}* ses-${ses}/;  done; done;
+
 # prepare 
  fslmaths in-file.nii -nan out-file 
 
@@ -137,3 +144,7 @@ for sub in 01 02 03 04 05 09 10 12 13 14 16 17 18 19 21 22 23 24 25 26 28 30 31 
 * exclude nodes that dont work: --exclude=u20-computeibmgpu-vesta19
 * 02,03,04,05,14,16,17,18,19,21,22,23,24,25,37,38,45,46,47,52,53,54,58,59
 
+
+# problems
+
+* glm_denoise --retroicor (--smoothed) failed on sciencecluster (03,18,44 ses-1; 04 ses-2), 03 (input NaNs) & 04 (Matrix singular) worked on local 

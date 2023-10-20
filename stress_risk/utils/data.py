@@ -11,8 +11,8 @@ from nilearn import image
 from nilearn.maskers import NiftiMasker
 from collections.abc import Iterable
 
-def get_data(bids_folder='/Users/mrenke/data/ds-stressrisk'):
-    df = get_all_behavior(bids_folder=bids_folder)
+def get_data(bids_folder='/Users/mrenke/data/ds-stressrisk',value=False ):
+    df = get_all_behavior(bids_folder=bids_folder,value=value )
     df['choice'] = df['choice'] == 2.0
     df['p1'] = df['prob1']
     df['p2'] = df['prob2']
@@ -49,10 +49,10 @@ def get_subjects(bids_folder='/data/ds-stressrisk', correct_behavior=True, corre
 
     return subjects
 
-def get_all_behavior(bids_folder='/data/ds-stressrisk', correct_behavior=True, correct_npc=False, drop_no_responses=True):
+def get_all_behavior(bids_folder='/data/ds-stressrisk', correct_behavior=True, correct_npc=False, drop_no_responses=True,value=False ):
 
     subjects = get_subjects(bids_folder, correct_behavior, correct_npc)
-    behavior = [s.get_behavior(drop_no_responses=drop_no_responses) for s in subjects]
+    behavior = [s.get_behavior(drop_no_responses=drop_no_responses, value=value) for s in subjects]
     return pd.concat(behavior)
 
 
@@ -122,18 +122,20 @@ class Subject(object):
 
         return im
 
-    def get_behavior(self, sessions=None, drop_no_responses=True):
+    def get_behavior(self, sessions=None, drop_no_responses=True,value=False ):
         if sessions is None:
             sessions = [1, 2]
 
         if not isinstance(sessions, Iterable):
             sessions = [sessions]
+        
+        value_n = 'value_' if value else ''
 
         runs = range(1, 7)
         df = []
         for session, run in product(sessions, runs):
 
-            fn = op.join(self.bids_folder, f'sub-{self.subject}/ses-{session}/func/sub-{self.subject}_ses-{session}_task-risk_run-{run}_events.tsv')
+            fn = op.join(self.bids_folder, f'sub-{self.subject}/ses-{session}/func/sub-{self.subject}_ses-{session}_task-risk_run-{run}_{value_n}events.tsv')
 
             if op.exists(fn):
                 d = pd.read_csv(fn, sep='\t',
@@ -267,12 +269,15 @@ class Subject(object):
             denoise=False,
             smoothed=False,
             pca_confounds=False,
-            retroicor=False):
+            retroicor=False,
+            value=False):
 
         key= 'glm_stim1'
 
         if denoise:
             key += '.denoise'
+        if value:
+            key += '.value'
 
         if pca_confounds:
             key += '.pca_confounds'
@@ -312,6 +317,12 @@ class Subject(object):
             f'sub-{self.subject}',
             f'sub-{self.subject}_space-T1w_desc-{roi}.nii.gz'
             )
+        elif roi.startswith('mpfc'):
+            mask = op.join(self.derivatives_dir
+            ,'mpfc_masks',
+            f'sub-{self.subject}',
+            f'sub-{self.subject}_space-T1w_{roi}_hemi-both.nii.gz'
+            )
         else:
             raise NotImplementedError
 
@@ -331,7 +342,8 @@ class Subject(object):
             cross_validated=True,
             hemi=None,
             roi=None,
-            space='fsnative'):
+            space='fsnative',
+            value=False):
 
         dir = 'encoding_model'
         if cross_validated:
@@ -342,6 +354,8 @@ class Subject(object):
 
         if denoise:
             dir += '.denoise'
+        if value:
+            dir += '.value'
 
         if (retroicor) and (not denoise):
             raise Exception("When not using GLMSingle RETROICOR is *always* used!")
@@ -375,15 +389,17 @@ class Subject(object):
 
         return pd.concat(parameters, axis=1, keys=keys, names=['parameter'])
 
-    def get_fmri_events(self, session, runs=None):
+    def get_fmri_events(self, session, runs=None, value = False):
 
         if runs is None:
             runs = range(1,7)
 
+        value_n = 'value_' if value else ''
+
         behavior = []
         for run in runs:
             behavior.append(pd.read_table(op.join(
-                self.bids_folder, f'sub-{self.subject}/ses-{session}/func/sub-{self.subject}_ses-{session}_task-risk_run-{run}_events.tsv')))
+                self.bids_folder, f'sub-{self.subject}/ses-{session}/func/sub-{self.subject}_ses-{session}_task-risk_run-{run}_{value_n}events.tsv')))
 
         behavior = pd.concat(behavior, keys=runs, names=['run'])
         behavior = behavior.reset_index().set_index(

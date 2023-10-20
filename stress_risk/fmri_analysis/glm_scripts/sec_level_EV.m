@@ -1,6 +1,6 @@
 % 2nd level SPM
 
-model = 'EV-3b'
+model = 'NLC-4'
 specification = 'con' % 'con'
 
 in_model_name = ['1stlevel_' model]
