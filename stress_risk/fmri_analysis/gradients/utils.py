@@ -9,6 +9,12 @@ import pandas as pd
 from nipype.interfaces.freesurfer import SurfaceTransform # needs the fsaverage & fsaverage5 in ..derivatives/freesurfer folder!
 from nilearn import datasets
 
+# for plotting surface map
+from brainspace.utils.parcellation import map_to_labels
+from  nilearn.datasets import fetch_surf_fsaverage
+import nilearn.plotting as nplt
+import matplotlib.pyplot as plt
+
 def get_basic_mask():
     atlas = datasets.fetch_atlas_surf_destrieux()
     regions = atlas['labels'].copy()
@@ -68,9 +74,9 @@ def cleanTS(sub, ses, runs = range(1, 7),space = 'fsaverage5', bids_folder='/Use
     ex_file = op.join(bids_folder,'derivatives', 'fmriprep', f'sub-{sub}', f'ses-{ses}', 'func', 
             f'sub-{sub}_ses-{ses}_task-risk_run-1_space-{space}_hemi-L_bold.func.gii')
     
-    #if (os.path.exists(ex_file) == False):
-    print(f'sub-{sub} fsaverage5.gii missing, fsavTofsav5 will be performed')
-    fsavTofsav5(sub,ses, bids_folder)
+    if (os.path.exists(ex_file) == False):
+        print(f'sub-{sub} fsaverage5.gii missing, fsavTofsav5 will be performed')
+        fsavTofsav5(sub,ses, bids_folder)
 
     for run in runs:
         timeseries = [None] * 2
@@ -204,3 +210,6 @@ def fsav5Tofsav(sub,ses, specification='',bids_folder='/Users/mrenke/data/ds-str
                 sxfm.inputs.hemi = 'rh'
 
             r = sxfm.run()
+
+
+
