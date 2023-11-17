@@ -18,5 +18,5 @@ source activate numrefields
 export PARTICIPANT_LABEL=$(printf "%02d" $SLURM_ARRAY_TASK_ID)
 
 source activate tf2-gpu
-python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/fit_nprf.py $PARTICIPANT_LABEL 1 --bids_folder /scratch/mrenke/ds-stressrisk --denoise --smoothed
-python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/fit_nprf.py $PARTICIPANT_LABEL 2 --bids_folder /scratch/mrenke/ds-stressrisk --denoise --smoothed
+python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/fit_nprf.py $PARTICIPANT_LABEL 1 --bids_folder /shares/zne.uzh/mrenke/ds-stressrisk --denoise --smoothed
+python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/fit_nprf.py $PARTICIPANT_LABEL 2 --bids_folder /shares/zne.uzh/mrenke/ds-stressrisk --denoise --smoothed
