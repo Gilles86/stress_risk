@@ -19,22 +19,6 @@ base = 'encoding_model.smoothed'
 specification=''
 #specification='_dmask'
 
-#%%
-sub = '01'
-subject = f'sub-{sub}'
-
-r2_data =  op.join(bids_folder, 'derivatives', base , f'sub-{sub}', f'ses-{ses}', 'func', 
-    f'sub-{sub}_ses-{ses}_desc-r2.optim_space-T1w_pars.nii.gz')
-r2_data = image.load_img(r2_data).get_data().T
-r2_surf = cortex.Volume(r2_data, subject, xfm)
-
-grad1,grad2 = loadGradAsCortexVertex(sub,ses,bids_folder,specification)
-
-ds = cortex.Dataset(r2=r2_surf,
-                    grad1 = grad1,
-                    grad2 = grad2) #somehow does not work to display both in one webshow...."TypeError: byte indices must be integers or slices, not tuple"
-                    
-cortex.webshow(ds)    # here change the IP to "localhost" for the webapplication to work!! e.g. http://localhost:47789/mixer.html
 
 
 #%% load in grad from surf.gii files
@@ -108,6 +92,22 @@ def saveR2toNativeSurfFile(sub,ses,bids_folder):
     out_file = op.join(target_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-R_r2.surf.gii')
     gii_im.to_filename(out_file)
 
+#%%
+sub = '01'
+subject = f'sub-{sub}'
+
+r2_data =  op.join(bids_folder, 'derivatives', base , f'sub-{sub}', f'ses-{ses}', 'func', 
+    f'sub-{sub}_ses-{ses}_desc-r2.optim_space-T1w_pars.nii.gz')
+r2_data = image.load_img(r2_data).get_data().T
+r2_surf = cortex.Volume(r2_data, subject, xfm)
+
+grad1,grad2 = loadGradAsCortexVertex(sub,ses,bids_folder,specification)
+
+ds = cortex.Dataset(r2=r2_surf,
+                    grad1 = grad1,
+                    grad2 = grad2) #somehow does not work to display both in one webshow...."TypeError: byte indices must be integers or slices, not tuple"
+                    
+cortex.webshow(ds)    # here change the IP to "localhost" for the webapplication to work!! e.g. http://localhost:47789/mixer.html
 
 
 #%%

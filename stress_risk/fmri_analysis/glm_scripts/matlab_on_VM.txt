@@ -1,0 +1,4 @@
+
+
+- create tunnel (on local): ssh -L 5901:localhost:5901 ubuntu@172.23.186.207 (one science cloud IP address!!)
+-open GUI: open finder, go to GO, connect to server, vnc://localhost:5901
