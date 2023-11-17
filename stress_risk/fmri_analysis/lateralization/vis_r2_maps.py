@@ -40,6 +40,8 @@ if __name__ == '__main__':
         f'sub-{sub}_ses-{ses}_task-risk_space-fsnative_hemi-rh_r2.surf.gii')
     r2_from_surf = cortex.dataset.Vertex(np.concatenate([nib.load(r2_file_from_surf_L).agg_data(), nib.load(r2_file_from_surf_R).agg_data()], axis=0), subject=subject) #
 
+    r2_from_surf_data = np.concatenate([nib.load(r2_file_from_surf_L).agg_data(), nib.load(r2_file_from_surf_R).agg_data()], axis=0)
+    
     ips_L =  op.join(bids_folder, 'derivatives', 'ips_masks' , f'sub-{sub}',
          f'sub-{sub}_desc-NPC_L_space-fsnative_hemi-lh.ips.gii')
     ips_R =  op.join(bids_folder, 'derivatives','ips_masks' , f'sub-{sub}',

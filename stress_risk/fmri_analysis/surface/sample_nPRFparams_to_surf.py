@@ -3,7 +3,7 @@ import os.path as op
 from stress_risk.utils.data import Subject
 from nilearn import surface
 import nibabel as nb
-from stress_risk.encoding_model.fit_nprf import get_key_target_dir
+from stress_risk.fmri_analysis.encoding_model.fit_nprf import get_key_target_dir
 from tqdm import tqdm
 from nipype.interfaces.freesurfer import SurfaceTransform
 
@@ -22,17 +22,17 @@ def transform_fsaverage(in_file, fs_hemi, source_subject, bids_folder):
         r = sxfm.run()
         return r
 
-def main(subject, session, bids_folder, smoothed, denoise):
+def main(subject, session, bids_folder, smoothed, denoise, natural_space=False ):
     
     sub = Subject(subject, bids_folder=bids_folder)
     surfinfo = sub.get_surf_info()
 
-    par_keys = ['mu', 'sd', 'amplitude', 'baseline', 'cvr2', 'r2']
+    par_keys = ['mu', 'sd', 'amplitude', 'baseline', 'r2'] # 'cvr2'  ??
 
-    prf_pars_volume = sub.get_prf_parameters_volume(session, smoothed=smoothed, denoise=denoise, keys=par_keys, natural_space=True, retroicor=False, pca_confounds=False,
-                                                    return_image=True, cross_validated=False)
+    prf_pars_volume = sub.get_prf_parameters_volume(session, smoothed=smoothed, denoise=denoise, keys=par_keys, natural_space=False, retroicor=False, pca_confounds=False,
+                                                    return_image=True, cross_validated=False) # natural_space=True
 
-    _, target_dir = get_key_target_dir(f'{int(subject):02d}', session, bids_folder, smoothed, denoise=True, pca_confounds=False, retroicor=False, natural_space=True)    
+    _, target_dir = get_key_target_dir(f'{int(subject):02d}', session, bids_folder, smoothed, denoise=True, pca_confounds=False, retroicor=False, natural_space=natural_space)    
 
     print(f'Writing to {target_dir}')
 
@@ -50,7 +50,7 @@ def main(subject, session, bids_folder, smoothed, denoise):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('subject', default=None)
-    parser.add_argument('session', default=1)
+    parser.add_argument('--session', default=1)
     parser.add_argument('--bids_folder', default='/Volumes/mrenkeED/data/ds-stressrisk')
     parser.add_argument('--smoothed', action='store_true')
     parser.add_argument('--denoise', action='store_true')

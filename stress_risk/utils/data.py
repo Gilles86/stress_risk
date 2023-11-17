@@ -341,9 +341,10 @@ class Subject(object):
             pca_confounds=False,
             denoise=False,
             cross_validated=True,
-            hemi=None,
+            natural_space=False,
+            keys=None,
             roi=None,
-            space='fsnative',
+            return_image=False,
             value=False):
 
         dir = 'encoding_model'
@@ -369,10 +370,12 @@ class Subject(object):
 
         if pca_confounds:
             dir += '.pca_confounds'
-
+        if natural_space:
+            dir += '.natural_space'
         parameters = []
-
-        keys = ['mu', 'sd', 'amplitude', 'baseline']
+        
+        if keys is None:
+            keys = ['mu', 'sd', 'amplitude', 'baseline']
 
         mask = self.get_volume_mask(session=session, roi=roi, epi_space=True)
         masker = NiftiMasker(mask)
@@ -387,17 +390,22 @@ class Subject(object):
             
             pars = pd.Series(masker.fit_transform(fn).ravel())
             parameters.append(pars)
+        
+        parameters =  pd.concat(parameters, axis=1, keys=keys, names=['parameter'])
+
+        if return_image:
+            return masker.inverse_transform(parameters.T)
 
         return pd.concat(parameters, axis=1, keys=keys, names=['parameter'])
     
     def get_prf_parameters_surf(self, session, run=None, smoothed=False, cross_validated=False, hemi=None, mask=None, space='fsnative',
-        parameters=None, key=None, nilearn=False):
+        parameters=None, key=None, nilearn=True):
 
         if mask is not None:
             raise NotImplementedError
 
         if parameters is None:
-            parameter_keys = ['mu', 'sd', 'cvr2', 'r2']
+            parameter_keys = ['mu', 'sd',  'r2'] #'cvr2',
         else:
             parameter_keys = parameters
 
@@ -432,14 +440,14 @@ class Subject(object):
             if cross_validated:
                 if nilearn:
                     fn = op.join(self.bids_folder, 'derivatives', dir, f'sub-{self.subject}', f'ses-{session}', 
-                            'func', f'sub-{self.subject}_ses-{session}_run-{run}_desc-{parameter_key}.volume.optim.nilearn_space-{space}_hemi-{hemi}.func.gii')
+                            'func', f'sub-{self.subject}_ses-{session}_run-{run}_desc-{parameter_key}.optim.nilearn_space-{space}_hemi-{hemi}.func.gii') # volume.
                 else:
                     fn = op.join(self.bids_folder, 'derivatives', dir, f'sub-{self.subject}', f'ses-{session}', 
                             'func', f'sub-{self.subject}_ses-{session}_run-{run}_desc-{parameter_key}.volume.optim_space-{space}_hemi-{hemi}.func.gii')
             else:
                 if nilearn:
                     fn = op.join(self.bids_folder, 'derivatives', dir, f'sub-{self.subject}', f'ses-{session}', 
-                            'func', f'sub-{self.subject}_ses-{session}_desc-{parameter_key}.volume.optim.nilearn_space-{space}_hemi-{hemi}.func.gii')
+                            'func', f'sub-{self.subject}_ses-{session}_desc-{parameter_key}.optim.nilearn_space-{space}_hemi-{hemi}.func.gii') # .volume
                 else:
                     fn = op.join(self.bids_folder, 'derivatives', dir, f'sub-{self.subject}', f'ses-{session}', 
                             'func', f'sub-{self.subject}_ses-{session}_desc-{parameter_key}.volume.optim_space-{space}_hemi-{hemi}.func.gii')
@@ -450,7 +458,25 @@ class Subject(object):
             parameters.append(pars)
 
         return pd.concat(parameters, axis=1, keys=parameter_keys, names=['parameter'])
+    
+    def get_surf_info(self):
+        info = {'L':{}, 'R':{}}
 
+        for hemi in ['L', 'R']:
+
+            fs_hemi = {'L':'lh', 'R':'rh'}[hemi]
+
+            info[hemi]['inner'] = op.join(self.bids_folder, 'derivatives', 'fmriprep', f'sub-{self.subject}', 'ses-1', 'anat', f'sub-{self.subject}_ses-1_hemi-{hemi}_smoothwm.surf.gii')
+            info[hemi]['mid'] = op.join(self.bids_folder, 'derivatives', 'fmriprep', f'sub-{self.subject}', 'ses-1', 'anat', f'sub-{self.subject}_ses-1_hemi-{hemi}_midthickness.surf.gii')
+            info[hemi]['outer'] = op.join(self.bids_folder, 'derivatives', 'fmriprep', f'sub-{self.subject}', 'ses-1', 'anat', f'sub-{self.subject}_ses-1_hemi-{hemi}_pial.surf.gii')
+            info[hemi]['inflated'] = op.join(self.bids_folder, 'derivatives', 'fmriprep', f'sub-{self.subject}', 'ses-1', 'anat', f'sub-{self.subject}_ses-1_hemi-{hemi}_inflated.surf.gii')
+            info[hemi]['curvature'] = op.join(self.bids_folder, 'derivatives', 'freesurfer', f'sub-{self.subject}', 'surf', f'{fs_hemi}.curv')
+
+            for key in info[hemi]:
+                assert(os.path.exists(info[hemi][key])), f'{info[hemi][key]} does not exist'
+
+        return info
+    
     def get_fmri_events(self, session, runs=None, value = False):
 
         if runs is None:

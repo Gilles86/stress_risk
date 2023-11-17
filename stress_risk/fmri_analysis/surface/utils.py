@@ -3,7 +3,7 @@ import cortex
 from matplotlib import colors, cm
 
 
-def get_alpha_vertex(data, alpha, cmap='nipy_spectral', vmin=np.log(5), vmax=np.log(80), standard_space=False, subject='fsaverage'):
+def get_alpha_vertex(data, alpha, subject='fsaverage', cmap='nipy_spectral', vmin=np.log(5), vmax=np.log(80), standard_space=False):
 
     data = np.clip((data - vmin) / (vmax - vmin), 0., .99)
     data[alpha < 0.01] = 0
