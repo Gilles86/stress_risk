@@ -13,10 +13,7 @@ import os
 import os.path as op
 import numpy as np
 
-def main(subject, session, bids_folder, denoise=False, retroicor=False, smoothed=True,
-        pca_confounds=False):
-    
-    runs = range(1, 7)
+def get_key_target_dir(subject, session, bids_folder, smoothed, denoise, pca_confounds, retroicor, natural_space):
 
     key = 'glm_stim1'
     target_dir = 'encoding_model'
@@ -24,9 +21,14 @@ def main(subject, session, bids_folder, denoise=False, retroicor=False, smoothed
     if denoise:
         key += '.denoise'
         target_dir += '.denoise'
+
+    if (retroicor) and (not denoise):
+        raise Exception("When not using GLMSingle RETROICOR is *always* used!")
+
     if retroicor:
         key += '.retroicor'
         target_dir += '.retroicor'
+
     if smoothed:
         key += '.smoothed'
         target_dir += '.smoothed'
@@ -35,7 +37,22 @@ def main(subject, session, bids_folder, denoise=False, retroicor=False, smoothed
         target_dir += '.pca_confounds'
         key += '.pca_confounds'
 
-    target_dir = get_target_dir(subject, session, bids_folder, target_dir)
+    if natural_space:
+        target_dir += '.natural_space'
+
+    target_dir = op.join(bids_folder, 'derivatives', target_dir, f'sub-{subject}', f'ses-{session}', 'func' )
+
+    if not op.exists(target_dir):
+        os.makedirs(target_dir)
+
+    return key, target_dir
+
+def main(subject, session, bids_folder, denoise=False, retroicor=False, smoothed=True,
+        pca_confounds=False,  natural_space=False):
+    
+    runs = range(1, 7)
+
+    key, target_dir = get_key_target_dir(subject, session, bids_folder, smoothed, denoise, pca_confounds, retroicor, natural_space)
 
     paradigm = [pd.read_csv(op.join(bids_folder, f'sub-{subject}', f'ses-{session}',
                                'func', f'sub-{subject}_ses-{session}_task-risk_run-{run}_events.tsv'), sep='\t')
