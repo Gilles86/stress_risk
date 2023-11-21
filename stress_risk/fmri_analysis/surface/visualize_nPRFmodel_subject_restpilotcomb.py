@@ -9,7 +9,7 @@ from utils import get_alpha_vertex
 
 from stress_risk.utils.data import Subject
 
-def main(subject, bids_folder, key, use_cvr2=False, threshold=None, filter_extreme_prfs=False, smoothed=False, fsnative=False):
+def main(subject, bids_folder, dataset ='restpilotcomb',  use_cvr2=False, threshold=None, filter_extreme_prfs=False, smoothed=False, fsnative=False):
 
     use_cvr2=False # 
     subject = int(subject)
@@ -19,16 +19,12 @@ def main(subject, bids_folder, key, use_cvr2=False, threshold=None, filter_extre
 
     if fsnative:
         space = 'fsnative'
+        fs_subject = f'{dataset}.sub-{subject:02d}'
+        if bids_folder == '/Users/mrenke/data/ds-stressrisk':
+            fs_subject =  f'sub-{subject:02d}'
     else:
         space = 'fsaverage'
-
-    if not fsnative :
         fs_subject = 'fsaverage' 
-    elif fsnative:
-        if bids_folder == '/Volumes/mrenkeED/data/ds-stressrisk':
-            fs_subject =  f'stressrisk.sub-{subject:02d}' # that is how the corresponding freesurfer registration is stored in pycortex
-        elif bids_folder == '/Users/mrenke/data/ds-stressrisk':
-            fs_subject =  f'sub-{subject:02d}'
 
     vertices = {}
 
@@ -37,8 +33,8 @@ def main(subject, bids_folder, key, use_cvr2=False, threshold=None, filter_extre
     elif not use_cvr2 and (threshold is None):
         threshold = 0.05
     
-    for session in [1]:
-        prf_pars = sub.get_prf_parameters_surf(session, run=None,  key=key, nilearn=True, space=space)
+    for session in [2]:
+        prf_pars = sub.get_prf_parameters_surf(session, None,  smoothed=smoothed, nilearn=True, space=space)
         print(prf_pars.head())
 
         prf_pars['mu'] = np.exp(prf_pars['mu'])
@@ -62,18 +58,16 @@ def main(subject, bids_folder, key, use_cvr2=False, threshold=None, filter_extre
     vertices = {k: v for k, v in sorted(vertices.items(), key=lambda item: item[0])}
     webgl.show(vertices)
 
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('subject')
     parser.add_argument('--bids_folder', default='/Volumes/mrenkeED/data/ds-stressrisk')
     parser.add_argument('--fsnative', action='store_true')
-    parser.add_argument('--key', default=None) # 'encoding_model.denoise.smoothed.natural_space'
-    #parser.add_argument('--unsmoothed', dest='smoothed', action='store_false')
-    #parser.add_argument('--denoise', action='store_true')
+    parser.add_argument('--unsmoothed', dest='smoothed', action='store_false')
     parser.add_argument('--threshold_r2', dest='use_cvr2', action='store_false')
     parser.add_argument('--threshold', default=None, type=float)
     parser.add_argument('--no_mu_filter', dest='filter_extreme_prfs', action='store_false')
     args = parser.parse_args()
-    main(args.subject, bids_folder=args.bids_folder,key=args.key, use_cvr2=args.use_cvr2, threshold=args.threshold, fsnative=args.fsnative,filter_extreme_prfs=args.filter_extreme_prfs) #
-
-    # smoothed=args.smoothed, 
+    main(args.subject, bids_folder=args.bids_folder, use_cvr2=args.use_cvr2, threshold=args.threshold, smoothed=args.smoothed, fsnative=args.fsnative,filter_extreme_prfs=args.filter_extreme_prfs) #

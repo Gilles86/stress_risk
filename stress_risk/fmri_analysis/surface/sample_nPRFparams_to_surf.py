@@ -45,7 +45,7 @@ def main(subject, session, bids_folder, smoothed, denoise, natural_space=False )
             target_fn =  op.join(target_dir, f'sub-{subject}_ses-{session}_desc-{par}.optim.nilearn_space-fsnative_hemi-{hemi}.func.gii')
             nb.save(im, target_fn)
 
-            transform_fsaverage(target_fn, fs_hemi, f'sub-{subject}', bids_folder)
+            #transform_fsaverage(target_fn, fs_hemi, f'sub-{subject}', bids_folder)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
