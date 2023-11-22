@@ -148,3 +148,8 @@ for sub in 02; do cd /mnt/ds-stressrisk/derivatives/spm/sub-${sub}; for ses in 1
 # problems
 
 * glm_denoise --retroicor (--smoothed) failed on sciencecluster (03,18,44 ses-1; 04 ses-2), 03 (input NaNs) & 04 (Matrix singular) worked on local 
+
+
+# Surface Visualization
+
+ %run visualize_nPRFmodel_subject.py 2 --fsnative --key encoding_model.denoise.retroicor.smoothed

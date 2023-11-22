@@ -476,7 +476,26 @@ class Subject(object):
                 assert(os.path.exists(info[hemi][key])), f'{info[hemi][key]} does not exist'
 
         return info
-    
+
+    def get_surf_info_fs(self):
+        info = {'L':{}, 'R':{}}
+
+        for hemi in ['L', 'R']:
+
+            fs_hemi = {'L':'lh', 'R':'rh'}[hemi]
+
+            info[hemi]['inner'] = op.join(self.bids_folder, 'derivatives', 'freesurfer', f'sub-{self.subject}', 'surf',f'{fs_hemi}.white')
+            #info[hemi]['inner'] = op.join(self.bids_folder, 'derivatives', 'freesurfer', f'sub-{self.subject}', 'surf',f'{fs_hemi}.smoothwm')
+            #info[hemi]['mid'] = op.join(self.bids_folder, 'derivatives', 'freesurfer', f'sub-{self.subject}', 'surf', f'{fs_hemi}.midthickness')
+            info[hemi]['outer'] = op.join(self.bids_folder, 'derivatives', 'freesurfer', f'sub-{self.subject}', 'surf', f'{fs_hemi}.pial')
+            #info[hemi]['inflated'] = op.join(self.bids_folder, 'derivatives', 'freesurfer', f'sub-{self.subject}', 'surf', f'{fs_hemi}.inflated')
+            #info[hemi]['curvature'] = op.join(self.bids_folder, 'derivatives', 'freesurfer', f'sub-{self.subject}', 'surf', f'{fs_hemi}.curv')
+
+            for key in info[hemi]:
+                assert(os.path.exists(info[hemi][key])), f'{info[hemi][key]} does not exist'
+
+        return info
+
     def get_fmri_events(self, session, runs=None, value = False):
 
         if runs is None:
