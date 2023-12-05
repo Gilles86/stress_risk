@@ -4,14 +4,18 @@ import os.path as op
 from cortex import webgl 
 from nilearn import image
 from nilearn import surface
+
 import numpy as np
 from utils import get_alpha_vertex
+import pandas as pd
 
 from stress_risk.utils.data import Subject
 
-def main(subject, bids_folder, key, use_cvr2=False, threshold=None, filter_extreme_prfs=False, smoothed=False, fsnative=False):
+def main(subject, bids_folder, key,both_sessions = True,mask_by_ips=True, use_cvr2=False, threshold=None, filter_extreme_prfs=False, smoothed=False, fsnative=False):
 
     use_cvr2=False # 
+    both_sessions = True
+
     subject = int(subject)
     print(use_cvr2, threshold)
 
@@ -37,7 +41,10 @@ def main(subject, bids_folder, key, use_cvr2=False, threshold=None, filter_extre
     elif not use_cvr2 and (threshold is None):
         threshold = 0.05
     
-    for session in [1]:
+    sessions = [1,2] if both_sessions else [1]
+    print(sessions)
+
+    for session in sessions:
         prf_pars = sub.get_prf_parameters_surf(session, run=None,  key=key, nilearn=True, space=space)
         print(prf_pars.head())
 
@@ -51,12 +58,16 @@ def main(subject, bids_folder, key, use_cvr2=False, threshold=None, filter_extre
             print("Filtering extreme prfs")
             mask = mask & (prf_pars['mu'] > 5).values & (prf_pars['mu'] < 28).values
 
+        if mask_by_ips:
+            ips_mask = sub.get_surf_mask(roi='ips')
+            mask = mask & ips_mask
+
         mu_vertex = get_alpha_vertex(prf_pars['mu'].values, mask, vmin=5, vmax=28, subject=fs_subject) 
         r2_vertex = get_alpha_vertex(prf_pars['r2'].values, mask, cmap='hot', vmin=threshold, vmax=0.25, subject=fs_subject)
         #cvr2_vertex = get_alpha_vertex(prf_pars['cvr2'].values, mask, cmap='hot', vmin=0.0, vmax=0.25, subject=fs_subject)
 
-        vertices[f"mu_vertex_session_{session}"] = mu_vertex
-        vertices[f"r2_vertex_session_{session}"] = r2_vertex
+        vertices[f"sub-{subject}_mu_vertex_session_{session}"] = mu_vertex
+        vertices[f"sub-{subject}_r2_vertex_session_{session}"] = r2_vertex
         #vertices[f"cvr2_vertex_session_{session}"] = cvr2_vertex
 
     vertices = {k: v for k, v in sorted(vertices.items(), key=lambda item: item[0])}
@@ -70,10 +81,11 @@ if __name__ == '__main__':
     parser.add_argument('--key', default=None) # 'encoding_model.denoise.smoothed.natural_space'
     #parser.add_argument('--unsmoothed', dest='smoothed', action='store_false')
     #parser.add_argument('--denoise', action='store_true')
+    parser.add_argument('--both_sessions', default=None, action='store_false')
     parser.add_argument('--threshold_r2', dest='use_cvr2', action='store_false')
     parser.add_argument('--threshold', default=None, type=float)
     parser.add_argument('--no_mu_filter', dest='filter_extreme_prfs', action='store_false')
     args = parser.parse_args()
-    main(args.subject, bids_folder=args.bids_folder,key=args.key, use_cvr2=args.use_cvr2, threshold=args.threshold, fsnative=args.fsnative,filter_extreme_prfs=args.filter_extreme_prfs) #
+    main(args.subject, bids_folder=args.bids_folder,key=args.key,both_sessions = args.both_sessions, use_cvr2=args.use_cvr2, threshold=args.threshold, fsnative=args.fsnative,filter_extreme_prfs=args.filter_extreme_prfs) #
 
     # smoothed=args.smoothed, 

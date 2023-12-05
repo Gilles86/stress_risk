@@ -459,6 +459,12 @@ class Subject(object):
 
         return pd.concat(parameters, axis=1, keys=parameter_keys, names=['parameter'])
     
+    def get_surf_mask(self,roi='ips'):
+        ips_L =  op.join(self.bids_folder, 'derivatives', 'ips_masks' , f'sub-{self.subject}',f'sub-{self.subject}_desc-NPC_L_space-fsnative_hemi-lh.{roi}.gii')
+        ips_R =  op.join(self.bids_folder, 'derivatives','ips_masks' , f'sub-{self.subject}',f'sub-{self.subject}_desc-NPC_R_space-fsnative_hemi-rh.{roi}.gii')
+        ips_mask = np.concatenate([surface.load_surf_data(ips_L), surface.load_surf_data(ips_R)])
+        return ips_mask.astype(np.bool)
+    
     def get_surf_info(self):
         info = {'L':{}, 'R':{}}
 
