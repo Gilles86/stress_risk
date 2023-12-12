@@ -153,3 +153,30 @@ for sub in 02; do cd /mnt/ds-stressrisk/derivatives/spm/sub-${sub}; for ses in 1
 # Surface Visualization
 
  %run visualize_nPRFmodel_subject.py 2 --fsnative --key encoding_model.denoise.retroicor.smoothed
+
+ # MRIY
+ * on sciencecloud3 : 
+ 
+    sudo docker run -it --rm -v /mnt/ds-stressrisk:/data:ro -v /mnt/ds-stressrisk/derivatives/mriqc:/out nipreps/mriqc:latest /data /out participant --participant_labels 01 02 03 04 05 09 10 12 13 14 16 17 18 19 21 22 23 24 25 26 28 30 31 32 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 57 58 59 61
+* on sciencecluster:
+    srun --pty -n 1 -c 2 --time=02:30:00 --mem=7G bash -l
+    module load singularityce # some nodes have it, some not (e.g. compute-m6)
+    
+    singularity build --sandbox /data/mrenke/mriqc-23.1.0.simg docker://nipreps/mriqc:23.1.0 # from https://hub.docker.com
+    singularity run --cleanenv /data/mrenke/mriqc-23.1.0.simg /shares/zne.uzh/mrenke/ds-stressrisk /shares/zne.uzh/mrenke/ds-stressrisk/derivatives/mriqc group -w /scratch/mrenke/workflow_folders/mriqc # does not work, but 
+    
+    singularity run --cleanenv /data/mrenke/mriqc-23.1.0.simg /shares/zne.uzh/$USER/ds-stressrisk /shares/zne.uzh/$USER/ds-stressrisk/derivatives/mriqc participant -w /scratch/mrenke/workflow_folders/mriqc --participant_label 02
+    * * errors:
+        * * * OSError: Error occurred while trying to decode JSON from file /shares/zne.uzh/mrenke/ds-stressrisk/sub-02/ses-1/func/._sub-02_ses-1_task-risk_run-1_bold.json --> delete those files (that somehow probably got creted, code in `/Users/mrenke/git/stress_risk/stress_risk/prepare/correct_json-file_task.ipynb`)
+        * * * ModuleNotFoundError: No module named 'niworkflows.interfaces.utils' --> 
+    * * Traceback (most recent call last):
+        File "/opt/conda/bin/mriqc", line 8, in <module>
+            sys.exit(main())
+        File "/opt/conda/lib/python3.9/site-packages/mriqc/cli/run.py", line 206, in main
+            dataframe, out_tsv = generate_tsv(output_dir, mod)
+        File "/opt/conda/lib/python3.9/site-packages/mriqc/utils/misc.py", line 181, in generate_tsv
+            jsonfiles = list(output_dir.glob("sub-*/**/%s/sub-*_%s.json" % (IMTYPES[mod], mod)))
+        KeyError: 'dwi'
+
+
+    singularity run -u -B /shares/zne.uzh/$USER/ds-stressrisk:/data -B /shares/zne.uzh/$USER/ds-stressrisk/derivatives/mriqc:/out /data/mrenke/nipreps /data /out participant --participant_labels 01
