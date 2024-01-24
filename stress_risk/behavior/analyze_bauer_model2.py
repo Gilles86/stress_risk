@@ -12,13 +12,19 @@ from utils import get_data, build_model, plot_ppc
 import numpy as np
 import seaborn as sns
 from bauer.utils.bayes import softplus
+import pandas as pd
 
-def main(model_label, bids_folder='/Users/mrenke/data/ds-stressrisk', col_wrap=5):
+def main(model_label, bids_folder='/Users/mrenke/data/ds-stressrisk', AUC=False,col_wrap=5):
 
 # behav_fit3
 # does only work when executed via terminal, not in interactive shell of VSC
 
     df = get_data(bids_folder)
+    if AUC:
+        df_comb_shifts = pd.read_csv('/Users/mrenke/data/ds-stressrisk/interim_sum_data/r-prior-shift_Ediff_AUC.csv')
+        df = df.join(df_comb_shifts.set_index('subject')['AUC'], on='subject', how='left')
+        df.dropna(subset=['AUC'], inplace=True) # remove subjects without AUC
+
     model = build_model(model_label, df)
     model.build_estimation_model()
 
@@ -53,6 +59,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('model_label', default=None)
     parser.add_argument('--bids_folder', default='/Users/mrenke/data/ds-stressrisk')
+    parser.add_argument('--AUC', action='store_true')
+
     args = parser.parse_args()
 
-    main(args.model_label, bids_folder=args.bids_folder)
+    main(args.model_label, bids_folder=args.bids_folder, AUC=args.AUC)

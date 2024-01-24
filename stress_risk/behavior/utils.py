@@ -99,9 +99,32 @@ def build_model(model_label, df):
             'safe_prior_std':'session*group'},
             prior_estimate='full',
             memory_model = 'shared_perceptual_noise')
+            
+    # mediator AUC (cortisol); full interaction effect
+    elif model_label == '7':
+        model = RiskRegressionModel(df,regressors={'n1_evidence_sd':'session*AUC',
+         'n2_evidence_sd':'session*AUC', 'risky_prior_mu':'session*AUC', 'risky_prior_std':'session*AUC',
+          'safe_prior_mu':'session*AUC', 'safe_prior_std':'session*AUC'},
+         prior_estimate='full')
+    elif model_label == '8':
+        model = RiskRegressionModel(df,regressors={'n1_evidence_sd':'session*group*AUC',
+         'n2_evidence_sd':'session*group*AUC', 'risky_prior_mu':'session*group*AUC', 'risky_prior_std':'session*group*AUC',
+          'safe_prior_mu':'session*group*AUC', 'safe_prior_std':'session*group*AUC'},
+         prior_estimate='full')
+        
+    # mediator: shift neural coding; only interaction effect
+    elif model_label == '9':
+        model = RiskRegressionModel(df,regressors={'n1_evidence_sd':'session+session:E_dif',
+         'n2_evidence_sd':'session+session:E_dif', 'risky_prior_mu':'session+session:E_dif', 'risky_prior_std':'session+session:E_dif',
+          'safe_prior_mu':'session+session:E_dif', 'safe_prior_std':'session+session:E_dif'},
+         prior_estimate='full')
+    elif model_label == '10':
+        model = RiskRegressionModel(df,regressors={'n1_evidence_sd':'session+session:group*E_dif',
+         'n2_evidence_sd':'session+session:group*E_dif', 'risky_prior_mu':'session+session:group*E_dif', 'risky_prior_std':'session+session:group*E_dif',
+          'safe_prior_mu':'session+session:group*E_dif', 'safe_prior_std':'session+session:group*E_dif'},
+         prior_estimate='full')
     else:
         raise Exception(f'Do not know model label {model_label}')
-
     return model
 
 

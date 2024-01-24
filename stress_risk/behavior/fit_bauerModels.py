@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 from utils import add_cond2df, build_model, get_data
 
-def main(model_label, burnin=1000, samples=1000, bids_folder = '/Users/mrenke/data/ds-stressrisk'):
+def main(model_label, burnin=1000, samples=1000, bids_folder = '/Users/mrenke/data/ds-stressrisk',AUC=False):
 
     target_folder = op.join(bids_folder, 'derivatives', 'cogmodels')
     
@@ -20,7 +20,10 @@ def main(model_label, burnin=1000, samples=1000, bids_folder = '/Users/mrenke/da
         os.makedirs(target_folder)
 
     df = get_data(bids_folder)
-
+    if AUC:
+        df_comb_shifts = pd.read_csv('/Users/mrenke/data/ds-stressrisk/interim_sum_data/r-prior-shift_Ediff_AUC.csv')
+        df = df.join(df_comb_shifts.set_index('subject')['AUC'], on='subject', how='left')
+        df.dropna(subset=['AUC'], inplace=True) # remove subjects without AUC
 
     if model_label in ['0', '5']:
         target_accept = 0.9
@@ -39,7 +42,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('model_label', default=None)
     parser.add_argument('--bids_folder', default='/Users/mrenke/data/ds-stressrisk')
+    parser.add_argument('--AUC', action='store_true')
+
     args = parser.parse_args()
 
-    main(args.model_label, bids_folder=args.bids_folder)
+    main(args.model_label, bids_folder=args.bids_folder, AUC=args.AUC)
 
