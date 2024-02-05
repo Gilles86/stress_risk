@@ -30,7 +30,7 @@ def main(sub,ses,bids_folder,specification):
     mask = ~np.isin(labeling, masked_labels) # generate a new, raw mask for each sub, that can be worked on later
 
     # subject
-    fsavTofsav5(sub,ses, bids_folder=bids_folder)
+    #fsavTofsav5(sub,ses, bids_folder=bids_folder) 
     clean_ts = cleanTS(sub, ses,bids_folder=bids_folder)
     seed_ts_noParcel = clean_ts[mask]
     correlation_measure_noParcel = ConnectivityMeasure(kind='correlation')

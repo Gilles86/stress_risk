@@ -62,29 +62,38 @@ def loadGradAsNpArray(sub,ses,bids_folder,specification, space = 'fsnative', par
 
 def cleanTS(sub, ses, runs = range(1, 7),space = 'fsaverage5', bids_folder='/Users/mrenke/data/ds-stressrisk'):
     # load in data as timeseries and regress out confounds (for each run sepeprately)
-    number_of_vertex = 20484  # 'fsaverage5', 10242 * 2
 
     fmriprep_confounds_include = ['global_signal', 'dvars', 'framewise_displacement', 'trans_x',
                                     'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z',
                                     'a_comp_cor_00', 'a_comp_cor_01', 'a_comp_cor_02', 'a_comp_cor_03', 'cosine00', 'cosine01', 'cosine02'
                                     ] # 
 
-    clean_ts_runs = np.empty([number_of_vertex,0])
-
+    # check if fsaverage5.gii exists, if not, perform fsavTofsav5 [fsnative should automatically have been produced during fmriprep]
     ex_file = op.join(bids_folder,'derivatives', 'fmriprep', f'sub-{sub}', f'ses-{ses}', 'func', 
-            f'sub-{sub}_ses-{ses}_task-risk_run-1_space-{space}_hemi-L_bold.func.gii')
-    
-    if (os.path.exists(ex_file) == False):
+            f'sub-{sub}_ses-{ses}_task-risk_run-1_space-{space}_hemi-L_bold.func.gii')   
+    if (os.path.exists(ex_file) == False) & (space == 'fsaverage5'):
         print(f'sub-{sub} fsaverage5.gii missing, fsavTofsav5 will be performed')
         fsavTofsav5(sub,ses, bids_folder)
 
+    # get number of vertices
+    if space == 'fsaverage5':
+        number_of_vertex = 20484  # 'fsaverage5', 10242 * 2
+    elif space == 'fsnative': # takes way to long to estimate CC
+        timeseries = [None] * 2
+        for i, hemi in enumerate(['L', 'R']): # have to load in both hemispheres to get the number of vertices (can be different for L&R)
+            ex_file = op.join(bids_folder,'derivatives', 'fmriprep', f'sub-{sub}', f'ses-{ses}', 'func', 
+            f'sub-{sub}_ses-{ses}_task-risk_run-1_space-{space}_hemi-L_bold.func.gii')
+            timeseries[i] = nib.load(ex_file).agg_data()
+        timeseries = np.vstack(timeseries)
+        number_of_vertex = timeseries.shape[0]
+
+    # loop over runs and concatenate timeseries
+    clean_ts_runs = np.empty([number_of_vertex,0])
     for run in runs:
         timeseries = [None] * 2
         for i, hemi in enumerate(['L', 'R']):
             filename = op.join(bids_folder,'derivatives', 'fmriprep', f'sub-{sub}', f'ses-{ses}', 'func', 
-            f'sub-{sub}_ses-{ses}_task-risk_run-{run}_space-{space}_hemi-{hemi}_bold.func.gii')
-            
-            
+            f'sub-{sub}_ses-{ses}_task-risk_run-{run}_space-{space}_hemi-{hemi}_bold.func.gii')        
             timeseries[i] = nib.load(filename).agg_data()
         timeseries = np.vstack(timeseries) # (20484, 135)
 
