@@ -68,7 +68,7 @@ def simulate_choices_subind_p_var(trials_df, sub_param,p_risky):
 
         diff_mu, diff_sd = get_diff_dist( post_n1_mu, post_n1_sd, post_n2_mu, post_n2_sd)
 
-        ['threshold'] =  np.log(trials_df['p2'] / trials_df['p1'])
+        #['threshold'] =  np.log(trials_df['p2'] / trials_df['p1'])
         p = norm.cdf(diff_mu, scale = diff_sd)
         choice = int(np.random.binomial(1, p, 1)) # 
         

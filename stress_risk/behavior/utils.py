@@ -111,17 +111,17 @@ def build_model(model_label, df):
          'n2_evidence_sd':'session*group*AUC', 'risky_prior_mu':'session*group*AUC', 'risky_prior_std':'session*group*AUC',
           'safe_prior_mu':'session*group*AUC', 'safe_prior_std':'session*group*AUC'},
          prior_estimate='full')
-        
-    # mediator: shift neural coding; only interaction effect
+    # 'session*group*AUC' 'session+session:AUC+sesssion:group'
     elif model_label == '9':
-        model = RiskRegressionModel(df,regressors={'n1_evidence_sd':'session+session:E_dif',
-         'n2_evidence_sd':'session+session:E_dif', 'risky_prior_mu':'session+session:E_dif', 'risky_prior_std':'session+session:E_dif',
-          'safe_prior_mu':'session+session:E_dif', 'safe_prior_std':'session+session:E_dif'},
+        model = RiskRegressionModel(df,regressors={'n1_evidence_sd':'session','n2_evidence_sd':'session', 'risky_prior_std':'session','safe_prior_mu':'session', 'safe_prior_std':'session',
+         'risky_prior_mu':'session*group*AUC', 
+          },
          prior_estimate='full')
+    # mediator: shift neural coding (E_dif); only interaction effect
     elif model_label == '10':
-        model = RiskRegressionModel(df,regressors={'n1_evidence_sd':'session+session:group*E_dif',
-         'n2_evidence_sd':'session+session:group*E_dif', 'risky_prior_mu':'session+session:group*E_dif', 'risky_prior_std':'session+session:group*E_dif',
-          'safe_prior_mu':'session+session:group*E_dif', 'safe_prior_std':'session+session:group*E_dif'},
+        model = RiskRegressionModel(df,regressors={'n1_evidence_sd':'session','n2_evidence_sd':'session', 'risky_prior_std':'session','safe_prior_mu':'session', 'safe_prior_std':'session',
+         'risky_prior_mu':'session*group*E_dif', 
+          },
          prior_estimate='full')
     else:
         raise Exception(f'Do not know model label {model_label}')
