@@ -43,6 +43,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('subject', default=1, nargs='?')
+    
     cmd_args = parser.parse_args()
 
     sub = cmd_args.subject
@@ -50,9 +51,9 @@ if __name__ == '__main__':
     ses = 1
     xfm = 'identity.bold'
 
-    bids_folder = '/Users/mrenke/data/ds-stressrisk'
+    bids_folder = '/Volumes/mrenkeED/data/ds-stressrisk' # '/Users/mrenke/data/ds-stressrisk'
     ses = 1
-    base = 'encoding_model.smoothed'
+    base = 'encoding_model.denoise.retroicor.smoothed' #'encoding_model.smoothed'
     specification=''
 
     subject = f'sub-{sub}'

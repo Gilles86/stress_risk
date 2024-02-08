@@ -18,3 +18,4 @@ from utils import fsavTofsav5,cleanTS, saveGradToNPFile, npFileTofs5Gii,fsav5Tof
 
 
 def main(sub,ses,bids_folder,specification):
+    
