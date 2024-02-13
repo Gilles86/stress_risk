@@ -16,6 +16,7 @@
 * `avGrad_local.py` inspect average_GM, ....
 
 ## alignment
+--> fit_grad_all_reordMaskFlip.py
 
 ### reorder & flipping
 

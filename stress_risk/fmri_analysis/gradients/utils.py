@@ -117,13 +117,13 @@ def saveGradToNPFile(grad, sub,ses, specification='',bids_folder='/Users/mrenke/
         os.makedirs(target_dir)
 
     for g, n_grad  in enumerate(range(1,1+np.shape(grad)[0])):
-        np.save(op.join(target_dir,f'grad{n_grad}_noParcel{specification}.npy'), grad[g])
+        np.save(op.join(target_dir,f'grad{n_grad}{specification}.npy'), grad[g])
 
 def npFileTofs5Gii(sub,ses, specification='',bids_folder='/Users/mrenke/data/ds-stressrisk'):
     target_dir = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}')
 
     for n_grad in [1,2]:
-        grad = np.load(op.join(target_dir, f'grad{n_grad}_noParcel{specification}.npy'))
+        grad = np.load(op.join(target_dir, f'grad{n_grad}{specification}.npy'))
         grad = np.split(grad,2) # for i, hemi in enumerate(['L', 'R']): --> left first
 
         for h, hemi in enumerate(['L', 'R']):    
@@ -131,7 +131,7 @@ def npFileTofs5Gii(sub,ses, specification='',bids_folder='/Users/mrenke/data/ds-
             gii_im_datar = nib.gifti.gifti.GiftiDataArray(data=grad[h])
             gii_im = nib.gifti.gifti.GiftiImage(darrays= [gii_im_datar])
 
-            out_file = op.join(target_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsaverage5_hemi-{hemi}_grad{n_grad}_noParcel{specification}.surf.gii')
+            out_file = op.join(target_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsaverage5_hemi-{hemi}_grad{n_grad}{specification}.surf.gii')
             gii_im.to_filename(out_file) # https://nipy.org/nibabel/reference/nibabel.spatialimages.html
 
 
@@ -150,8 +150,8 @@ def fsav5Tofsnative(sub,ses, specification='', bids_folder='/Users/mrenke/data/d
 
             grad_sub_dir = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}')
 
-            in_file = op.join(grad_sub_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsaverage5_hemi-{hemi}_grad{n_grad}_noParcel{specification}.surf.gii')
-            out_file = op.join(grad_sub_dir, f'sub-{sub}_ses-{ses}_task-risk_space-{target_space}_hemi-{hemi}_grad{n_grad}_noParcel{specification}.surf.gii')
+            in_file = op.join(grad_sub_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsaverage5_hemi-{hemi}_grad{n_grad}{specification}.surf.gii')
+            out_file = op.join(grad_sub_dir, f'sub-{sub}_ses-{ses}_task-risk_space-{target_space}_hemi-{hemi}_grad{n_grad}{specification}.surf.gii')
 
             sxfm.inputs.source_file = in_file
             sxfm.inputs.out_file = out_file
@@ -204,8 +204,8 @@ def fsav5Tofsav(sub,ses, specification='',bids_folder='/Users/mrenke/data/ds-str
 
             grad_sub_dir = op.join(bids_folder, 'derivatives', 'gradients', f'sub-{sub}', f'ses-{ses}')
 
-            in_file = op.join(grad_sub_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsaverage5_hemi-{hemi}_grad{n_grad}_noParcel{specification}.surf.gii')
-            out_file = op.join(grad_sub_dir, f'sub-{sub}_ses-{ses}_task-risk_space-{target_space}_hemi-{hemi}_grad{n_grad}_noParcel{specification}.surf.gii')
+            in_file = op.join(grad_sub_dir, f'sub-{sub}_ses-{ses}_task-risk_space-fsaverage5_hemi-{hemi}_grad{n_grad}{specification}.surf.gii')
+            out_file = op.join(grad_sub_dir, f'sub-{sub}_ses-{ses}_task-risk_space-{target_space}_hemi-{hemi}_grad{n_grad}{specification}.surf.gii')
 
             sxfm.inputs.source_file = in_file
             sxfm.inputs.out_file = out_file

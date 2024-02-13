@@ -432,7 +432,7 @@ class Subject(object):
             dir += '.natural_space'
         else:
             dir = key
-            print(dir)
+            #print(dir)
 
         parameters = []
     

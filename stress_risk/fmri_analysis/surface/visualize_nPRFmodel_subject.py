@@ -11,6 +11,8 @@ import pandas as pd
 
 from stress_risk.utils.data import Subject
 
+# run via:  %run visualize_nPRFmodel_subject.py 2 --fsnative --key encoding_model.denoise.retroicor.smoothed
+
 def main(subject, bids_folder, key,both_sessions = True,mask_by_ips=True, use_cvr2=False, threshold=None, filter_extreme_prfs=False, smoothed=False, fsnative=False):
 
     use_cvr2=False # 
