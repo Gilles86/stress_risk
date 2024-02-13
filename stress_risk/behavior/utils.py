@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 from bauer.models import RiskRegressionModel, ExpectedUtilityRiskRegressionModel
+from bauer.models_add import Risk_NLC_EU_RegressionModel
 from stress_risk.utils.data import get_all_behavior
 import arviz as az
 import matplotlib.pyplot as plt
@@ -123,6 +124,21 @@ def build_model(model_label, df):
          'risky_prior_mu':'session*group*E_dif', 
           },
          prior_estimate='full')
+        
+    elif model_label == 'NLC_EU_1':
+        model = Risk_NLC_EU_RegressionModel(df,regressors= {'n1_evidence_sd':'session','n2_evidence_sd':'session', 'risky_prior_std':'session','safe_prior_mu':'session', 'safe_prior_std':'session',
+         'risky_prior_mu':'session*group', 
+         'alpha':'session*group',
+          },
+          prior_estimate='full',
+          probability_distortion=False)
+    elif model_label == 'NLC_EU_2':
+        model = Risk_NLC_EU_RegressionModel(df,regressors= {
+         'risky_prior_mu':'session:group', 
+         'alpha':'session:group',
+          },
+          prior_estimate='full',
+          probability_distortion=False)
     else:
         raise Exception(f'Do not know model label {model_label}')
     return model
