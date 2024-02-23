@@ -46,8 +46,8 @@ if __name__ == '__main__':
     
     cmd_args = parser.parse_args()
 
-    sub = cmd_args.subject
-    #sub = f'{sub:02}'
+    sub = int(cmd_args.subject)
+    sub = f'{sub:02}'
     ses = 1
     xfm = 'identity.bold'
 
@@ -55,8 +55,9 @@ if __name__ == '__main__':
     ses = 1
     base = 'encoding_model.denoise.retroicor.smoothed' #'encoding_model.smoothed'
     specification=''
+    dataset = 'stressrisk'
 
-    subject = f'sub-{sub}'
+    subject = f'{dataset}.sub-{sub}'
 
     r2_data =  op.join(bids_folder, 'derivatives', base , f'sub-{sub}', f'ses-{ses}', 'func', 
         f'sub-{sub}_ses-{ses}_desc-r2.optim_space-T1w_pars.nii.gz')

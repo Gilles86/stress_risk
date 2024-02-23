@@ -21,6 +21,9 @@
 ### reorder & flipping
 
 * first tried procrust 
+--> found out that the brainspace built in procrust alignment does work, was just reading the wrong part out of the fitted GM
+[`gm.aligned_` vs. `gm.gradients_`]
+* but with kernel=None filtering is still necessary!
 
 ### morphospace comparisons
 

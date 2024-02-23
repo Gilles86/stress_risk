@@ -39,7 +39,8 @@ def main(sub,ses,bids_folder,kernel,approach,ref_marg_align=False):
     
     kernel_specification = f'_kernel-{kernel}'
 
-    np.save(op.join(target_folder,f'sub-{sub}_ses-{ses}_ref-p-align_fsav5_unfiltered{kernel_specification}{ref_specification}.npy'),g_align.gradients_) # 
+    gradients = g_align.aligned_  # has now both, gm.gradients_ and gm.aligned_
+    np.save(op.join(target_folder,f'sub-{sub}_ses-{ses}_ref-p-align_fsav5_unfiltered{kernel_specification}{ref_specification}.npy'),gradients) # 
 
 
 if __name__ == '__main__':

@@ -137,10 +137,13 @@ def npFileTofs5Gii(sub,ses, specification='',bids_folder='/Users/mrenke/data/ds-
 
 # nipype transformations
 
-def fsav5Tofsnative(sub,ses, specification='', bids_folder='/Users/mrenke/data/ds-stressrisk'):
+def fsav5Tofsnative(sub,ses, specification='', bids_folder='/Users/mrenke/data/ds-stressrisk', target_space = 'fsnative'):
 
-    target_space = 'fsnative'
-
+    if target_space == 'fsnative':
+        target_subject =f'sub-{sub}'
+    else:
+        target_subject = target_space
+        
     for n_grad in [1,2]:
 
         for i, hemi in enumerate(['L', 'R']):   
@@ -157,7 +160,7 @@ def fsav5Tofsnative(sub,ses, specification='', bids_folder='/Users/mrenke/data/d
             sxfm.inputs.out_file = out_file
 
             sxfm.inputs.source_subject = 'fsaverage5'
-            sxfm.inputs.target_subject = f'sub-{sub}'
+            sxfm.inputs.target_subject = target_subject
 
             if hemi == 'L':
                 sxfm.inputs.hemi = 'lh'
