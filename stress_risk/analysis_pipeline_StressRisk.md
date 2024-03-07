@@ -101,6 +101,12 @@ rsync -rzcv  --include="*/" --include="*.tsv" --include="*/ses-2/*" --exclude="*
 * * `01 02 03 04 05 09 10 12 13 14 16 17 18 19 21 22 23 24 25 26 28 30 31 32 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 57 58 59 61`
 * * `01,02,03,04,05,09,10,12,13,14,16,17,18,19,21,22,23,24,25,26,28,30,31,32,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,57,58,59,61`
 
+# Sciencecloud2
+- Log in on sciencelcoud: ssh ….
+- start VNC: `vncserver - localhost`
+- create tunnel (on local): `ssh -L 5901:localhost:5901 ubuntu@172.23.186.207` (one science cloud IP address!!)
+-open GUI: open finder (on local), go to GO, connect to server, vnc://localhost:5901
+
 ## file placing for GLM on sciencecloud2
 
 * copy physio files
