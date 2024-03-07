@@ -13,7 +13,9 @@ from stress_risk.utils.data import Subject
 
 # run via:  %run visualize_nPRFmodel_subject.py 2 --fsnative --key encoding_model.denoise.retroicor.smoothed
 
-def main(subject, bids_folder, key,both_sessions = True,mask_by_ips=True, use_cvr2=False, threshold=None, filter_extreme_prfs=False, smoothed=False, fsnative=False):
+def main(subject, bids_folder, key,both_sessions = True,
+         mask_by_ips=True, use_cvr2=False, threshold=None, filter_extreme_prfs=True, smoothed=False, fsnative=False,
+         vmax=28.0):
 
     use_cvr2=False # 
     both_sessions = True
@@ -64,7 +66,7 @@ def main(subject, bids_folder, key,both_sessions = True,mask_by_ips=True, use_cv
             ips_mask = sub.get_surf_mask(roi='ips')
             mask = mask & ips_mask
 
-        mu_vertex = get_alpha_vertex(prf_pars['mu'].values, mask, vmin=5, vmax=28, subject=fs_subject) 
+        mu_vertex = get_alpha_vertex(prf_pars['mu'].values, mask, vmin=5, vmax=vmax, subject=fs_subject) 
         r2_vertex = get_alpha_vertex(prf_pars['r2'].values, mask, cmap='hot', vmin=threshold, vmax=0.25, subject=fs_subject)
         #cvr2_vertex = get_alpha_vertex(prf_pars['cvr2'].values, mask, cmap='hot', vmin=0.0, vmax=0.25, subject=fs_subject)
 
@@ -87,7 +89,11 @@ if __name__ == '__main__':
     parser.add_argument('--threshold_r2', dest='use_cvr2', action='store_false')
     parser.add_argument('--threshold', default=None, type=float)
     parser.add_argument('--no_mu_filter', dest='filter_extreme_prfs', action='store_false')
+    parser.add_argument('--vmax', default=28, type=float)
+
     args = parser.parse_args()
-    main(args.subject, bids_folder=args.bids_folder,key=args.key,both_sessions = args.both_sessions, use_cvr2=args.use_cvr2, threshold=args.threshold, fsnative=args.fsnative,filter_extreme_prfs=args.filter_extreme_prfs) #
+    main(args.subject, bids_folder=args.bids_folder,key=args.key,both_sessions = args.both_sessions, use_cvr2=args.use_cvr2, 
+         threshold=args.threshold, fsnative=args.fsnative,filter_extreme_prfs=args.filter_extreme_prfs,
+         vmax=args.vmax) #
 
     # smoothed=args.smoothed, 
