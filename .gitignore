@@ -71,3 +71,4 @@ fMRIMIST/MIST_PTB/logfiles
 stress_risk/fmri_analysis/encoding_model/cluster_scripts/core
 stress_risk/fmri_analysis/.DS_Store
 stress_risk/fmri_analysis/.DS_Store
+stress_risk/fmri_analysis/glm_nipype/first_level_wf/*
