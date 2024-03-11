@@ -110,6 +110,19 @@ class Subject(object):
          f'ses-{session}', 'func', f'sub-{self.subject}_ses-{session}_task-risk_run-{run}_space-{space}_desc-preproc_bold.nii.gz') for run in runs]
 
         return images
+    
+    def get_preprocessed_bold_surf(self, session=1, runs=None, hemis= None,space='T1w'):
+        if runs is None:
+            runs = range(1, 7)
+        if hemis is None:
+            hemis = ['L', 'R']
+        
+        images = [op.join(self.bids_folder, 'derivatives', 'fmriprep', f'sub-{self.subject}',
+        f'ses-{session}', 'func', f'sub-{self.subject}_ses-{session}_task-risk_run-{run}_space-{space}_hemi-{hemi}_bold.func.gii') for run in runs for hemi in hemis]
+        
+        print(f'file exists:{op.exists(images[0])}')
+
+        return images
 
     def get_nprf_pars(self, session=1, model='encoding_model.smoothed', parameter='r2',
     volume=True):
