@@ -1,0 +1,32 @@
+[
+    {
+        "group": 1,
+        "imports": [],
+        "name": "0_twoSampleTTest",
+        "size": 1
+    },
+    {
+        "group": 1,
+        "imports": [
+            "0_twoSampleTTest"
+        ],
+        "name": "1_level2estimate",
+        "size": 1
+    },
+    {
+        "group": 1,
+        "imports": [
+            "1_level2estimate"
+        ],
+        "name": "2_level2estcon",
+        "size": 1
+    },
+    {
+        "group": 1,
+        "imports": [
+            "2_level2estcon"
+        ],
+        "name": "3_datasink",
+        "size": 1
+    }
+]
