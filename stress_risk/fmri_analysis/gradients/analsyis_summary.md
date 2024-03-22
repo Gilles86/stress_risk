@@ -17,6 +17,7 @@
 
 ## alignment
 --> fit_grad_all_reordMaskFlip.py
+found out that the gradient result has an addtional attribute where the actually aligned GM are stored: `gm._aligned` (which should teach me that sometimes reading tutorial/insructions varefully can save a llot of time and work!!)
 
 ### reorder & flipping
 
@@ -29,4 +30,7 @@
 
 
 
+### visualize
+
+* Marguelies16 color scale (skewed, but shows anchoring of gradient1 nicely!!)
 

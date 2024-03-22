@@ -59,6 +59,7 @@ def plot_from_nparray(grad, colorbar=False):
     nplt.plot_surf_stat_map(surf_mesh=fsaverage.infl_right, colorbar = colorbar,stat_map=grad3_r,cmap='viridis',view='medial',axes=axes[2])
     axes[2].set(title='grad 3')
     #figure.suptitle(file)
+    return figure, axes
 
 def plot_surface_map(surface_map, fsaverage, cmap="coolwarm", colorbar=True, **kwargs):
     """Util function for plotting surfaces."""
