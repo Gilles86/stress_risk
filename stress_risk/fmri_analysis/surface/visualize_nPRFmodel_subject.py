@@ -11,7 +11,7 @@ import pandas as pd
 
 from stress_risk.utils.data import Subject
 
-# run via:  %run visualize_nPRFmodel_subject.py 2 --fsnative --key encoding_model.denoise.retroicor.smoothed
+# run via:  %run visualize_nPRFmodel_subject.py 59 --fsnative --key encoding_model.denoise.retroicor.smoothed
 
 def main(subject, bids_folder, key,both_sessions = True,
          mask_by_ips=True, use_cvr2=False, threshold=None, filter_extreme_prfs=True, smoothed=False, fsnative=False,
@@ -51,7 +51,7 @@ def main(subject, bids_folder, key,both_sessions = True,
     for session in sessions:
         prf_pars = sub.get_prf_parameters_surf(session, run=None,  key=key, nilearn=True, space=space)
         print(prf_pars.head())
-
+        print(len(prf_pars))
         prf_pars['mu'] = np.exp(prf_pars['mu'])
         if use_cvr2:
             mask = (prf_pars['cvr2']  > threshold).values

@@ -221,16 +221,16 @@ def fsav5Tofsnative(sub,ses, specification='', bids_folder='/Users/mrenke/data/d
             r = sxfm.run()
 
 
-def fsavTofsav5(sub,ses, bids_folder='/Users/mrenke/data/ds-stressrisk'):
+def fsavTofsav5(sub,ses, bids_folder='/Users/mrenke/data/ds-stressrisk', key='fmriprep'):
     runs = range(1,7)
 
     for run in runs:
         for hemi in ['L', 'R']:
             sxfm = SurfaceTransform(subjects_dir=op.join(bids_folder,'derivatives','freesurfer'))
             in_file = f'sub-{sub}_ses-{ses}_task-risk_run-{run}_space-fsaverage_hemi-{hemi}_bold.func.gii'
-            in_file_path = op.join(bids_folder, 'derivatives', 'fmriprep', f'sub-{sub}',f'ses-{ses}','func',in_file)
+            in_file_path = op.join(bids_folder, 'derivatives', key, f'sub-{sub}',f'ses-{ses}','func',in_file)
             out_file = f'sub-{sub}_ses-{ses}_task-risk_run-{run}_space-fsaverage5_hemi-{hemi}_bold.func.gii'
-            out_file_path = op.join(bids_folder, 'derivatives', 'fmriprep', f'sub-{sub}',f'ses-{ses}','func',out_file)
+            out_file_path = op.join(bids_folder, 'derivatives', key, f'sub-{sub}',f'ses-{ses}','func',out_file)
 
             sxfm.inputs.source_file = in_file_path
             sxfm.inputs.out_file = out_file_path
