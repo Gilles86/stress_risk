@@ -409,7 +409,7 @@ class Subject(object):
         if return_image:
             return masker.inverse_transform(parameters.T)
 
-        return pd.concat(parameters, axis=1, keys=keys, names=['parameter'])
+        return parameters
     
     def get_prf_parameters_surf(self, session, run=None, smoothed=False, cross_validated=False, hemi=None, mask=None, space='fsnative',
         parameters=None, key=None, nilearn=True):

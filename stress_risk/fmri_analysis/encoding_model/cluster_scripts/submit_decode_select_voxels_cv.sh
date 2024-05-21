@@ -19,5 +19,6 @@ export PARTICIPANT_LABEL=$(printf "%02d" $SLURM_ARRAY_TASK_ID)
 
 source activate tf2-gpu
 
-python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/decode_select_voxels_cv.py $PARTICIPANT_LABEL 1 --bids_folder /shares/zne.uzh/mrenke/ds-stressrisk --mask mpfc  --denoise --value
-python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/decode_select_voxels_cv.py $PARTICIPANT_LABEL 2 --bids_folder /shares/zne.uzh/mrenke/ds-stressrisk --mask mpfc  --denoise --value
+python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/decode_select_voxels_cv.py $PARTICIPANT_LABEL 2 --bids_folder /shares/zne.uzh/mrenke/ds-stressrisk --mask NPC1_R  --denoise
+python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/decode_select_voxels_cv.py $PARTICIPANT_LABEL 2 --bids_folder /shares/zne.uzh/mrenke/ds-stressrisk --mask NPC3_R  --denoise
+
