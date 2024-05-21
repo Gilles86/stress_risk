@@ -5,7 +5,7 @@ import os.path as op
 from nipype.interfaces.freesurfer import SurfaceTransform
 
 
-def main(subject, bids_folder, hemi, roi):
+def main(subject, bids_folder, hemi, roi, npc = 'NPC'):
 
     subjects_dir = op.join(bids_folder, 'derivatives', 'freesurfer')
 
@@ -16,7 +16,7 @@ def main(subject, bids_folder, hemi, roi):
     elif hemi == 'L':
         fs_hemi = 'lh'
     
-    in_file = op.join(bids_folder, f'derivatives/surface_masks/desc-NPC_{hemi}_space-fsaverage_hemi-{fs_hemi}.label.gii')
+    in_file = op.join(bids_folder, f'derivatives/surface_masks/desc-{npc}_{hemi}_space-fsaverage_hemi-{fs_hemi}.label.gii')
 
     target_dir = op.join(bids_folder, 'derivatives', f'{roi}_masks', target_subject)
 
@@ -24,7 +24,7 @@ def main(subject, bids_folder, hemi, roi):
         os.makedirs(target_dir)
     
     # NPC = numerosity parietal cortex ~ IPS
-    out_file = op.join(target_dir, f'{target_subject}_desc-NPC_{hemi}_space-fsnative_hemi-{fs_hemi}.{roi}.gii')
+    out_file = op.join(target_dir, f'{target_subject}_desc-{npc}_{hemi}_space-fsnative_hemi-{fs_hemi}.{roi}.gii')
 
     #'sub-01_desc-NPC_R_space-fsnative_hemi-rh.label.gii')  
     #out_file = op.join(subjects_dir, target_subject, 'surf', f'{hemi}.{roi}.mgz') #f'sub-{subject}',
@@ -54,6 +54,7 @@ if __name__ == '__main__':
     parser.add_argument('--bids_folder', default='/Users/mrenke/data/ds-stressrisk/')
     parser.add_argument('--hemi', default='R')
     parser.add_argument('--roi', default ='ips')
+    parser.add_argument('--npc', default ='NPC') # for NPC1, NPC3,
     args = parser.parse_args()
 
-    main(args.subject,  bids_folder=args.bids_folder, hemi = args.hemi, roi = args.roi)
+    main(args.subject,  bids_folder=args.bids_folder, hemi = args.hemi, roi = args.roi, npc=args.npc)

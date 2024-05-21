@@ -10,7 +10,7 @@ from neuropythy.io import load, save
 from neuropythy.mri import (is_image, is_image_spec, image_clear, to_image)
 
 
-def main(subject, bids_folder, hemi, roi):
+def main(subject, bids_folder, hemi, roi, npc):
     ses_anat = 1
     target_subject = f'sub-{subject}'
     
@@ -24,13 +24,13 @@ def main(subject, bids_folder, hemi, roi):
     if not op.exists(target_dir):
         os.makedirs(target_dir)
 
-    fsnative_fn = op.join(target_dir, f'{target_subject}_desc-NPC_{hemi}_space-fsnative_hemi-{fs_hemi}.{roi}.gii')
+    fsnative_fn = op.join(target_dir, f'{target_subject}_desc-{npc}_{hemi}_space-fsnative_hemi-{fs_hemi}.{roi}.gii')
     mask_data = surface.load_surf_data(fsnative_fn).astype(bool)
 
     subjects_dir = op.join(bids_folder, 'derivatives', 'freesurfer')
 
 
-    target_fn = op.join(target_dir, f'sub-{subject}_space-T1w_desc-NPC_{hemi}.nii.gz')
+    target_fn = op.join(target_dir, f'sub-{subject}_space-T1w_desc-{npc}_{hemi}.nii.gz')
     sub = fs_subject(op.join(bids_folder, 'derivatives', 'freesurfer', f'sub-{subject}'))
     im = load(op.join(bids_folder, 'derivatives', 'fmriprep', f'sub-{subject}',f'ses-{ses_anat}',
     'anat', f'sub-{subject}_ses-{ses_anat}_desc-preproc_T1w.nii.gz'))
@@ -53,6 +53,8 @@ if __name__ == '__main__':
     parser.add_argument('--bids_folder', default='/Users/mrenke/data/ds-stressrisk/')
     parser.add_argument('--hemi', default='R')
     parser.add_argument('--roi', default ='ips')
+    parser.add_argument('--npc', default ='NPC') # for NPC1, NPC3,
+
     args = parser.parse_args()
 
-    main(args.subject,  bids_folder=args.bids_folder, hemi = args.hemi, roi = args.roi)
+    main(args.subject,  bids_folder=args.bids_folder, hemi = args.hemi, roi = args.roi, npc=args.npc)
