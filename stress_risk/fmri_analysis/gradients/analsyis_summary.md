@@ -2,12 +2,20 @@
 
 # Trying to have an overivew of all the sstuff I did related to gradients
 
+
+--> most current version that I use: `fit_grad_procrust.py` 
+* filters unconnected nodes
+* can remove task effects
+* can save correlation matrix (unfiltered)
+* aligns it with `bids_folder,'derivatives', 'gradients',f'gm_av50_unfiltered{ref_specification}.npy'`
+* uses default setting (by not providing specifications): `approacch = 'dm', kernel = None`
+
 ### different techniques:
 
 * no parcellation is meanwhile the standard (added `no_Parcel` )
 * builtin - kernel & aligmnet (procrust) --> `fir_grad_only_aligned.py` kernel&align modifications, saves to np file 
 * in fsnative space: takes way to much time....
-
+* remove task-effects by putting deisgn matrix as additional confound to cleanTS
 
 
 ### average (task!) gradient *check
