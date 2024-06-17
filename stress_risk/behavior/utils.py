@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 from bauer.models import RiskRegressionModel, ExpectedUtilityRiskRegressionModel
-from bauer.models_add import Risk_NLC_EU_RegressionModel
+from bauer.models_add import Risk_NLC_EU_RegressionModel # switch to maike branch on bauer so that this works!
 from stress_risk.utils.data import get_all_behavior
 import arviz as az
 import matplotlib.pyplot as plt
