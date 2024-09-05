@@ -65,7 +65,8 @@ for sub=1:numel(subList)
     for ses=1:2
        try  
             cd('/home/ubuntu/git/stress_risk/stress_risk/fmri_analysis/glm_scripts')
-            first_level_spm_V1(subList{sub},sesList{ses},bids_folder, model); % scirpt adds automatically '-1'
+            %first_level_spm_V1(subList{sub},sesList{ses},bids_folder, model); % scirpt adds automatically '-1'
+            get_addEventContrast_1stLevel_V1(subList{sub},sesList{ses},bids_folder, model); 
             [subList{sub} ' ' sesList{ses} 'done']
         catch
             [subList{sub} ' ' sesList{ses} 'problem']

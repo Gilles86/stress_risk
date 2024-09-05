@@ -2,10 +2,11 @@
 
 model = 'NLC-4'
 specification = 'con' % 'con'
+ses = 1
 
 in_model_name = ['1stlevel_' model]
 
-parent_out_folder= [model '_' specification '_2ndlevels'];
+parent_out_folder= [model '_' specification '_2ndlevels' sesList{ses}];
 
 temp_SPM = load(fullfile(bids_folder,'derivatives','spm',subList{sub},sesList{ses},in_model_name, 'SPM.mat'))
 get_names = @(s) s.name;
@@ -21,12 +22,12 @@ for n=1:length(temp_SPM.SPM.xCon)
 
     scans = {};
     for sub=1:numel(subList)
-         for ses = 1:length(sesList)
+         %for ses = 1:length(sesList)
             con_file = fullfile(bids_folder,'derivatives','spm',subList{sub},sesList{ses},in_model_name,[specification '_000' num2str(n) '.nii']);
             if isfile(con_file)
                scans{end+1,1} = [con_file ',1'];
             end
-         end
+         %end
     end
 
 
