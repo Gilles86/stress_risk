@@ -59,7 +59,7 @@ end
 %% 2.1. 1stlevel( - version 1) loop + deleting old folders (for more space on Volume (/mnt))
 
 errorL = [];
-model = 'Vhat' % carefull, timing files are named inconsistently among different model types (e.g. '...n1_EV' vs ' '...n1-EU')
+model = 'EU' % carefull, timing files are named inconsistently among different model types (e.g. '...n1_EV' vs ' '...n1-EU')
 
 for sub=1:numel(subList)
     for ses=1:2
