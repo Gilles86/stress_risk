@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 from bauer.models import RiskRegressionModel, ExpectedUtilityRiskRegressionModel
-from bauer.models_add import Risk_NLC_EU_RegressionModel # switch to maike branch on bauer so that this works!
+#from bauer.models_add import Risk_NLC_EU_RegressionModel # switch to maike branch on bauer so that this works!
 from stress_risk.utils.data import get_all_behavior
 import arviz as az
 import matplotlib.pyplot as plt
@@ -83,6 +83,7 @@ def build_model(model_label, df):
           'safe_prior_mu':'session*group', 
           'safe_prior_std':'session*group'},
          prior_estimate='full')
+        
     elif model_label=='5' : # introduction on common-prior-effect(sesssion*group)
         model = RiskRegressionModel(df,regressors={
         'n1_evidence_sd':'session*group',
@@ -91,6 +92,13 @@ def build_model(model_label, df):
         'risky_prior_std':'session*group', # 0 == no intercept for that regressor
         'safe_prior_std':'session*group'},
          prior_estimate='full')
+    elif model_label=='5b' : # introduction on common-prior-effect(sesssion*group)
+        model = RiskRegressionModel(df,regressors={
+        'n1_evidence_sd':'session',
+        'prior_mu':'0 + session*group', 
+        'safe_prior_sd': 'session'},
+         prior_estimate='full')
+        
     elif model_label=='6' : # perceptual and memory noise
             model = RiskRegressionModel(df,regressors={
             'perceptual_noise_sd':'session*group',

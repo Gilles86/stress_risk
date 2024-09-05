@@ -91,29 +91,30 @@ function first_level_spm_V4_bothSessions(subject,bids_folder, model)
     load(file_nuisance);
     n_cond_reg = 16; %  2 * 2*2 + 2*2 = (sessions * risky/safe * first/second) * (event, pmod1)
     n_conf = size(R,2);
-    n_reg = (n_cond_reg + n_conf) * 6 + 6
+    N_runs = 12;
+    n_reg = (n_cond_reg + n_conf) * N_runs + N_runs % N_runs was 6 before.....
     y = zeros(1, n_reg); rfe = y; rfp = y; rse = y; rsp = y;sfe = y; sfp = y; sse = y; ssp = y;
     
     %session 1
-    x1 = 1:n_cond_reg + n_conf:n_reg-6; % risky_first event
-    x2 = 2:n_cond_reg + n_conf:n_reg-6; % risky_first pmod
-    x3 = 3:n_cond_reg + n_conf:n_reg-6; % risky_second event
-    x4 = 4:n_cond_reg + n_conf:n_reg-6; % risky_second pmod
-    x5 = 5:n_cond_reg + n_conf:n_reg-6; % safe_first event
-    x6 = 6:n_cond_reg + n_conf:n_reg-6; % safe_first pmod
-    x7 = 7:n_cond_reg + n_conf:n_reg-6; % safe_second event
-    x8 = 8:n_cond_reg + n_conf:n_reg-6; % safe_second pmod
+    x1 = 1:n_cond_reg + n_conf:n_reg-N_runs; % risky_first event
+    x2 = 2:n_cond_reg + n_conf:n_reg-N_runs; % risky_first pmod
+    x3 = 3:n_cond_reg + n_conf:n_reg-N_runs; % risky_second event
+    x4 = 4:n_cond_reg + n_conf:n_reg-N_runs; % risky_second pmod
+    x5 = 5:n_cond_reg + n_conf:n_reg-N_runs; % safe_first event
+    x6 = 6:n_cond_reg + n_conf:n_reg-N_runs; % safe_first pmod
+    x7 = 7:n_cond_reg + n_conf:n_reg-N_runs; % safe_second event
+    x8 = 8:n_cond_reg + n_conf:n_reg-N_runs; % safe_second pmod
 
 
     %session 1
-    x9 = 9:n_cond_reg + n_conf:n_reg-6; % risky_first event
-    x10 = 10:n_cond_reg + n_conf:n_reg-6; % risky_first pmod
-    x11 = 11:n_cond_reg + n_conf:n_reg-6; % risky_second event
-    x12 = 12:n_cond_reg + n_conf:n_reg-6; % risky_second pmod
-    x13 = 13:n_cond_reg + n_conf:n_reg-6; % safe_first event
-    x14 = 14:n_cond_reg + n_conf:n_reg-6; % safe_first pmod
-    x15 = 15:n_cond_reg + n_conf:n_reg-6; % safe_second event
-    x16 = 16:n_cond_reg + n_conf:n_reg-6; % safe_second pmod
+    x9 = 9:n_cond_reg + n_conf:n_reg-N_runs; % risky_first event
+    x10 = 10:n_cond_reg + n_conf:n_reg-N_runs; % risky_first pmod
+    x11 = 11:n_cond_reg + n_conf:n_reg-N_runs; % risky_second event
+    x12 = 12:n_cond_reg + n_conf:n_reg-N_runs; % risky_second pmod
+    x13 = 13:n_cond_reg + n_conf:n_reg-N_runs; % safe_first event
+    x14 = 14:n_cond_reg + n_conf:n_reg-N_runs; % safe_first pmod
+    x15 = 15:n_cond_reg + n_conf:n_reg-N_runs; % safe_second event
+    x16 = 16:n_cond_reg + n_conf:n_reg-N_runs; % safe_second pmod
 
     rfe(x1) = -1; rfe(x9)=1;
     rfp(x2) = -1; rfp(x10)=1;

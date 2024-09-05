@@ -101,11 +101,17 @@ rsync -rzcv  --include="*/" --include="*.tsv" --include="*/ses-2/*" --exclude="*
 * * `01 02 03 04 05 09 10 12 13 14 16 17 18 19 21 22 23 24 25 26 28 30 31 32 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 57 58 59 61`
 * * `01,02,03,04,05,09,10,12,13,14,16,17,18,19,21,22,23,24,25,26,28,30,31,32,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,57,58,59,61`
 
-# Sciencecloud2
-- Log in on sciencelcoud: ssh ….
-- start VNC: `vncserver - localhost`
-- create tunnel (on local): `ssh -L 5901:localhost:5901 ubuntu@172.23.186.207` (one science cloud IP address!!)
+# Sciencecloud2/ Matlab fun
+- Log in on sciencelcoud: `ssh sciencelcoud2`.
+- start VNC (on sciencecloud2): `vncserver -localhost` (kill previous if neccessary )
+- create tunnel (on local): `ssh -L 5901:localhost:5901 ubuntu@172.23.38.114 ` (before: 172.23.186.207, check science cloud IP address,`hostname -I` on sciencecloud)
 -open GUI: open finder (on local), go to GO, connect to server, vnc://localhost:5901
+
+- start matlab: open terminal, type matlab
+- add spm path
+
+- 'stress_risk/fmri_analysis/glm_scripts'
+- VM computations started via GUI keep running even if I close local computer (GUI and cmdline)
 
 ## file placing for GLM on sciencecloud2
 
@@ -121,15 +127,17 @@ do rsync -rvz /Volumes/mrenkeED/data/ds-stressrisk/derivatives/fmriprep/sub-${su
 * events.txt to sciencecloud
     * do rsync -rcvz /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub} sciencecloud2:/mnt/ds-stressrisk/derivatives/spm; done;
     * do for ses in 1 2; do rsync -avz --include='*/' --include='*NLCn.txt' --exclude='*' /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/ sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}; done; done;
-    * do for ses in 1 2; do rsync -rcvz /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/event_files sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}; done; done;
+    * do for ses in 1 2; do rsync -rcvz /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/event_files sciencecloud2:/mnt_01/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}; done; done;
 
 14 34 40 41 57
 # sync back SPMs from sciencecloud2 to local/ED
 
 * 2ndLevel-SPM folders: 
-rsync -avzr --include='2ndlevel_*/' --exclude='*/' sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/ /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm
+rsync -avzr --include='2ndlevel_*/' --exclude='*/' sciencecloud2:/mnt_01/ds-stressrisk/derivatives/spm/ /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm
 
-rsync -avzr --include='1stlevel_*/' --exclude='*.*' sciencecloud2:/mnt/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/ /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}
+rsync -avzr --include='1stlevel_*/' --exclude='*.*' sciencecloud2:/mnt_01/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/ /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}
+
+rsync -rcvz sciencecloud2:/mnt_01/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}/1stlevel_Vhat-1 /Volumes/mrenkeED/data/ds-stressrisk/derivatives/spm/sub-${sub}/ses-${ses}
 
 * 1stlevel back to /Volumes to make space on /mnt
 --> loop ofer sub, ses, model
