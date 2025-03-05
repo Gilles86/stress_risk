@@ -18,7 +18,7 @@ from nilearn.maskers import NiftiMasker
 # needs:
 # encoding_model.cv.denoise/../ses-1; vor CV voxel selection
 # encoding_model.denoise/../ses-1 ; 
-# ginel-trial-estimates: glm_stim1.denoise/../ses-1 & ses-2 ! ; 
+# singel-trial-estimates: glm_stim1.denoise/../ses-1 & ses-2 ! ; 
 # paradigm: ..run-..events.txt ses1 & ses-2
 # IPS-mask
 
