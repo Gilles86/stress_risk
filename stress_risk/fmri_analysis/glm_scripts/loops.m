@@ -3,7 +3,7 @@
 % 2. different versions of 1stlevels
 
 % general variable definitions
-bids_folder = '/mnt/ds-stressrisk'
+bids_folder = '/mnt_01/ds-stressrisk'
 
 subList = dir([bids_folder, '/sub-*'])
 subList = {subList.name}
@@ -59,23 +59,15 @@ end
 %% 2.1. 1stlevel( - version 1) loop + deleting old folders (for more space on Volume (/mnt))
 
 errorL = [];
-model = 'NLC' % carefull, timing files are named inconsistently among different model types (e.g. '...n1_EV' vs ' '...n1-EU')
+model = 'EU' % carefull, timing files are named inconsistently among different model types (e.g. '...n1_EV' vs ' '...n1-EU')
 
 for sub=1:numel(subList)
     for ses=1:2
-       try       
-            target_folder= strcat(bids_folder,'/derivatives','/spm/',subList{sub},'/',sesList{ses});
-            
-            %1stlevel, remove old
-            cd(target_folder)
-            try
-                rmdir('1stlevel_EV-1','s')
-                %rmdir('1stlevel_EU-3','s')
-
-            end
-            
-            first_level_spm_V1b(subList{sub},sesList{ses},bids_folder, model); % scirpt adds automatically '-1'
-
+       try  
+            cd('/home/ubuntu/git/stress_risk/stress_risk/fmri_analysis/glm_scripts')
+            %first_level_spm_V1(subList{sub},sesList{ses},bids_folder, model); % scirpt adds automatically '-1'
+            get_addEventContrast_1stLevel_V1(subList{sub},sesList{ses},bids_folder, model); 
+            [subList{sub} ' ' sesList{ses} 'done']
         catch
             [subList{sub} ' ' sesList{ses} 'problem']
             errorL = [errorL; subList{sub}];
@@ -83,7 +75,16 @@ for sub=1:numel(subList)
         
     end 
 end
+%% snippet to remove old folders
+            target_folder= strcat(bids_folder,'/derivatives','/spm/',subList{sub},'/',sesList{ses});
 
+            %1stlevel, remove old
+            cd(target_folder)
+            try
+                rmdir('1stlevel_EV-1','s')
+                %rmdir('1stlevel_EU-3','s')
+
+            end
 
 %% 2.2. 1stlevel( - version 2)
 

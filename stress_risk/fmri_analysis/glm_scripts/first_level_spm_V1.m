@@ -28,7 +28,7 @@ function first_level_spm_V1(subject,session,bids_folder, model) % was: first_lev
     matlabbatch{2}.spm.stats.fmri_spec.timing.fmri_t0 = refSlice;
 
     % 1st Model Specification
-    ff = dir(strcat(target_folder,'/fwhm-8_sub*run-', string(run), '*.nii'));
+    ff = dir(strcat(target_folder,'/ssub*run-', string(run), '*.nii'));
     ff = spm_select('ExtList',target_folder,ff.name ,Inf);  
     
     file_nuisance = fullfile(bids_folder,'derivatives','spm', subject, session,[subject '_' session '_task-risk_run-' num2str(run) '_mult-reg-confounds.mat']);

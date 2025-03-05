@@ -120,7 +120,7 @@ denoise=True, retroicor=False, mask='NPC_R', value=False):
         train_data, train_paradigm = data.drop(test_run, level='run').copy(), paradigm.drop(test_run, level='run').copy()
 
         pars = sub.get_prf_parameters_volume(session, cross_validated=True,
-        denoise=denoise, retroicor=retroicor,
+                denoise=denoise, retroicor=retroicor,
                 smoothed=smoothed, pca_confounds=pca_confounds,
                 run=test_run, roi=mask,
                 value=value)

@@ -61,7 +61,7 @@ def loadGradAsNpArray(sub,ses,bids_folder,specification, space = 'fsnative', par
 def get_events_confounds(sub, ses, run, bids_folder='/Users/mrenke/data/ds-stressrisk'):
     tr = 2.3 # repetition Time
     n = 135  # number of slices
-    df_events = pd.read_csv(op.join(bids_folder, f'sub-{sub}', f'ses-{ses}', 'func', f'sub-{sub}_ses-{ses}_task-risk_run-1_events.tsv'.format(sub=sub, ses=ses)), sep='\t')
+    df_events = pd.read_csv(op.join(bids_folder, f'sub-{sub}', f'ses-{ses}', 'func', f'sub-{sub}_ses-{ses}_task-risk_run-{run}_events.tsv'.format(sub=sub, ses=ses)), sep='\t') # before run was ot interated over (run-1)
     
     stimulus1 = df_events.loc[df_events['trial_type'] == 'stimulus 1', ['onset', 'trial_nr', 'trial_type', 'n1']]
     stimulus1['duration'] = 0.6 + 0.8
