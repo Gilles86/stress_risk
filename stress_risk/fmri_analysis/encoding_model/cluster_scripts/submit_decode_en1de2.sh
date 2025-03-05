@@ -1,9 +1,9 @@
 #!/bin/bash
 #SBATCH --job-name=decode_volume
-#SBATCH --output=/home/mrenke/logs/decode_svox_en1-de2_%A-%a.txt
+#SBATCH --output=/home/mrenke/logs/stress_risk_logs/decode_svox_en1-de2_%A-%a.txt
 #SBATCH --ntasks=1
 #SBATCH --mem=96G
-#SBATCH --gres gpu:1
+#SBATCH --gpus=V100:1 --constraint=GPUMEM32GB
 #SBATCH --time=3:00:00
 
 source /etc/profile.d/lmod.sh
