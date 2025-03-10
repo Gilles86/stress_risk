@@ -19,4 +19,4 @@ source activate numrefields
 
 export PARTICIPANT_LABEL=$(printf "%02d" $SLURM_ARRAY_TASK_ID)
 
-python $HOME/git/numrisk/numrisk/fmri_analysis/encoding_model/fit_regression_encoding_model.py $PARTICIPANT_LABEL --bids_folder /shares/zne.uzh/mrenke/ds-stressrisk 
+python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/fit_regression_encoding_model.py $PARTICIPANT_LABEL --bids_folder /shares/zne.uzh/mrenke/ds-stressrisk 

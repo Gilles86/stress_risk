@@ -44,7 +44,7 @@ def main(subject, smoothed, model_label=6, bids_folder='/Users/mrenke/data/ds-st
 
     # Get paradigm/data/model
     sub = Subject(subject, bids_folder=bids_folder)
-    behavior = sub.get_behavior(sessions=None).reset_index('session') # session will be range
+    behavior = sub.get_behavior(sessions=None, drop_no_responses=False).reset_index('session') # session will be range
     paradigm = behavior[['n1', 'session']].rename(columns={'n1':'x' }) #,'session':'range'
     #if not gaussian:
     paradigm['x'] = np.log(paradigm['x']) # as before
@@ -114,8 +114,8 @@ if __name__ == '__main__':
     parser.add_argument('--model_label', default=6, type=int)
     parser.add_argument('--bids_folder', default='/Users/mrenke/data/ds-stressrisk')
     parser.add_argument('--smoothed', action='store_true')
-    parser.add_argument('--log_space', action='store_true')
+    #parser.add_argument('--log_space', action='store_true')
     parser.add_argument('--debug', action='store_true')
     args = parser.parse_args()
 
-    main(args.subject, model_label=args.model_label, smoothed=args.smoothed, bids_folder=args.bids_folder, debug=args.debug, gaussian=not args.log_space)
+    main(args.subject, model_label=args.model_label, smoothed=args.smoothed, bids_folder=args.bids_folder, debug=args.debug) # , gaussian=not args.log_space
