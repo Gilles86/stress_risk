@@ -18,12 +18,18 @@ from braincoder.models import RegressionGaussianPRF
 
 # MODEL 0: NULL MODEL
 # MODEL 1: Shift model
+# MODEL 2: Everything differs-model
 
 def get_model(paradigm, model_label):
     if model_label == 0:
         regressors = {}
     elif model_label == 1:
         regressors = {'mu':'0 + C(session)'}
+    elif model_label == 2:
+        regressors = {'mu':'0 + C(session)',
+                      'sd': '0 + C(session)',
+                      'amplitude': '0 + C(session)',
+                      'baseline': '0 + C(session)'}
     else:
         raise NotImplementedError(f"Model {model_label} is not implemented")
 
@@ -40,7 +46,9 @@ def get_grid(model_label):
     if model_label == 0:
         return modes, sds, amplitudes, baselines
     elif model_label == 1:
-        return modes, sds, amplitudes, baselines
+        return modes, modes, sds, amplitudes, baselines
+    elif model_label == 2:
+        return modes, modes, sds, sds, amplitudes, amplitudes, baselines, baselines
     else:
         raise NotImplementedError(f"Model {model_label} is not implemented")
 
@@ -51,8 +59,13 @@ def fit_model(model_label, model, data, paradigm, max_n_iterations=1000):
     grid = get_grid(model_label)
 
     grid_pars = fitter.fit_grid(*grid, use_correlation_cost=True)
-    grid_pars = fitter.refine_baseline_and_amplitude(grid_pars, n_iterations=2)
-    gd_pars = fitter.fit(init_pars=grid_pars, learning_rate=.05, store_intermediate_parameters=False, max_n_iterations=max_n_iterations, r2_atol=0.00001)
+    if model_label in[0, 1]:
+        init_pars = fitter.refine_baseline_and_amplitude(grid_pars, n_iterations=2)
+    elif model_label in [2]:
+        fixed_pars = [('mu_unbounded', 'C(session)[1]'), ('mu_unbounded', 'C(session)[2]'), ('sd_unbounded', 'C(session)[1]'), ('sd_unbounded', 'C(session)[2]')]
+        init_pars = fitter.fit(init_pars=grid_pars, learning_rate=.05, store_intermediate_parameters=False, max_n_iterations=max_n_iterations, r2_atol=0.00001, fixed_pars=fixed_pars)
+
+    gd_pars = fitter.fit(init_pars=init_pars, learning_rate=.05, store_intermediate_parameters=False, max_n_iterations=max_n_iterations, r2_atol=0.00001)
 
     return gd_pars
 
@@ -104,14 +117,6 @@ def main(subject, smoothed, model_label=1, bids_folder='/data/ds-stressrisk', re
     session1 = 1
     ips_mask = sub.get_volume_mask(roi=roi, session=1, epi_space=True) # anat from session1
     ips_masker = NiftiMasker(mask_img=ips_mask)
-    im_cvr2_fn = op.join(bids_folder, 'derivatives', source_key_vselect, f'sub-{subject}', f'ses-{session1}','func', f'sub-{subject}_ses-{session1}_desc-cvr2.optim_space-T1w_pars.nii.gz')
-    im_cvr2 = image.load_img(im_cvr2_fn)
-    cv_r2 = pd.DataFrame(ips_masker.fit_transform(im_cvr2))
-    r2_mask = cv_r2 > 0.0
-    r2_mask = r2_mask.to_numpy().T
-    n_voxels = r2_mask.sum()
-    print(f'Number of voxels: {n_voxels}')
-
     # single trial functional brain data
     data_s1 = op.join(bids_folder, 'derivatives', source_key_glm,
                     f'sub-{subject}', f'ses-1', 'func', f'sub-{subject}_ses-1_task-risk_space-T1w_desc-stims1_pe.nii.gz')
