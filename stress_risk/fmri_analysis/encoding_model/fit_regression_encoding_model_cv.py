@@ -8,6 +8,7 @@ import pandas as pd
 from nilearn.maskers import NiftiMasker
 from nilearn import image
 from braincoder.models import RegressionGaussianPRF
+from fit_regression_encoding_model import get_model, fit_model, get_conditionspecific_parameters
 
 
 # concatenate sessions paradigms with additional column 'range'
@@ -19,51 +20,6 @@ from braincoder.models import RegressionGaussianPRF
 # MODEL 0: NULL MODEL
 # MODEL 1: Shift model
 
-def get_model(paradigm, model_label):
-    if model_label == 0:
-        regressors = {}
-    elif model_label == 1:
-        regressors = {'mu':'0 + C(session)'}
-    else:
-        raise NotImplementedError(f"Model {model_label} is not implemented")
-
-    model = RegressionGaussianPRF(paradigm=paradigm, regressors=regressors)
-
-    return model
-
-def get_grid(model_label):
-    modes = np.linspace(np.log(5), np.log(40), 30)
-    sds = np.linspace(np.log(2), np.log(30), 30)
-    amplitudes = np.array([1.], dtype=np.float32)
-    baselines = np.array([0], dtype=np.float32)
-
-    if model_label == 0:
-        return modes, sds, amplitudes, baselines
-    elif model_label == 1:
-        return modes, sds, amplitudes, baselines
-    else:
-        raise NotImplementedError(f"Model {model_label} is not implemented")
-
-def fit_model(model_label, model, data, paradigm, max_n_iterations=1000):
-    from braincoder.optimize import ParameterFitter
-    fitter = ParameterFitter(model, data, paradigm)
-
-    grid = get_grid(model_label)
-
-    grid_pars = fitter.fit_grid(*grid, use_correlation_cost=True)
-    grid_pars = fitter.refine_baseline_and_amplitude(grid_pars, n_iterations=2)
-    gd_pars = fitter.fit(init_pars=grid_pars, learning_rate=.05, store_intermediate_parameters=False, max_n_iterations=max_n_iterations, r2_atol=0.00001)
-
-    return gd_pars
-
-def get_conditionspecific_parameters(model_label, model, estimated_parameters):
-    
-    conditions = pd.DataFrame({'x':[0,0], 'session':[1,2]}, index=pd.Index([1, 2], name='session'))
-
-    pars = model.get_conditionspecific_parameters(conditions, estimated_parameters)
-    
-    return pars.unstack('session')
-
 def main(subject, smoothed, model_label=1, bids_folder='/data/ds-stressrisk', retroicor=True, debug=False, roi='NPC_R'): # gaussian=True, 
 
     max_n_iterations = 100 if debug else 1000
@@ -74,7 +30,7 @@ def main(subject, smoothed, model_label=1, bids_folder='/data/ds-stressrisk', re
     source_key_glm = 'glm_stim1.denoise'
 
     source_key_vselect = 'encoding_model.cv.denoise'
-    target_key = 'encoding_model'
+    target_key = 'encoding_model.cv'
     target_key += f'.model{model_label}'
     
     if retroicor:
@@ -84,8 +40,6 @@ def main(subject, smoothed, model_label=1, bids_folder='/data/ds-stressrisk', re
 
     if smoothed:
         source_key_glm += '.smoothed'
-        target_key += '.smoothed'
-        source_key_vselect += '.smoothed'
 
     target_dir = op.join(bids_folder, 'derivatives', target_key, f'sub-{subject}', 'func')
     if not op.exists(target_dir):
@@ -98,49 +52,63 @@ def main(subject, smoothed, model_label=1, bids_folder='/data/ds-stressrisk', re
     #if not gaussian:
     paradigm['x'] = np.log(paradigm['x']) # as before
     paradigm['x'] = paradigm['x'].astype(np.float32)
+    paradigm.set_index('session', drop=False, inplace=True, append=True)
+    print(paradigm)
+    paradigm = paradigm.droplevel('subject').reorder_levels(['session', 'run', 'trial_nr']).sort_index()
     print(paradigm.describe())
 
     # get average cv-r2 map from seesion 1 for voxel selection
     session1 = 1
     ips_mask = sub.get_volume_mask(roi=roi, session=1, epi_space=True) # anat from session1
     ips_masker = NiftiMasker(mask_img=ips_mask)
-    im_cvr2_fn = op.join(bids_folder, 'derivatives', source_key_vselect, f'sub-{subject}', f'ses-{session1}','func', f'sub-{subject}_ses-{session1}_desc-cvr2.optim_space-T1w_pars.nii.gz')
-    im_cvr2 = image.load_img(im_cvr2_fn)
-    cv_r2 = pd.DataFrame(ips_masker.fit_transform(im_cvr2))
-    r2_mask = cv_r2 > 0.0
-    r2_mask = r2_mask.to_numpy().T
-    n_voxels = r2_mask.sum()
-    print(f'Number of voxels: {n_voxels}')
 
     # single trial functional brain data
     data_s1 = op.join(bids_folder, 'derivatives', source_key_glm,
                     f'sub-{subject}', f'ses-1', 'func', f'sub-{subject}_ses-1_task-risk_space-T1w_desc-stims1_pe.nii.gz')
     data_s2 = op.join(bids_folder, 'derivatives', source_key_glm,
                     f'sub-{subject}', f'ses-2', 'func', f'sub-{subject}_ses-2_task-risk_space-T1w_desc-stims1_pe.nii.gz')
+
     data = np.concatenate([ips_masker.fit_transform(data_s1), ips_masker.fit_transform(data_s2)], axis=0)
     data = pd.DataFrame(data, index=paradigm.index)
 
-    # # Get model
-    model = get_model(paradigm, model_label)
+    print(data)
 
-    # # Fit model
-    gd_pars = fit_model(model_label, model, data, paradigm, max_n_iterations=max_n_iterations)
+    all_cvr2 = []
 
-    pred = model.predict(parameters=gd_pars, paradigm=paradigm)
-    r2 = get_rsq(data, pred)
-    print(r2.describe())
+    for (test_session, test_run), _ in paradigm.groupby(level=['session', 'run']):
 
-    conditionwise_pars = get_conditionspecific_parameters(model_label, model, gd_pars)
-    print(conditionwise_pars)
+        print(f'Fitting using session {test_session} run {test_run} as test set')
 
-    # # save output
+        test_data, test_paradigm = data.loc[(test_session, test_run)].copy().astype(np.float32), paradigm.loc[(test_session, test_run)].copy().astype(np.float32)
+        train_data, train_paradigm = data.drop((test_session, test_run)).copy(), paradigm.drop((test_session, test_run)).copy()
 
-    ips_masker.inverse_transform(r2).to_filename(op.join(target_dir, f'sub-{subject}_desc-r2.optim_space-T1w_pars.nii.gz'))
+        # Get model
+        model = get_model(train_paradigm, model_label)
 
-    for par in ['mu', 'sd', 'amplitude', 'baseline']:
-        for session in range(1, 3):
-            target_fn = op.join(target_dir, f'sub-{subject}_ses-{session}_desc-{par}.optim_space-T1w_pars.nii.gz')
-            ips_masker.inverse_transform(conditionwise_pars[par, session]).to_filename(target_fn)
+        # # Fit model
+        gd_pars = fit_model(model_label, model, train_data, train_paradigm, max_n_iterations=max_n_iterations)
+
+        # pred = model.predict(parameters=gd_pars, paradigm=paradigm)
+        # r2 = get_rsq(data, pred)
+        # print(r2.describe())
+
+        conditionwise_pars = get_conditionspecific_parameters(model_label, model, gd_pars)
+        print(conditionwise_pars)
+
+        model.set_paradigm(test_paradigm)
+        test_pred = model.predict(paradigm=test_paradigm, parameters=gd_pars)
+
+        cvr2 = get_rsq(test_data, test_pred)
+
+        print(cvr2.describe())
+
+        all_cvr2.append(cvr2)
+    
+    all_cvr2 = pd.concat(all_cvr2, axis=1)
+    mean_cvr2 = all_cvr2.mean(axis=1)
+
+    target_fn = op.join(target_dir, f'sub-{subject}_desc-cvr2.optim_space-T1w_pars.nii.gz')
+    ips_masker.inverse_transform(mean_cvr2).to_filename(target_fn)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
