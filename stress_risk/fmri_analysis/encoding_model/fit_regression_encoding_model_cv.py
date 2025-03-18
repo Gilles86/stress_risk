@@ -28,18 +28,16 @@ def main(subject, smoothed, model_label=1, bids_folder='/data/ds-stressrisk', re
     subject = f'{int(subject):02d}'
 
     source_key_glm = 'glm_stim1.denoise'
-
-    source_key_vselect = 'encoding_model.cv.denoise'
     target_key = 'encoding_model.cv'
     target_key += f'.model{model_label}'
     
     if retroicor:
         target_key += '.retroicor'
         source_key_glm += '.retroicor'
-        source_key_vselect += '.retroicor'
 
     if smoothed:
         source_key_glm += '.smoothed'
+        target_key += '.smoothed'
 
     target_dir = op.join(bids_folder, 'derivatives', target_key, f'sub-{subject}', 'func')
     if not op.exists(target_dir):
