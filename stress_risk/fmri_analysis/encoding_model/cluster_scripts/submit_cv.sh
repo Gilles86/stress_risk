@@ -1,20 +1,18 @@
 #!/bin/bash
-#SBATCH --job-name=task_fit_cv
-#SBATCH --output=/home/cluster/gdehol/logs/fit_nprf_smoothed_surf_%A-%a.txt
-#SBATCH --partition=volta
+#SBATCH --job-name=nprf_fit_joint_alphagaussian_cv
 #SBATCH --ntasks=1
-#SBATCH --mem=96G
+#SBATCH --time=120:00
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=64G  # Request more memory
 #SBATCH --gres gpu:1
-#SBATCH --time=2:00:00
-module load volta
-module load nvidia/cuda11.2-cudnn8.1.0
 
-# . $HOME/init_conda.sh
+. $HOME/init_conda.sh
 # . $HOME/init_freesurfer.sh
-. $HOME/.bashrc.sh
+# . $HOME/.bashrc.sh
 
 export PARTICIPANT_LABEL=$(printf "%02d" $SLURM_ARRAY_TASK_ID)
 
 source activate tf2-gpu
-python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/fit_model_cv.py $PARTICIPANT_LABEL 1 --bids_folder /scratch/gdehol/ds-stressrisk --denoise
-python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/fit_model_cv.py $PARTICIPANT_LABEL 1 --bids_folder /scratch/gdehol/ds-stressrisk --smoothed --denoise
+# python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/fit_model_cv.py $PARTICIPANT_LABEL 1 --bids_folder /scratch/gdehol/ds-stressrisk --denoise
+python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/fit_model_cv.py $PARTICIPANT_LABEL 1 --bids_folder /scratch/gdehol/ds-stressrisk --smoothed --denoise --retroicor
+python $HOME/git/stress_risk/stress_risk/fmri_analysis/encoding_model/fit_model_cv.py $PARTICIPANT_LABEL 2 --bids_folder /scratch/gdehol/ds-stressrisk --smoothed --denoise --retroicor

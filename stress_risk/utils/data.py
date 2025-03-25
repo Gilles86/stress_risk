@@ -42,11 +42,16 @@ def add_cond2df(df):
 
     return df
 
+def get_group_mapping(bids_folder='/data/ds-stressrisk'):
+    subject_list = pd.read_csv(f'{bids_folder}/group_assignmentList.csv', index_col=1).drop('Unnamed: 0', axis=1)['group']
+    return subject_list
+
 
 def get_subjects(bids_folder='/data/ds-stressrisk', correct_behavior=True, correct_npc=False):
-    subjects = list(range(1, 200))
+    bids_folder = '/data/ds-stressrisk'
+    subject_list = pd.read_csv(f'{bids_folder}/group_assignmentList.csv', index_col=1).drop('Unnamed: 0', axis=1)
 
-    subjects = [Subject(subject, bids_folder) for subject in subjects]
+    subjects = [Subject(subject, bids_folder) for subject in subject_list.index]
 
     return subjects
 
@@ -54,7 +59,13 @@ def get_all_behavior(bids_folder='/data/ds-stressrisk', correct_behavior=True, c
 
     subjects = get_subjects(bids_folder, correct_behavior, correct_npc)
     behavior = [s.get_behavior(drop_no_responses=drop_no_responses, value=value) for s in subjects]
-    return pd.concat(behavior)
+    behavior = pd.concat(behavior)
+
+    mapping = get_group_mapping(bids_folder)
+    behavior['group'] = behavior.index.get_level_values('subject').map(mapping)
+    behavior.set_index('group', append=True, inplace=True)
+    behavior = behavior.reorder_levels(['group', 'subject', 'session', 'run', 'trial_nr']) 
+    return behavior
 
 
 class Subject(object):
@@ -175,6 +186,7 @@ class Subject(object):
         df['choice'] = df_[('choice', 'choice')]
         df['risky_first'] = df['prob1'] == 0.55
         df['chose_risky'] = (df['risky_first'] & (df['choice'] == 1.0)) | (~df['risky_first'] & (df['choice'] == 2.0))
+        df['chose_risky'] = df['chose_risky'].astype(float)
         df.loc[df.choice.isnull(), 'chose_risky'] = np.nan
 
 
@@ -322,7 +334,7 @@ class Subject(object):
         if roi is None:
             if epi_space:
                 base_mask = op.join(self.bids_folder, 'derivatives', f'fmriprep/sub-{self.subject}/ses-{session}/func/sub-{self.subject}_ses-{session}_task-risk_run-1_space-T1w_desc-brain_mask.nii.gz')
-                return image.load_img(base_mask)
+                return image.load_img(base_mask, dtype='int32')
             else:
                 raise NotImplementedError
         elif roi.startswith('NPC'):
@@ -342,8 +354,9 @@ class Subject(object):
 
         if epi_space:
             base_mask = op.join(self.bids_folder, 'derivatives', f'fmriprep/sub-{self.subject}/ses-{session}/func/sub-{self.subject}_ses-{session}_task-risk_run-1_space-T1w_desc-brain_mask.nii.gz')
+            base_mask = image.load_img(base_mask, dtype='int32')
 
-            mask = image.resample_to_img(mask, base_mask, interpolation='nearest')
+            mask = image.resample_to_img(mask, base_mask, interpolation='nearest',  force_resample=False, copy_header=True)
 
         return mask
     
@@ -388,7 +401,7 @@ class Subject(object):
         parameters = []
         
         if keys is None:
-            keys = ['mu', 'sd', 'amplitude', 'baseline']
+            keys = ['mu', 'sd', 'amplitude', 'baseline', 'r2', 'cvr2']
 
         mask = self.get_volume_mask(session=session, roi=roi, epi_space=True)
         masker = NiftiMasker(mask)
@@ -398,8 +411,14 @@ class Subject(object):
                 fn = op.join(self.bids_folder, 'derivatives', dir, f'sub-{self.subject}', f'ses-{session}', 
                         'func', f'sub-{self.subject}_ses-{session}_run-{run}_desc-{parameter_key}.optim_space-T1w_pars.nii.gz')
             else:
-                fn = op.join(self.bids_folder, 'derivatives', dir, f'sub-{self.subject}', f'ses-{session}', 
-                        'func', f'sub-{self.subject}_ses-{session}_desc-{parameter_key}.optim_space-T1w_pars.nii.gz')
+
+                if parameter_key == 'cvr2':
+                    fn = op.join(self.bids_folder, 'derivatives', dir.replace('encoding_model', 'encoding_model.cv'), f'sub-{self.subject}',
+                                 f'ses-{session}', 'func', f'sub-{self.subject}_ses-{session}_desc-{parameter_key}.optim_space-T1w_pars.nii.gz')
+
+                else:
+                    fn = op.join(self.bids_folder, 'derivatives', dir, f'sub-{self.subject}', f'ses-{session}', 
+                            'func', f'sub-{self.subject}_ses-{session}_desc-{parameter_key}.optim_space-T1w_pars.nii.gz')
             
             pars = pd.Series(masker.fit_transform(fn).ravel())
             parameters.append(pars)
@@ -410,7 +429,56 @@ class Subject(object):
             return masker.inverse_transform(parameters.T)
 
         return parameters
-    
+
+    def get_prf_parameters_volume2(self, model_label=0, smoothed=True, roi='NPC_R'):
+
+        dir = 'encoding_model'
+        dir += f'.model{model_label}'
+        dir += '.retroicor'
+            
+        if smoothed:
+            dir += '.smoothed'
+
+        cv_dir = dir.replace('encoding_model', 'encoding_model.cv')
+
+        par_keys = ['mu', 'sd', 'amplitude', 'baseline', 'cvr2', 'r2']
+
+        mask = self.get_volume_mask(session=1, roi=roi, epi_space=True)
+        masker = NiftiMasker(mask)
+
+        parameters = []
+
+        keys = []
+
+        for par_key in par_keys:
+            if par_key not in ['cvr2', 'r2']:
+                for session in [1, 2]:
+                    fn = op.join(self.bids_folder, 'derivatives', dir, f'sub-{self.subject}', 
+                            'func', f'sub-{self.subject}_ses-{session}_desc-{par_key}.optim_space-T1w_pars.nii.gz')
+                    pars = pd.Series(masker.fit_transform(fn).ravel())
+                    parameters.append(pars)
+                    keys.append((par_key, session))
+            elif par_key == 'r2':
+                fn = op.join(self.bids_folder, 'derivatives', dir, f'sub-{self.subject}', 
+                            'func', f'sub-{self.subject}_desc-{par_key}.optim_space-T1w_pars.nii.gz')
+                pars = pd.Series(masker.fit_transform(fn).ravel())
+                parameters.append(pars)
+                keys.append((par_key, None))
+            elif par_key == 'cvr2':
+                fn = op.join(self.bids_folder, 'derivatives', cv_dir, f'sub-{self.subject}', 
+                        'func', f'sub-{self.subject}_desc-{par_key}.optim_space-T1w_pars.nii.gz')
+                pars = pd.Series(masker.fit_transform(fn).ravel())
+                parameters.append(pars)
+                keys.append((par_key, None))
+
+        parameters = pd.concat(parameters, axis=1, keys=keys, names=['parameter', 'session'])
+
+        return parameters
+
+
+
+
+
     def get_prf_parameters_surf(self, session, run=None, smoothed=False, cross_validated=False, hemi=None, mask=None, space='fsnative',
         parameters=None, key=None, nilearn=True):
 
