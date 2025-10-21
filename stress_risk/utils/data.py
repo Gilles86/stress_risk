@@ -18,9 +18,10 @@ def get_data(bids_folder='/Users/mrenke/data/ds-stressrisk',value=False ):
     df['p1'] = df['prob1']
     df['p2'] = df['prob2']
 
-    df = add_cond2df(df) # adds 
-    df = df.dropna() # automatially removes subs without group assignment
+    #df = add_cond2df(df) # adds 
+    #df = df.dropna() # automatially removes subs without group assignment
     df = df.reset_index(level= 'session', drop=False) 
+
     return df
 
 def add_cond2df(df):
@@ -48,11 +49,11 @@ def get_group_mapping(bids_folder='/data/ds-stressrisk'):
 
 
 def get_subjects(bids_folder='/data/ds-stressrisk', correct_behavior=True, correct_npc=False):
-    bids_folder = '/data/ds-stressrisk'
+    #bids_folder = '/data/ds-stressrisk'
     subject_list = pd.read_csv(f'{bids_folder}/group_assignmentList.csv', index_col=1).drop('Unnamed: 0', axis=1)
 
     subjects = [Subject(subject, bids_folder) for subject in subject_list.index]
-
+    print(f'Found {len(subjects)} subjects')
     return subjects
 
 def get_all_behavior(bids_folder='/data/ds-stressrisk', correct_behavior=True, correct_npc=False, drop_no_responses=True,value=False ):
