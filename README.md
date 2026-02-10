@@ -17,11 +17,12 @@ install via
 ## Usage
 
 All code that was used to present the experiment to participants can be found in https://github.com/Gilles86/stress_risk/tree/main/experiment
+
 All analysis code can be found in https://github.com/Gilles86/stress_risk/tree/main/stress_risk
 
 ## Further info
 
 The project heavily builds upon the following two packages
 
-braincoder (https://braincoder-devs.github.io)
-bauer (https://github.com/ruffgroup/bauer/tree/main)
+* braincoder (https://braincoder-devs.github.io)
+* bauer (https://github.com/ruffgroup/bauer/tree/main)
