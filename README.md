@@ -16,9 +16,9 @@ install via
 
 ## Usage
 
-All code that was used to present the experiment to participants can be found in https://github.com/Gilles86/stress_risk/tree/main/experiment
-
-All analysis code can be found in https://github.com/Gilles86/stress_risk/tree/main/stress_risk
+* code that was used to present the main experiment to participants can be found in `experiment`
+* code for the stress task in `fMRIMIST`
+* all analysis code (behavior & neural) can be found in `stress_risk`
 
 ## Further info
 
