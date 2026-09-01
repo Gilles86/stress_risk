@@ -1,3 +1,9 @@
+> **Superseded.** Kept for the install notes at the bottom. For the analysis
+> pipeline use [`stress_risk/plots_for_paper/README.md`](stress_risk/plots_for_paper/README.md)
+> (what produced each paper figure) and
+> [`stress_risk/analysis_pipeline_StressRisk.md`](stress_risk/analysis_pipeline_StressRisk.md)
+> (the actual cluster commands).
+
 ##
 
 ## get data, convert behavior & MRI

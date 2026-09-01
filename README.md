@@ -20,6 +20,16 @@ install via
 * code for the stress task in `fMRIMIST`
 * all analysis code (behavior & neural) can be found in `stress_risk`
 
+## Where to find what
+
+| Document | Covers |
+| --- | --- |
+| [`stress_risk/plots_for_paper/README.md`](stress_risk/plots_for_paper/README.md) | **Start here for the paper.** Which notebook makes which figure/statistic, and the full chain of scripts that produced every input it reads. |
+| [`stress_risk/ADDITIONAL_ANALYSES.md`](stress_risk/ADDITIONAL_ANALYSES.md) | Analyses that were run but not reported — ROI controls, brain–behaviour correlations, motion controls, model variants. For reviewer questions. |
+| [`stress_risk/DATA_ON_SHARE.md`](stress_risk/DATA_ON_SHARE.md) | Where the data lives on the department share, how to assemble a working `ds-stressrisk` folder from it, and the minimum file set per paper notebook. |
+| [`stress_risk/analysis_pipeline_StressRisk.md`](stress_risk/analysis_pipeline_StressRisk.md) | Operational log: the actual data-transfer, fMRIPrep, MRIQC and cluster commands, with the subject lists. |
+| [`ana_pipe_02.md`](ana_pipe_02.md) | Short sketch of the same pipeline, superseded by the two documents above. |
+
 ## Further info
 
 The project heavily builds upon the following two packages
