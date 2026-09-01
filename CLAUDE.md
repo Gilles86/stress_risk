@@ -61,6 +61,12 @@ Model traces are 300MB–1.2GB; **never add data files to git.**
 
 - Don't reformat or "tidy" notebooks that already ran — stored outputs are results.
   Editing a cell invalidates the output below it.
+- Exception: **strip outputs before committing a notebook whose output is a figure
+  payload, not a result.** A plotly figure embeds ~1.2 MB of mesh JSON per cell;
+  `vis_nPRFmodel_3d.ipynb` reached 12 MB that way and broke `git push` (HTTP 400,
+  git's default 1 MB `http.postBuffer` — this repo now sets it to 500 MB). Commit the
+  exported PDF/PNG next to the notebook instead. This does **not** apply to the
+  `paperFinal_*` notebooks, whose outputs are the reported numbers.
 - Superseded work goes to an `archive/` subfolder with a README entry, not deleted.
 - Prefer adding a new notebook over rewriting one that produced published numbers.
 - Commit only when asked.
