@@ -1,7 +1,7 @@
 import pandas as pd
 import os.path as op
 import numpy as np
-from stress_risk.utils.data import get_all_behavior
+from stress_risk.utils.data import get_all_behavior, get_group_mapping, BIDS_FOLDER
 from tqdm.contrib.itertools import product
 import matplotlib.pyplot as plt
 #import pingouin
@@ -9,7 +9,7 @@ import seaborn as sns
 
 # E['sd'] = np.trapz(np.abs(E.values - pdf.columns.astype(float).values[np.newaxis, :]) * pdf, pdf.columns, axis=1)
 
-def get_decoding_info(subject, session,  bids_folder='/data/ds-stressrisk',key = 'decoded_pdfs.volume', mask='NPC_R', n_voxels=250,retroicor = True, value=False): # , select_voxels=False
+def get_decoding_info(subject, session,  bids_folder=BIDS_FOLDER,key = 'decoded_pdfs.volume', mask='NPC_R', n_voxels=250,retroicor = True, value=False): # , select_voxels=False
 
     subject = f'{subject:02d}'
     
@@ -47,7 +47,7 @@ def get_decoding_info(subject, session,  bids_folder='/data/ds-stressrisk',key =
         return pd.DataFrame(np.zeros((0, 0)))
     
 
-def get_data(bids_folder='/Users/mrenke/data/ds-stressrisk'):
+def get_data(bids_folder=BIDS_FOLDER):
     df = get_all_behavior(bids_folder=bids_folder)
     df['choice'] = df['choice'] == 2.0
     df['p1'] = df['prob1']
@@ -58,9 +58,14 @@ def get_data(bids_folder='/Users/mrenke/data/ds-stressrisk'):
     df = df.reset_index(level= 'session', drop=False) 
     return df
 
-def get_stress_level():
-    df_auc = pd.read_excel('/Users/mrenke/Desktop/StressRisk/2022-StressRisk/Data-Final/auc_cortisol.xlsx')
+def get_stress_level(bids_folder=BIDS_FOLDER):
+    # was: ~/Desktop/StressRisk/2022-StressRisk/Data-Final/auc_cortisol.xlsx
+    # the identical file now lives inside the dataset, so it travels with the share
+    df_auc = pd.read_excel(op.join(bids_folder, 'addMeasures', 'auc_cortisol.xlsx'))
     df_auc = df_auc.rename(columns={'SubjectID':'subject'}).set_index('subject')[['AUC']] # double brackets --> dataframe
     # # df_auc.loc[34] --> sub 34 missing
     df_auc = df_auc[['AUC']].groupby('subject').mean()
+    # the committed version returned AUC only, but paperFinal_supplements.ipynb needs
+    # 'group' (its stored output has it) -- restored here so the notebook runs again
+    df_auc = df_auc.join(get_group_mapping(bids_folder))
     return df_auc

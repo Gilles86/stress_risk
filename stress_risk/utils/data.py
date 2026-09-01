@@ -12,7 +12,18 @@ from nilearn.maskers import NiftiMasker
 from collections.abc import Iterable
 from nilearn import surface
 
-def get_data(bids_folder='/Users/mrenke/data/ds-stressrisk',value=False ):
+# ---------------------------------------------------------------------------
+# Default location of the BIDS dataset. Change this ONE line to point the whole
+# package at a different copy; every function below uses it as its default and
+# still accepts an explicit bids_folder=... argument.
+#
+# On the department share (assemble it first, see stress_risk/DATA_ON_SHARE.md):
+# BIDS_FOLDER = '/Volumes/g_econ_department$/projects/2022/renkert_dehollander_aydogan_ruff_stressrisk/data/ds-stressrisk_remaining'
+BIDS_FOLDER = '/Users/mrenke/data/ds-stressrisk'
+# ---------------------------------------------------------------------------
+
+
+def get_data(bids_folder=BIDS_FOLDER, value=False):
     df = get_all_behavior(bids_folder=bids_folder,value=value )
     df['choice'] = df['choice'] == 2.0
     df['p1'] = df['prob1']
@@ -24,9 +35,8 @@ def get_data(bids_folder='/Users/mrenke/data/ds-stressrisk',value=False ):
 
     return df
 
-def add_cond2df(df):
-    #df_cond = pd.read_csv('/Users/mrenke/data/ds-stressrisk/StressRiskNum_ConditionAssigned.csv')
-    df_cond = pd.read_excel('/Users/mrenke/data/ds-stressrisk/addMeasures/data_combined.xlsx')
+def add_cond2df(df, bids_folder=BIDS_FOLDER):
+    df_cond = pd.read_excel(op.join(bids_folder, 'addMeasures', 'data_combined.xlsx'))
     df_c = pd.DataFrame({'subject' : df_cond['SUBID'], 'group': np.asarray(df_cond['condition']).astype(int)})
     df_c = df_c[df_c['subject'] < 100] # drop TMS subs
     gr = []
@@ -43,12 +53,12 @@ def add_cond2df(df):
 
     return df
 
-def get_group_mapping(bids_folder='/data/ds-stressrisk'):
+def get_group_mapping(bids_folder=BIDS_FOLDER):
     subject_list = pd.read_csv(f'{bids_folder}/group_assignmentList.csv', index_col=1).drop('Unnamed: 0', axis=1)['group']
     return subject_list
 
 
-def get_subjects(bids_folder='/data/ds-stressrisk', correct_behavior=True, correct_npc=False):
+def get_subjects(bids_folder=BIDS_FOLDER, correct_behavior=True, correct_npc=False):
     #bids_folder = '/data/ds-stressrisk'
     subject_list = pd.read_csv(f'{bids_folder}/group_assignmentList.csv', index_col=1).drop('Unnamed: 0', axis=1)
 
@@ -56,7 +66,7 @@ def get_subjects(bids_folder='/data/ds-stressrisk', correct_behavior=True, corre
     print(f'Found {len(subjects)} subjects')
     return subjects
 
-def get_all_behavior(bids_folder='/data/ds-stressrisk', correct_behavior=True, correct_npc=False, drop_no_responses=True,value=False ):
+def get_all_behavior(bids_folder=BIDS_FOLDER, correct_behavior=True, correct_npc=False, drop_no_responses=True,value=False ):
 
     subjects = get_subjects(bids_folder, correct_behavior, correct_npc)
     behavior = [s.get_behavior(drop_no_responses=drop_no_responses, value=value) for s in subjects]
@@ -71,7 +81,7 @@ def get_all_behavior(bids_folder='/data/ds-stressrisk', correct_behavior=True, c
 
 class Subject(object):
 
-    def __init__(self, subject, bids_folder='/data/ds-stressrisk'):
+    def __init__(self, subject, bids_folder=BIDS_FOLDER):
 
         self.subject = '%02d' % int(subject)
         self.bids_folder = bids_folder

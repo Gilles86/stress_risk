@@ -4,14 +4,14 @@ import numpy as np
 import pandas as pd
 from bauer.models import RiskRegressionModel, ExpectedUtilityRiskRegressionModel
 #from bauer.models_add import Risk_NLC_EU_RegressionModel # switch to maike branch on bauer so that this works!
-from stress_risk.utils.data import get_all_behavior
+from stress_risk.utils.data import get_all_behavior, BIDS_FOLDER
 import arviz as az
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 
 
-def get_data(bids_folder='/Users/mrenke/data/ds-stressrisk'):
+def get_data(bids_folder=BIDS_FOLDER):
     df = get_all_behavior(bids_folder=bids_folder)
     df['choice'] = df['choice'] == 2.0
     df['p1'] = df['prob1']
@@ -22,12 +22,10 @@ def get_data(bids_folder='/Users/mrenke/data/ds-stressrisk'):
     df = df.reset_index(level= 'session', drop=False) 
     return df
 
-def add_cond2df(df):
-    #df_cond = pd.read_csv('/Users/mrenke/data/ds-stressrisk/StressRiskNum_ConditionAssigned.csv')
-    df_cond = pd.read_excel('/Users/mrenke/data/ds-stressrisk/addMeasures/data_combined.xlsx')
+def add_cond2df(df, bids_folder=BIDS_FOLDER):
+    df_cond = pd.read_excel(op.join(bids_folder, 'addMeasures', 'data_combined.xlsx'))
     df_c = pd.DataFrame({'subject' : df_cond['SUBID'], 'group': np.asarray(df_cond['condition']).astype(int)})
     df_c = df_c[df_c['subject'] < 100] # drop TMS subs
-    # df_c.to_csv(op.join('/Users/mrenke/data/ds-stressrisk','sub-grou_assignmentList.csv'))
     gr = []
     for i in range(0,len(df)):
         sub = df.index[i][0] #subject is the first (0th) index

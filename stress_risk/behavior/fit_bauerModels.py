@@ -1,7 +1,7 @@
 import argparse
 from bauer.models import RiskRegressionModel
 #from tms_risk.utils.data import get_all_behavior
-from stress_risk.utils.data import get_all_behavior
+from stress_risk.utils.data import get_all_behavior, BIDS_FOLDER
 import os.path as op
 import os
 import arviz as az
@@ -11,7 +11,7 @@ from utils import add_cond2df, build_model, get_data
 
 # for value estimates for GLM - if save_trialwise=True - script for extracting pEV in fmri/glm_scripts/create_evenstFIles.ipynb
 
-def main(model_label, burnin=1000, samples=1000, bids_folder = '/Users/mrenke/data/ds-stressrisk',AUC=False,E_dif=False):
+def main(model_label, burnin=1000, samples=1000, bids_folder=BIDS_FOLDER,AUC=False,E_dif=False):
 
     target_folder = op.join(bids_folder, 'derivatives', 'cogmodels')
     
@@ -20,7 +20,7 @@ def main(model_label, burnin=1000, samples=1000, bids_folder = '/Users/mrenke/da
 
     df = get_data(bids_folder)
     
-    df_comb_shifts = pd.read_csv('/Users/mrenke/data/ds-stressrisk/interim_sum_data/r-prior-shift_Ediff_AUC.csv')
+    df_comb_shifts = pd.read_csv(op.join(bids_folder, 'interim_sum_data', 'r-prior-shift_Ediff_AUC.csv'))
     df = df.join(df_comb_shifts.set_index('subject')[['AUC', 'E_dif']], on='subject', how='left')
     
     if AUC:
@@ -44,7 +44,7 @@ def main(model_label, burnin=1000, samples=1000, bids_folder = '/Users/mrenke/da
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('model_label', default=None)
-    parser.add_argument('--bids_folder', default='/Users/mrenke/data/ds-stressrisk')
+    parser.add_argument('--bids_folder', default=BIDS_FOLDER)
     parser.add_argument('--AUC', action='store_true')
     parser.add_argument('--E_dif', action='store_true')
 
