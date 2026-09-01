@@ -9,7 +9,7 @@ import numpy as np
 from utils import get_alpha_vertex
 import pandas as pd
 
-from stress_risk.utils.data import Subject
+#from stress_risk.utils.data import Subject
 
 # run via:  %run visualize_nPRFmodel_subject.py 59 
 
