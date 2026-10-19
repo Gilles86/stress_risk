@@ -11,14 +11,18 @@ Clone this git repository
 
 git clone https://github.com/Gilles86/stress_risk.git
 
-install via 
-`python setup.py install`
+install the analysis package (editable) from the repo root:
+`pip install --editable .`
+
+Conda environments are in `environments/`; see `CLAUDE.md` for which one to use.
 
 ## Usage
 
 * code that was used to present the main experiment to participants can be found in `experiment`
 * code for the stress task in `fMRIMIST`
 * all analysis code (behavior & neural) can be found in `stress_risk`
+* reviewer-response analyses (first revision): `stress_risk/rebuttal1/`, `rebuttal_figures/`, `notes/rebuttal1/`
+* superseded material kept for the record: `archive/` (and `archive/` subfolders inside `stress_risk/`)
 
 ## Where to find what
 
@@ -28,7 +32,8 @@ install via
 | [`stress_risk/ADDITIONAL_ANALYSES.md`](stress_risk/ADDITIONAL_ANALYSES.md) | Analyses that were run but not reported — ROI controls, brain–behaviour correlations, motion controls, model variants. For reviewer questions. |
 | [`stress_risk/DATA_ON_SHARE.md`](stress_risk/DATA_ON_SHARE.md) | Where the data lives on the department share, how to assemble a working `ds-stressrisk` folder from it, and the minimum file set per paper notebook. |
 | [`stress_risk/analysis_pipeline_StressRisk.md`](stress_risk/analysis_pipeline_StressRisk.md) | Operational log: the actual data-transfer, fMRIPrep, MRIQC and cluster commands, with the subject lists. |
-| [`ana_pipe_02.md`](ana_pipe_02.md) | Short sketch of the same pipeline, superseded by the two documents above. |
+| [`stress_risk/rebuttal1/README.md`](stress_risk/rebuttal1/README.md) | Index of the reviewer-response analyses (first revision), including the corrected Supplementary Table 1 in [`rebuttal_figures/`](rebuttal_figures/). |
+| [`archive/README.md`](archive/README.md) | What was moved out of the way and why. |
 
 ## Further info
 
