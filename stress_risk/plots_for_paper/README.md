@@ -51,7 +51,7 @@ BIDS tree.
 
 | Section | Produces | Reads |
 | --- | --- | --- |
-| PMC parameter table | Absolute posterior means + 95% CI per parameter × group × session (`risky/safe_prior_mu`, `n1/n2_evidence_sd`, `risky/safe_prior_std`) | `derivatives/cogmodels/model-5_trace.netcdf` |
+| PMC parameter table | Absolute posterior means + 95% CI per parameter × group × session (`risky/safe_prior_mu`, `n1/n2_evidence_sd`, `risky/safe_prior_std`). **Wrong in the published Supplementary Table 1:** evaluated with session coded 0/1, but the model was fitted with 1/2. Use [`rebuttal_figures/supp_table1.py`](../../rebuttal_figures/supp_table1.py) instead. | `derivatives/cogmodels/model-5_trace.netcdf` |
 | Prior-std regressors | session / session:group effects on `risky_prior_std`, `safe_prior_std` | same trace |
 | *Model comparison* | `model_comparison_all.png` — `az.compare` ELPD over PMC, PMC-no-stress, EU, EU-no-stress | `model-5_trace`, `model-5_noStress_trace`, `model-EU_3_trace`, `model-EU_noStress__trace` |
 | *Stress manipulation effect* | Cortisol AUC + self-rated stress bar/swarm, group t-tests | `auc_cortisol.xlsx` (via `analyse_results.utils.get_stress_level`), `addMeasures/selfRated_Stress.csv` |
