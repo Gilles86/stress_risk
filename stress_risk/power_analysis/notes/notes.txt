@@ -1,0 +1,14 @@
+OK. I think I know what happened here.
+
+I think there are at least three ways of doing an experiment like this:
+
+A pure between-subjects design. All subjects do either the control or experimental condition. No baseline. The statistical test is a two-sample t-test on the raw dependent variables.
+A difference-of-differences design. All subjects do a baseline condition and a control or an experimental condition. The statistical test is a two-sample t-test on the individual difference scores (session 2 (control or experimental) - session 1 (baseline). The benefit over 1 is that you get rid of (some) subject-to-subject variance using the baseline condition. However, you are still testing two seperate populations: apart from the baseline condition, one group only did the control and one group only did the experimental condition. The downside of this si that you need to use the two-sample t-test. The denominator of that t-value contains both the variance of the experimental plus the variance of the control group. That substantially reduces the t-value and thereby power. I don’t see a way around it.
+A pure repeated measures design. All subjects undergo both the control and the experimental condition (if you randomize order effects, in principle I think you do not need a baseline condition). The statistical test is now a paired t-test. You can just test the difference scores across subjects against 0. That means that only the variance of the differences ends up in the denominator of the t-value, which makes it bigger and increases power.
+
+
+You guys were talking about scenario 2, and I was thinking about scenario 3. but we were both thinking we were talking about the same scenario.
+
+@Gökhan Aydogan, I think you only tested scenario 1 and 2. I agree that scenario 2 is better than 1, but only for very high within-subject correlation. Scenario 3 substantially increases power under all test-rest correlation values.
+
+Also, I noticed that the pre-post design (scenario2) actually does worse than the pure between-subjects design(1) when rho is smaller than ~.5. This makes sense: the variance of a difference score can be higher than a single score when correlation is low. (edited)

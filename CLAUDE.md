@@ -18,6 +18,7 @@ manuscript, so what a reviewer asks for has often already been done.
 | `stress_risk/plots_for_paper/README.md` | Which notebook makes which figure/statistic, and the full chain of scripts behind every input it reads. **Read before touching anything paper-related.** |
 | `stress_risk/ADDITIONAL_ANALYSES.md` | Analyses run but not reported. **Check here first when answering a reviewer.** |
 | `stress_risk/DATA_ON_SHARE.md` | What is on the department share and how to assemble a working dataset from it. |
+| `stress_risk/rebuttal1/README.md` | Index of the reviewer-response analyses (round 1). Reviewer reports and the letter are deliberately **not** in git — this repo is public. |
 | `stress_risk/analysis_pipeline_StressRisk.md` | The real cluster/transfer commands, if the neural pipeline ever has to be rerun. |
 
 ## Setting up on a new machine

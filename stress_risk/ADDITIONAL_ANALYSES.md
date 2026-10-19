@@ -194,3 +194,181 @@ numerosity range.
 **EDA / SCR** (skin conductance) features, plus frequency-domain analysis.
 `physio_hrv_loops.ipynb` cells 16+ correlate HRV measures with the prior shift and
 the neural shift.
+
+## 16. Salivary alpha-amylase — the second marker in the assay file
+
+**Status: done 2026-09-22 (reviewer-response round 1).** Gökhan pointed out that the
+saliva assay also measured **alpha-amylase**, a fast autonomic marker (immediate
+onset, back to baseline in 15–20 min) as against cortisol's slow glucocorticoid
+response, and that participants were re-stressed three times during the experiment.
+
+`rebuttal1/step9_amylase.py` — run with `~/mambaforge/envs/risk7t/bin/python` (needs
+openpyxl + pingouin + arviz together). Both markers are in
+`addMeasures/auc_cortisol.xlsx` despite the name: `Cortisol_1/_2` and
+`Amylase_1/_2` are duplicate assay runs (r = 0.98), `TimePoint` is the sample's
+position within participant, 1–6. Sample timing is mapped to the Methods there;
+samples 2–6 are `onset_Saliva_1..5` in `addMeasures/data_combined.xlsx`, sample 1
+(arrival) is not logged.
+
+* **Cortisol replicates the paper**: stress > control at the two during-MIST samples
+  (p = 0.004 both), AUC t = +5.31, BF10 ≈ 4900.
+* **Amylase shows no reactivity difference**: group × sample interaction
+  F = 0.45, p = 0.82 (F = 0.62, p = 0.69 on log amylase); during-MIST rise over the
+  pre-MIST sample −11.0 vs +0.5, p = 0.66, BF10 = 0.33. The groups differ in
+  *level* (group main effect p = 0.034), driven by the control group's decline after
+  arrival, not by a stress-evoked rise. Both groups rise at +65 min (post-scan /
+  debriefing).
+* **No association with the behavioural effect.** Group-controlled partial
+  correlation with the participant-level prior shift, per posterior draw: amylase
+  AUC r = −0.00 [−0.26, +0.26], during-MIST rise r = +0.08 [−0.28, +0.37], peak rise
+  r = −0.00 [−0.30, +0.28]. Cortisol AUC reproduces step 7 exactly (r = −0.090
+  [−0.343, +0.163]), which cross-validates the pipeline.
+* Cortisol AUC and the amylase rise are essentially independent (r = +0.03, n = 40).
+
+Outputs: `notes/rebuttal1/results/fig_saliva_markers.{pdf,png}` (both markers over
+the six samples by group, with per-sample significance markers),
+`rebuttal_amylase_correlations.csv`, `rebuttal_amylase_subjectwise.csv`.
+
+**Manuscript issue found:** the Methods say "A total of seven saliva samples were
+collected" and then enumerate six (−40, 0, ~20, ~37, 51, 65 min); the data has six.
+Also, the nominal minutes are the intended protocol — the logged medians are
+0, +33, +55, +70, +79.
+
+## 17. AUC of the saliva curves, on real elapsed time
+
+**Status: done 2026-09-22 (reviewer-response round 1).**
+`rebuttal1/step10_saliva_auc.py` (same env as entry 16).
+
+**What the paper's cortisol AUC actually is.** Reverse-engineered from the shipped
+`AUC` column: the trapezoid of (cortisol − `estCircadianChange`) over samples 2–6,
+integrated against the **sample index**, not minutes (reproduced to r = 0.998).
+`add_measures/saliva_analysis.py` shows the index integration. The circadian
+correction is sound; the equal spacing is not — the logged gaps are 40, 33, 22, 15
+and 8 minutes.
+
+* **The cortisol conclusion is robust to this.** Recomputed against each
+  participant's own logged sample times, the two measures correlate at r = 0.986 and
+  the group contrast barely moves: t = +4.36, p < 0.001, BF10 = 268, d = 1.31
+  (index version t = +4.61, BF10 = 530, d = 1.39; n = 22/23 complete curves).
+* Raw (uncorrected) Pruessner AUCs, same window: AUCg t = +3.11, p = 0.004,
+  BF10 = 11.8; AUCi t = +2.26, p = 0.029, BF10 = 2.2. So most of the strength of the
+  reported effect comes from the circadian correction, not from the AUC per se —
+  worth knowing if a reviewer asks for the raw version.
+* **Amylase, on real time, tells the same story as entry 16**: AUCg differs by group
+  (t = +2.32, p = 0.028, BF10 = 2.4) but AUCi — the reactivity measure — does not
+  (t = −0.37, p = 0.71, BF10 = 0.33). A level difference, not a response difference.
+* **No AUC predicts the prior shift** once group is controlled: every 95% CrI spans
+  zero (cortisol AUCcc minutes r = −0.10 [−0.35, +0.17]; amylase AUCi r = +0.09
+  [−0.29, +0.39]).
+
+Outputs: `notes/rebuttal1/results/fig_saliva_auc.{pdf,png}`,
+`rebuttal_saliva_auc_{contrasts,correlations,subjectwise}.csv`.
+
+## 18. Does the stress effect on risky choice depend on presentation order?
+
+**Status: done 2026-09-28 (reviewer-response round 1). No, it does not.**
+[`analyse_results/probit_order_interaction.ipynb`](analyse_results/probit_order_interaction.ipynb)
+(executed, outputs stored). The fits are in `analyse_results/fit_probit_order.py`, which writes
+`derivatives/cogmodels/bambi-RNP-fit_trace_model-{paper,order,order_re}.netcdf`. Run in
+`risk7t` (bambi 0.15.0, pymc 5.25.1) because there is no `behav_fit` env on that machine.
+Priors are bambi's defaults and sampler settings are the paper's. None of the three fits has
+divergences, and r_hat ≤ 1.01 throughout.
+
+The paper's probit model with order (`order`, 1 = risky first) crossed with everything:
+`chose_risky ~ x*session*group*order + (x*session|subject)`, where x = log(risky/safe).
+The stress effect is the group × session difference-in-difference in RNP, as in Figure 2B.
+
+* **Refit check:** the paper model refit in the current bambi reproduces the stored
+  `bambi-RNP-fit_trace_model1` (bambi 0.9.2): RNP interaction 0.066 [−0.004, 0.137],
+  p_bayes = 0.031, against 0.066 [−0.005, 0.142], p_bayes = 0.034 stored (paper: 0.07
+  [−0.01, 0.14], 0.034). The bambi version change does not matter.
+* **Stress effect on RNP per order:** safe first +0.069 [0.003, 0.140], p_bayes = 0.021;
+  risky first +0.061 [−0.017, 0.144], p_bayes = 0.064. Both are the same size as the pooled
+  effect (0.066). The risky-first interval is slightly wider and just touches 0.
+* **Slope (choice consistency) stress effect per order:** safe first −0.17 [−0.68, 0.34];
+  risky first +0.08 [−0.44, 0.61]. Neither differs from zero, as in the paper.
+* **Group × session × order:** the difference in the RNP stress effect between orders
+  (risky − safe) is −0.008 [−0.060, 0.043], p_bayes = 0.38. Coefficients:
+  `session:group:order` −0.24 [−0.70, 0.22] (intercept) and `x:session:group:order`
+  +0.25 [−0.34, 0.85] (slope). These partly offset each other, which is why the RNP
+  difference is ≈ 0.
+* **Raw check, no model:** the stress − control DiD in P(risky) is +0.091 for safe first
+  and +0.076 for risky first.
+* **Sensitivity:** order varies within subject, so a second model adds by-subject order
+  slopes (`order_re`: `(x*session*order|subject)`). It gives the same answer: per order
+  +0.070 [0.004, 0.141] and +0.060 [−0.021, 0.146]; difference −0.009 [−0.061, 0.044].
+
+**Limitation for the figure.** `notes/rebuttal1/results/fig_probit_order_ppc.{pdf,png}`
+uses the Figure 3B layout (stake × order × group × session). It shows that the probit has
+**no stake term**, so its predictions are flat over stake and miss the strong stake × order
+pattern: with risky first, P(risky) falls from ≈0.67 at stake 7 to 0.27–0.40 at stake 28. That pattern is what
+the PMC model is for. The probit answers "does the stake-averaged stress shift differ by
+order". Whether stress changes the stake × order *pattern* is a PMC question (Figure 3B).
+Also `fig_probit_order_stress_effect.{pdf,png}`: the posterior RNP stress effect per order
+next to the paper model's.
+
+Side note: the Methods give the random effects as `((1 + log_risky_safe)|subject)` and
+"4 chains of 2000 samples each (1000 burnin)". The trace that was actually used has
+`(x*session|subject)` and 1000 tune + 1000 draws per chain.
+
+## 19. Model-free baseline: did the groups already differ in risky choice at session 1?
+
+`rebuttal1/step11_baseline_choice.py` (run with
+`PYTHONPATH=<repo> ~/mambaforge/envs/tms_risk/bin/python`; needs pingouin + statsmodels).
+Complements entry R1.3 / `step6_baseline.py`, which contrasts the PMC parameters.
+
+* **Yes, a small one.** Session-1 P(chose risky): control 0.514, stress 0.449;
+  Δ = −0.065, 95% CI [−0.120, −0.010], t(48) = −2.38, p = 0.021, d = 0.67, BF10 = 2.69.
+  Welch, Mann–Whitney and a 20k permutation test all give p ≈ 0.02. At session 2 the
+  groups do not differ (t = 0.32, p = 0.75, BF10 = 0.30).
+* **Neither RNP nor slope differs significantly on its own.** In the paper probit model
+  the session-1 slope (choice consistency) is lower in the stress group but not credibly
+  so: −0.26 [−0.75, +0.23], P(>0) = 0.14; unpooled per-subject probit fits t(48) = −1.05,
+  p = 0.30, Mann–Whitney p = 0.32. The gap is the same at session 2 (−0.31 [−0.93, +0.31]) and
+  stress does not change it (group × session −0.05 [−0.47, +0.37]), so it looks like a
+  stable group difference in consistency. A simple trial-level logit with
+  subject-clustered SEs gives group × log-ratio −1.12, p = 0.020, but it has no
+  random slopes and overstates the evidence; use the probit numbers. The raw-proportion
+  gap (p = 0.02) is the sum of two small, non-significant differences (RNP −0.02, slope
+  −0.26) that both push the same way. For comparison, the PMC's only near-credible
+  baseline contrast is `n1_evidence_sd` (stress noisier, P(>0) ≈ 0.89–0.93); the prior
+  mean is −0.013 [−0.41, +0.39].
+* **Don't t-test this model's per-subject estimates.** `group` is a fixed effect, so
+  each subject is shrunk toward its own group's mean; within-group spread shrinks and a
+  t-test on posterior medians is anti-conservative (it gave slope p = 0.08 against
+  p = 0.30 for unpooled fits). Use the population-level contrast, or unpooled fits.
+* The apparent baseline prior gap of −0.52 in the published Table S1 was the
+  session-0/1-vs-1/2 coding error (see proposed edits §2); the raw-choice gap here is
+  real and independent of that.
+
+* **Against the stress effect.** Raw P(risky) change: control +0.024, stress +0.107;
+  DiD +0.083, t(48) = 1.54, p = 0.13, BF10 = 0.74; ANCOVA (ses-2 ~ group + ses-1)
+  +0.064, p = 0.26. With test–retest r = 0.31, regression to the mean alone predicts a
+  DiD of +0.045 from the baseline gap — about half the raw effect. The paper's effect is
+  on RNP (0.07, p_bayes = 0.034), which separates curve position from slope; the
+  baseline gap is in slope, the session-2 change is a leftward shift (see right panel).
+* **No baseline difference in risk attitude (RNP).** Paper probit model
+  (`bambi-RNP-fit_trace_model-paper`, RNP = exp(a/b)): session-1 stress − control
+  −0.018 [−0.145, +0.113] at the population level; unpooled per-subject probit fits
+  t(48) = 0.74, p = 0.46, Mann–Whitney p = 0.94. The same trace reproduces the paper's
+  group × session effect, +0.066 [−0.004, +0.137], p_bayes = 0.031. So the baseline
+  gap in raw choice proportions is not a gap in the quantity the paper reports.
+
+Outputs: `notes/rebuttal1/results/fig_baseline_choice.{pdf,png}`,
+`fig_group_session_choice.{pdf,png}` (paired per-subject P(risky) and RNP by group ×
+session, with all tests; choice curves for all four cells — the one-figure summary).
+
+## 20. Supplementary Table 1 — correction (changes paper numbers)
+
+**Status: done 2026-10-19 (reviewer-response round 1). This is a correction, not an
+additional analysis.** [`rebuttal_figures/supp_table1.py`](../rebuttal_figures/supp_table1.py)
+regenerates the table; outputs and checks are next to it.
+
+* The published per-cell PMC values (`plots_for_paper/paperFinal_supplements.ipynb`, cell 3)
+  evaluated the regression with session coded 0/1. The model was fitted with 1/2 (the design
+  matrices stored in `model-5_trace.netcdf` say so), so every cell was one session step too
+  early. Regression coefficients, and so every main-text effect, are unchanged.
+* With the correct coding no parameter differs between the groups at session 1. The prior
+  mean gap is −0.013 [−0.415, +0.389], not the −0.52 the published table implied.
+* The script reproduces the old table exactly with 0/1 coding, and all seven main-text PMC
+  effects and Supplementary Table 2 with either coding. See `supp_table1_checks.md`.
