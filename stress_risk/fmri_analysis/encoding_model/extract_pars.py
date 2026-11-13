@@ -1,95 +1,89 @@
 import os
 import os.path as op
 import argparse
-from neural_priors.utils.data import Subject, get_all_subject_ids
+from stress_risk.utils.data import Subject
 from tqdm.contrib.itertools import product
 import pandas as pd
-from stress_risk.utils.data import Subject
-from nilearn.maskers import NiftiMasker
-from nilearn import image
+import numpy as np
 
-def get_vselect_mask(sub, bids_folder):
-    roi='NPC_R'
-    source_key_vselect = 'encoding_model.cv.denoise.retroicor'
-    session1 = 1
-    subject = Subject(int(sub), bids_folder=bids_folder)
-    ips_mask = subject.get_volume_mask(roi=roi, session=1, epi_space=True) # anat from session1
-    ips_masker = NiftiMasker(mask_img=ips_mask)
-    im_cvr2_fn = op.join(bids_folder, 'derivatives', source_key_vselect, f'sub-{sub}', f'ses-{session1}','func', f'sub-{sub}_ses-{session1}_desc-cvr2.optim_space-T1w_pars.nii.gz')
-    im_cvr2 = image.load_img(im_cvr2_fn)
-    cv_r2 = pd.DataFrame(ips_masker.fit_transform(im_cvr2))
-    r2_mask = cv_r2 > 0.0
-    r2_mask = r2_mask.to_numpy().flatten()
-    print(f'Number of voxels: {r2_mask.sum()}')
-    return r2_mask, ips_masker
+def main(roi='NPCr', bids_folder='/data/ds-stressrisk', smoothed=True, old_models=False):
 
-    
-def get_prf_parameters_volume2(sub,bids_folder, model_label, smoothed=True, roi=None):
+    key = 'summary_encoding_models'
 
-    par_keys = ['mu', 'sd','amplitude', 'baseline']
-
-    # Create target folder
-    key = f'model{model_label}'
-    cv_key = key + '.cv'
+    if old_models:
+        key += '.old'
 
     if smoothed:
         key += '.smoothed'
-        cv_key += '.smoothed'
 
-    masker = self.get_volume_mask(roi=roi, epi_space=True, return_masker=True)
-
-    target_dir = op.join(self.bids_folder, 'derivatives', 'encoding_models2', key, f'sub-{sub}', 'func')
-
-    pars = []
-
-    for par, condition in product_(par_keys, ['ses', 'wide']):
-        fn = op.join(target_dir, f'sub-{sub}_desc-{par}.{condition}.optim_space-T1w_pars.nii.gz')
-
-        pars.append(pd.Series(masker.transform(fn).squeeze(), name=(par, condition)))
-
-    pars.append(pd.Series(masker.transform(op.join(target_dir, f'sub-{sub}_desc-r2.optim_space-T1w_pars.nii.gz')).squeeze(), name=('r2', None)))
-
-    cv_dir = op.join(self.bids_folder, 'derivatives', 'encoding_models2',  cv_key, f'sub-{sub}', 'func')
-
-    pars.append(pd.Series(masker.transform(op.join(cv_dir, f'sub-{sub}_desc-cvr2.optim_space-T1w_pars.nii.gz')).squeeze(), name=('cvr2', None)))
-
-    return pd.concat(pars, axis=1, names=['parameter', 'range'])
-
-
-
-def main(roi='NPC_R', bids_folder='/mnt_01/ds-stressrisk', smoothed=True, fit_responses=False):
-
-    key = 'encoding_models2'
+    print(key)
 
     target_dir = op.join(bids_folder, 'derivatives', key)
     print(f'Writing to {target_dir}')
     os.makedirs(target_dir, exist_ok=True)
 
-    subject_ids = get_all_subject_ids()
-    model_labels = list(range(0, 9))
-    subjects = [Subject(subject_id=subject_id) for subject_id in subject_ids]
+    subject_ids = range(1, 62)
+
+    subjects = [Subject(subject=subject_id) for subject_id in subject_ids]
     pars = []
 
-    keys = []
-    for sub, model_label, smoothed in product(subjects, model_labels, [True]):
-        try:
-            pars.append(get_prf_parameters_volume2(sub, bids_folder,model_label=model_label, smoothed=smoothed,  roi=roi))
-            keys.append((sub.subject_id, model_label, smoothed))
-        except Exception as e:
-            print(f"Failed for {sub.subject_id} model {model_label}: {e}")
+    if not old_models:
+        model_labels = range(0, 3)
+    else:
+        model_labels = [None]
 
-    pars = pd.concat(pars, keys=keys, names=['subject_id', 'model_label', 'smoothed'])
-    pars.columns.names = ['parameter', 'range']
+    keys = []
+    
+    if old_models:
+        for sub in subjects:
+            try:
+                roi, smoothed = 'NPC_R', True
+                p1 = sub.get_prf_parameters_volume(smoothed=smoothed, roi=roi, session=1, retroicor=True, denoise=True, cross_validated=False, run=None)
+                p2 = sub.get_prf_parameters_volume(smoothed=smoothed, roi=roi, session=2, retroicor=True, denoise=True, cross_validated=False, run=None)
+                p = pd.concat([p1, p2], keys=[1., 2.], names=['session'], axis=1)
+                p.columns.names = ['session', 'parameter']
+
+                p = p.reorder_levels(['parameter', 'session'], axis=1).sort_index(axis=1, level=0)
+                p[('mu_natural', 1)], p[('mu_natural', 2)] = np.exp(p[('mu', 1)]), np.exp(p[('mu', 2)])
+
+                p[('cvr2', 'nan')] = p['cvr2'].mean(axis=1)
+                p[('r2', 'nan')] = p['r2'].mean(axis=1)
+
+                pars.append(p)
+                print(pars[-1].head())
+                keys.append((sub.subject))
+            except Exception as e:
+                # raise e
+                print(f"Failed for {sub.subject}: {e}")
+
+        pars = pd.concat(pars, keys=keys, names=['subject_id'])
+    else:
+        for sub, model_label in product(subjects, model_labels):
+            try:
+                if old_models:
+                    # pars.append(sub.get_prf_parameters_volume(smoothed=smoothed, roi='NPCr'))
+                    raise NotImplementedError("Old models not implemented")
+                else:
+                    p = sub.get_prf_parameters_volume2(smoothed=smoothed, model_label=model_label, roi=roi)
+                    p[('mu_natural', 1)], p[('mu_natural', 2)] = np.exp(p[('mu', 1)]), np.exp(p[('mu', 2)])
+                    pars.append(p)
+                    print(pars[-1].head())
+                keys.append((sub.subject, model_label))
+            except Exception as e:
+                # raise e
+                print(f"Failed for {sub.subject}: {e}")
+
+        pars = pd.concat(pars, keys=keys, names=['subject_id', 'model_label'])
+
+    # pars.columns.names = ['parameter', 'session']
     pars.to_csv(op.join(target_dir, f'group_roi-{roi}_parameters.tsv'), sep='\t')
 
-
+argparser = argparse.ArgumentParser()
+argparser.add_argument('roi', default='NPC_R', type=str)
+argparser.add_argument('--bids_folder', default='/data/ds-stressrisk')
+argparser.add_argument('--smoothed', action='store_true')
+argparser.add_argument('--old_models', action='store_true', dest='old_models')
 
 if __name__ == '__main__':
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument('roi', default='NPCr', type=str)
-    argparser.add_argument('--bids_folder', default='/mnt_01/ds-stressrisk')
-    argparser.add_argument('--fit_responses', action='store_true')
-
     args = argparser.parse_args()
-
-    main(roi=args.roi, bids_folder=args.bids_folder, fit_responses=args.fit_responses)
+    main(roi=args.roi, bids_folder=args.bids_folder, smoothed=args.smoothed, old_models=args.old_models)

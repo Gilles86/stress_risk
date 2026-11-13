@@ -1,6 +1,3 @@
-
-
-# %%
 import argparse
 from bauer.models import RiskRegressionModel
 #from tms_risk.utils.data import get_all_behavior
@@ -11,6 +8,8 @@ import arviz as az
 import numpy as np
 import pandas as pd
 from utils import add_cond2df, build_model, get_data
+
+# for value estimates for GLM - if save_trialwise=True - script for extracting pEV in fmri/glm_scripts/create_evenstFIles.ipynb
 
 def main(model_label, burnin=1000, samples=1000, bids_folder = '/Users/mrenke/data/ds-stressrisk',AUC=False,E_dif=False):
 

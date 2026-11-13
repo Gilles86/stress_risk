@@ -17,8 +17,8 @@ def get_data(bids_folder='/Users/mrenke/data/ds-stressrisk'):
     df['p1'] = df['prob1']
     df['p2'] = df['prob2']
 
-    df = add_cond2df(df) # adds 
-    df = df.dropna() # automatially removes subs without group assignment
+    #df = add_cond2df(df) # adds 
+    #df = df.dropna() # automatially removes subs without group assignment
     df = df.reset_index(level= 'session', drop=False) 
     return df
 
@@ -69,11 +69,21 @@ def build_model(model_label, df):
           'risky_prior_mu':'session*group'},
          prior_estimate='different')
     elif model_label =='EU_1':
-        model = ExpectedUtilityRiskRegressionModel(df, save_trialwise_eu= True,probability_distortion=False, regressors=None) #subject is automatically a regressor
+        model = ExpectedUtilityRiskRegressionModel(df, save_trialwise_eu= True,probability_distortion=False, 
+                regressors=None) #subject is automatically a regressor
     elif model_label =='EU_2':
-        model = ExpectedUtilityRiskRegressionModel(df, save_trialwise_eu= True,probability_distortion=False, regressors={'alpha':'0 + C(session)','sigma':'0 + C(session)'}) #subject is automatically a regressor
+        model = ExpectedUtilityRiskRegressionModel(df, save_trialwise_eu= True,probability_distortion=False, 
+                regressors={'alpha':'0 + C(session)','sigma':'0 + C(session)'}) #subject is automatically a regressor
     elif model_label =='EU_3':
-        model = ExpectedUtilityRiskRegressionModel(df, save_trialwise_eu= True, probability_distortion=False, regressors={'alpha':'0 + C(session)*group', 'sigma':'0 + C(session)*group'}) #subject is automatically a regressor
+        model = ExpectedUtilityRiskRegressionModel(df, save_trialwise_eu= True, probability_distortion=False, 
+                regressors={'alpha':'0 + C(session)*group', 
+                            'sigma':'0 + C(session)*group'}) #subject is automatically a regressor
+    elif model_label =='EU_noStress':
+        model = ExpectedUtilityRiskRegressionModel(df, save_trialwise_eu= True, probability_distortion=False, 
+                regressors={'alpha':'0 + C(session) + group', 
+                            'sigma':'0 + C(session) + group'}) #subject is automatically a regressor
+    
+    
     elif model_label =='NLC_1': # same as '1', just with save_trialwise_n_estimates
         model = RiskRegressionModel(df,save_trialwise_n_estimates=True, regressors={
         'n1_evidence_sd':'session*group',
@@ -92,6 +102,16 @@ def build_model(model_label, df):
         'risky_prior_std':'session*group', # 0 == no intercept for that regressor
         'safe_prior_std':'session*group'},
          prior_estimate='full')
+        
+    elif model_label=='5_noStress' : # introduction on common-prior-effect(sesssion*group)
+        model = RiskRegressionModel(df,regressors={
+        'n1_evidence_sd':'session + group',
+        'n2_evidence_sd':'session + group', 
+        'prior_mu':'0 + session + group', 
+        'risky_prior_std':'session + group', # 0 == no intercept for that regressor
+        'safe_prior_std':'session + group'},
+         prior_estimate='full')
+        
     elif model_label=='5b' : # introduction on common-prior-effect(sesssion*group)
         model = RiskRegressionModel(df,regressors={
         'n1_evidence_sd':'session',
