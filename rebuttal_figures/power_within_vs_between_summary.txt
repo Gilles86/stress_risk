@@ -1,0 +1,22 @@
+Control group (n = 25), RNP from unpooled per-session probit fits
+  test-retest r = 0.377, bootstrap 95% CI [-0.066, 0.746]
+  between-subject SD: session 1 = 0.0958, session 2 = 0.1098, pooled = 0.1031
+  SD of change scores = 0.1154 = 1.119 x SD (95% CI [0.755, 1.460]); theory sqrt(2(1-r)) = 1.116
+
+Other measures of risk attitude, control group:
+  RNP, paper hierarchical model    r = 0.53 [0.16, 0.84], SD_change/SD = 0.97
+  P(chose risky)                   r = 0.20 [-0.18, 0.56], SD_change/SD = 1.29
+
+Power with this study's budget, 25 per group x 2 sessions = 100 scans (two-sided alpha = .05):
+     d  1 ses, 50/grp  1 ses, 25/grp   change   ANCOVA  single-session n/group matching change / ANCOVA
+   0.4           0.51           0.28     0.24     0.32  20 / 29
+   0.6           0.84           0.55     0.46     0.61  20 / 29
+   0.8           0.98           0.79     0.70     0.85  20 / 29
+
+For 80% power, n per group (scanning sessions in total):
+  d = 0.4: single session 100 (200), change score 124 (496), ANCOVA 86 (344)
+  d = 0.6: single session 45 (90), change score 56 (224), ANCOVA 39 (156)
+  d = 0.8: single session 26 (52), change score 32 (128), ANCOVA 23 (92)
+
+Break-even: at equal n per group the change score beats a single session only if r > 0.5.
+At equal scanning cost it needs SD_change < SD / sqrt(2), i.e. r > 0.75.
